@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huawei.mapper.StudentMapper">
+
+    <select id="findInfo" resultType="java.util.Map" parameterType="string">
+        select
+            s.Sid sid,s.Sname sname,a.score score,c.Cname cname,c.Cid cid
+        from student s join sc a on s.Sid = a.Sid
+        join course c on a.Cid = c.Cid <if test="cid != null and cid != ''"> and c.Cid = #{cid}</if>
+        order by a.score desc
+    </select>
+    <select id="findStudentIds" resultType="java.lang.String">
+        select
+            s.Sid
+        from student s join sc a on s.Sid = a.Sid
+        join course c on a.Cid = c.Cid  <if test="cid != null and cid != ''"> and c.Cid = #{cid}</if>
+    </select>
+    <select id="findStudentInfo" resultType="java.util.Map">
+        select
+            s.Sid,s.Sname,a.score,c.Cname
+        from student s join sc a on s.Sid = a.Sid
+        join course c on a.Cid = c.Cid and c.Cid = #{cid}
+        where s.Sid = #{sid}
+
+    </select>
+
+
+</mapper>
