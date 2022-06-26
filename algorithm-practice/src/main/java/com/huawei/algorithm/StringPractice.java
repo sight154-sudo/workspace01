@@ -6,6 +6,8 @@ package com.huawei.algorithm;/**
 
 import org.junit.Test;
 
+import java.util.Scanner;
+
 /**
  * @program: springboot-demo
  *
@@ -49,5 +51,12 @@ public class StringPractice {
         }
         return -1;
     }
+    Scanner sc = new Scanner(System.in);
 
+    @Test
+    public void testScanner() {
+        while(sc.hasNext()) {
+            System.out.println(sc.next());
+        }
+    }
 }

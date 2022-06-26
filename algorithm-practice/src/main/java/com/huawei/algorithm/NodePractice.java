@@ -2,7 +2,9 @@ package com.huawei.algorithm;
 
 import org.junit.Test;
 
+import javax.swing.tree.TreeNode;
 import java.util.ArrayList;
+import java.util.List;
 
 public class NodePractice {
 
@@ -187,28 +189,28 @@ public class NodePractice {
         return tmp.next;
     }
 
-    public Node mergeTwoNodeRecursion(Node node1,Node node2) {
+    public Node mergeTwoNodeRecursion(Node node1, Node node2) {
         //找到小的节点，然后用小的节点的下一个节点与另一个链表比较 依次类推
-        if(node1 == null) {
+        if (node1 == null) {
             //表示node1已经比较完毕
             return node2;
-        }else if(node2 == null) {
+        } else if (node2 == null) {
             return node1;
-        }else if(node1.val > node2.val ) {
-            node2.next = mergeTwoNodeRecursion(node1,node2.next);
+        } else if (node1.val > node2.val) {
+            node2.next = mergeTwoNodeRecursion(node1, node2.next);
             return node2;
-        }else{
-            node1.next = mergeTwoNodeRecursion(node1.next,node2);
+        } else {
+            node1.next = mergeTwoNodeRecursion(node1.next, node2);
             return node1;
         }
     }
 
     @Test
     public void hasCycle() {
-        Node node1 = new Node(1,null);
-        Node node2 = new Node(2,null);
-        Node node3 = new Node(3,null);
-        Node node4 = new Node(4,null);
+        Node node1 = new Node(1, null);
+        Node node2 = new Node(2, null);
+        Node node3 = new Node(3, null);
+        Node node4 = new Node(4, null);
         node1.next = node2;
         node2.next = node3;
         node3.next = node4;
@@ -237,6 +239,37 @@ public class NodePractice {
         return false;
     }
 
+    List<Integer> list = new ArrayList<>();
+    /**
+     * 二叉树的前序遍历
+     * @param root
+     * @return
+     */
+    public List<Integer> preorderTraversal(BinaryTreeNode root) {
+        if (root == null) return null;
+        list.add(root.val);
+        preorderTraversal(root.left);
+        preorderTraversal(root.right);
+        return list;
+    }
+
+    /**
+     * n叉树的前序遍历
+     * @param root
+     * @return
+     */
+    public List<Integer> preorder(NTreeNode root) {
+        if (root == null) return list;
+        list.add(root.val);
+//        preorder(root.children);
+        return null;
+    }
+
+    /**
+     * 构造链表
+     * @param arr
+     * @return
+     */
     public Node constructNode(int[] arr) {
         Node head = new Node();
         Node cur = head;
@@ -248,6 +281,10 @@ public class NodePractice {
         return head.next;
     }
 
+    /**
+     * 打印链表
+     * @param head
+     */
     public void printNode(Node head) {
         if (head == null) {
             System.out.println("null");
@@ -261,4 +298,41 @@ public class NodePractice {
         sb.append("null");
         System.out.println(sb.toString());
     }
+
+
 }
+class BinaryTreeNode {
+    int val;
+    BinaryTreeNode left;
+    BinaryTreeNode right;
+
+    BinaryTreeNode() {
+    }
+
+    BinaryTreeNode(int val) {
+        this.val = val;
+    }
+
+    BinaryTreeNode(int val, BinaryTreeNode left, BinaryTreeNode right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
+    }
+}
+class NTreeNode {
+    public int val;
+    public List<NTreeNode> children;
+
+    public NTreeNode() {
+    }
+
+    public NTreeNode(int _val) {
+        val = _val;
+    }
+
+    public NTreeNode(int _val, List<NTreeNode> _children) {
+        val = _val;
+        children = _children;
+    }
+}
+

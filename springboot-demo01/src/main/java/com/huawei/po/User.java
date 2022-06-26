@@ -1,6 +1,8 @@
 package com.huawei.po;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
@@ -10,6 +12,8 @@ import java.util.Date;
  * @Desc
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
     private Integer id;
     private String userName;
@@ -19,4 +23,5 @@ public class User {
     private Date birthday;
     private Date createdTime;
     private Date updatedTime;
+
 }

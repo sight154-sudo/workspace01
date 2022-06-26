@@ -1,11 +1,11 @@
 package com.huawei.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.huawei.po.Student;
 import com.huawei.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -31,4 +31,9 @@ public class StudentController {
         return studentService.findStudentSearch(cid);
     }
 
+    @PostMapping("student/upload")
+    public String uploadFile(@RequestPart("file") MultipartFile file, @RequestPart("stu") Student stu) {
+        System.out.println(stu);
+        return stu.toString();
+    }
 }
