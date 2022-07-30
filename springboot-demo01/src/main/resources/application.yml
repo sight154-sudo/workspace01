@@ -12,3 +12,42 @@ spring:
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
+#  dynamic:
+#    thread-pool:
+#      enable: true  # 是否开启动态线程池
+#      banner: true  # 是否打印 banner
+#      collect: true  # 是否开启线程池数据采集，对接 Prometheus
+#      check-state-interval: 3  # 检查线程池状态，是否达到报警条件，单位秒
+#      notify-platforms: # 通知报警平台，支持多个，或者任选其一
+#        - platform: 'WECHAT'  # 企业微信
+#          secret-key: 1d307bfa-815f-4662-a2e5-99415e947bb8
+#        - platform: 'DING'  # 钉钉
+#          secret-key: 56417ebba6a27ca352f0de77a2ae9da66d01f39610b5ee8a6033c60ef9071c55
+#        - platform: 'LARK'  # 飞书
+#          secret-key: 2cbf2808-3839-4c26-a04d-fd201dd51f9e
+#      nacos: # nacos apollo 任选其一
+#        data-id: xxx
+#        group: xxx
+#      apollo:
+#        namespace: xxxx
+#      config-file-type: yml  # 配置中心文件格式
+#      executors:
+#        - thread-pool-id: 'message-consume'  # 线程池标识
+#          core-pool-size: 1  # 核心线程数
+#          maximum-pool-size: 1  # 最大线程数
+#          queue-capacity: 1  # 阻塞队列大小
+#          execute-time-out: 1000  # 执行超时时间，执行任务时间超过此时间发起报警
+#          blocking-queue: 'LinkedBlockingQueue'  # 阻塞队列名称，参考 QueueTypeEnum，支持 SPI
+#          rejected-handler: 'AbortPolicy'  # 拒绝策略名称，参考 RejectedPolicies，支持 SPI
+#          keep-alive-time: 1024  # 线程存活时间，单位秒
+#          allow-core-thread-time-out: true  # 是否允许核心线程超时
+#          thread-name-prefix: 'message-consume'  # 线程名称前缀
+#          notify: # 通知配置
+#            is-alarm: true  # 是否报警
+#            active-alarm: 80  # 活跃度报警阈值；假设线程池最大线程数 10，当线程数达到 8 发起报警
+#            capacity-alarm: 80  # 容量报警阈值；假设阻塞队列容量 100，当容量达到 80 发起报警
+#            interval: 8  # 报警间隔，同一线程池下同一报警纬度，在 interval 时间内只会报警一次，单位分钟
+#            receives: # 任选其一
+#              DING: 'xxx'  # 手机号
+#              WECHAT: 'xxx'  # 填写企业微信用户 ID（填写其它将无法达到 @ 效果）
+#              LARK: 'xxx' # 填写 ou_开头的用户唯一标识，否则只能普通 @

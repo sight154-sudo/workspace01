@@ -1,6 +1,7 @@
 package com.huawei;
 
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
@@ -10,9 +11,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SpringBootApplication
 @MapperScan(basePackages = "com.huawei.mapper")
-public class SpringApplication {
+//@EnableDynamicThreadPool
+public class LivedataApplication {
 
     public static void main(String[] args) {
-        org.springframework.boot.SpringApplication.run(SpringApplication.class);
+        SpringApplication.run(LivedataApplication.class);
     }
 }

@@ -299,8 +299,22 @@ public class NodePractice {
         System.out.println(sb.toString());
     }
 
+    public BinaryTreeNode levelConstruct(int[] arr) {
+        if (arr.length < 2) {
+            return null;
+        }
+        BinaryTreeNode root = new BinaryTreeNode(arr[1],null,null);
+        BinaryTreeNode cur = root;
+        BinaryTreeNode left;
+        BinaryTreeNode right;
 
+        return root;
+    }
 }
+
+/**
+ * 二叉树构造
+ */
 class BinaryTreeNode {
     int val;
     BinaryTreeNode left;

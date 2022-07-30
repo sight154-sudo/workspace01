@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 
 
@@ -13,7 +14,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class ThreadExecutorConfig {
 
     @Bean("taskExecutor")
-    public ThreadPoolTaskExecutor getMyExecutor() {
+    public ThreadPoolTaskExecutor taskExecutor() {
         ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
         // 设置核心线程数
         threadPool.setCorePoolSize(20);
@@ -34,4 +35,14 @@ public class ThreadExecutorConfig {
         return threadPool;
     }
 
+
+    /*@Bean
+    @DynamicThreadPool
+    public ThreadPoolExecutor dynamicThreadPoolExecutor() {
+        String consumeThreadPoolId = "message-consume";
+        return ThreadPoolBuilder.builder()
+                .threadFactory(consumeThreadPoolId)
+                .dynamicPool()
+                .build();
+    }*/
 }

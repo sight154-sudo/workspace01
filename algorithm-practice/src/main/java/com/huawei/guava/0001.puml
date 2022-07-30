@@ -1,0 +1,12 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+Alice -> Bob: Authentication Request -> lisi
+Bob --> Alice: Authentication Response
+wang --> Bob
+
+Alice -> Bob: Another authentication Request
+Alice <-- Bob: another authentication Response
+@enduml

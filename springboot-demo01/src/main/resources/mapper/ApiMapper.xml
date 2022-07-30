@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huawei.mapper.ApiMapper">
+
+    <resultMap id="baseMapper" type="com.huawei.po.ApiEntity">
+        <id column="id" jdbcType="VARCHAR"></id>
+        <result column="api_uuid" jdbcType="VARCHAR"></result>
+        <result column="api_name" jdbcType="VARCHAR"></result>
+        <result column="api_method" jdbcType="VARCHAR"></result>
+        <result column="api_createtime" jdbcType="VARCHAR"></result>
+        <result column="api_modifytime" jdbcType="VARCHAR"></result>
+        <result column="api_deleteflag" jdbcType="VARCHAR"></result>
+    </resultMap>
+
+    <insert id="addApi" parameterType="com.huawei.po.ApiEntity">
+        insert into ld_api(id,api_uuid,api_name,api_method,api_createtime,api_modifytime,api_deleteflag)
+        values(#{id},#{apiUUID},#{apiName},#{apiMethod},#{createtime},#{modifytime},#{deleteflag})
+    </insert>
+    <select id="queryApi" parameterType="com.huawei.po.ApiEntity" resultType="com.huawei.po.ApiEntity">
+        select *
+        from ld_api
+        <where>
+            <if test="apiUUID != null and apiUUID != ''">
+                and api_uuid = #{apiUUID}
+            </if>
+            <if test="apiName != null and apiName != ''">
+                and api_name = #{apiName}
+            </if>
+            <if test="apiMethod != null and apiMethod != ''">
+                and api_method = #{apiMethod}
+            </if>
+        </where>
+    </select>
+</mapper>
