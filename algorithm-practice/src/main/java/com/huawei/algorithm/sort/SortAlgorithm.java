@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.MapMaker;
 import com.google.common.collect.Maps;
 import com.huawei.algorithm.Node;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import javax.swing.*;
@@ -15,14 +16,19 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Comparator;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
@@ -3202,8 +3208,31 @@ public class SortAlgorithm {
      * @param k
      * @return
      */
-    public List<List<Integer>> kSmallestPairs(int[] nums1, int[] nums2, int k) {
-        return null;
+    public List<List<Integer>> kSmallestPairs(int[] num1, int[] num2, int k) {
+        PriorityQueue<int[]> pq = new PriorityQueue<>(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return num1[o1[0]] + num2[o1[1]] - num1[o2[0]] - num2[o2[1]];
+            }
+        });
+        List<List<Integer>> res = new ArrayList<>();
+        int m = num1.length;
+        int n = num1.length;
+        for (int i = 0; i < Math.min(m, k); i++) {
+            pq.add(new int[]{i, 0});
+        }
+        while (k-- > 0 && !pq.isEmpty()) {
+            int[] poll = pq.poll();
+            List<Integer> list = new ArrayList<>();
+            list.add(num1[poll[0]]);
+            list.add(num2[poll[1]]);
+            res.add(list);
+            if (poll[1] + 1 < n) {
+                pq.add(new int[]{poll[0], poll[1] + 1});
+            }
+        }
+        return res;
+
     }
 
     @Test
@@ -3267,7 +3296,7 @@ public class SortAlgorithm {
             // 存放元素  依次为i行的首元素，第i行， 第0列的；
             pq.offer(new int[]{matrix[i][0], i, 0});
         }
-        for (int i = 0; i < k-1; i++) {
+        for (int i = 0; i < k - 1; i++) {
             int[] cur = pq.poll();
             if (cur[2] < len - 1) {
                 pq.offer(new int[]{matrix[cur[1]][cur[2] + 1], cur[1], cur[2] + 1});
@@ -3300,6 +3329,7 @@ public class SortAlgorithm {
         }
         System.out.println(Arrays.toString(res));
     }
+
 
     @Test
     public void longestPalindromeSubseq2() {
@@ -3484,4 +3514,679 @@ public class SortAlgorithm {
         System.out.println(Math.pow(2, 3));
         System.out.println(Integer.valueOf('0'));
     }
+
+    @Test
+    public void validSquare() {
+        int[] p1 = {0, 0};
+        int[] p2 = {0, 1};
+        int[] p3 = {1, 1};
+        int[] p4 = {1, 0};
+        System.out.println(validSquare(p1, p2, p3, p4));
+    }
+
+    /**
+     * 有效的正方形 593
+     *
+     * @param p1
+     * @param p2
+     * @param p3
+     * @param p4
+     * @return
+     */
+    public boolean validSquare(int[] p1, int[] p2, int[] p3, int[] p4) {
+        if (p1[0] == p2[0] && p1[1] == p2[1]) {
+            return false;
+        }
+        int len1 = isEqual(p1, p2);
+        int len2 = isEqual(p1, p3);
+        int len3 = isEqual(p1, p4);
+        int len4 = isEqual(p2, p3);
+        int len5 = isEqual(p2, p4);
+        int len6 = isEqual(p3, p4);
+        int[] res = {len1, len2, len3, len4, len5, len6};
+        Arrays.sort(res);
+        return res[0] == res[3] && res[4] == res[5];
+//        int[] p1p2 = new int[]{p1[0]-p2[0], p1[1]-p2[1]};
+//        int[] p1p4 = new int[]{p1[0]-p4[0], p1[1]-p4[1]};
+//        if (len1 == len2 && len1 == len3 && len1 == len4 && iscos(p1p2,p1p4)) {
+//            return true;
+//        }
+//        return false;
+    }
+
+    public int isEqual(int[] p1, int[] p2) {
+        return (p1[0] - p2[0]) * (p1[0] - p2[0]) + (p1[1] - p2[1]) * (p1[1] - p2[1]);
+    }
+
+    public boolean iscos(int[] p1, int[] p2) {
+        // 两向量积为0，则垂直
+        return p1[0] * p2[0] + p1[1] * p2[1] == 0;
+    }
+
+    @Test
+    public void lastRemaining() {
+        int n = 5;
+        int m = 3;
+        System.out.println(lastRemaining(n, m));
+    }
+
+    /**
+     * 约瑟夫环问题 圆圈中最后剩下的数
+     *
+     * @param n
+     * @param m
+     * @return
+     */
+    public int lastRemaining(int n, int m) {
+        Node head = new Node(0);
+        Node cur = head;
+        for (int i = 1; i < n; i++) {
+            Node node = new Node(i);
+            cur.next = node;
+            cur = node;
+        }
+        Node pre = cur;
+        cur.next = head;
+        cur = head;
+        int count = 1;
+        while (true) {
+            if (cur.val == cur.next.val) {
+                break;
+            }
+            if (count == m) {
+                pre.next = cur.next;
+                cur = cur.next;
+                count = 1;
+            } else {
+                count++;
+                pre = cur;
+                cur = cur.next;
+            }
+        }
+        return cur.val;
+    }
+
+    static class Node {
+        int val;
+        Node next;
+
+        public Node(int val) {
+            this.val = val;
+            this.next = null;
+        }
+    }
+
+    @Test
+    public void lastRemaining1() {
+        int n = 5;
+        int m = 3;
+        System.out.println(lastRemaining1(n, m));
+    }
+
+    /**
+     * 约瑟夫环问题 循环数组
+     *
+     * @param n
+     * @param m
+     * @return
+     */
+    public int lastRemaining1(int n, int m) {
+        int alive = n;
+        int num = 0;
+        int index = 0;
+        int[] arr = new int[n];
+        while (alive > 0) {
+            num += 1 - arr[index];
+            if (num == m) {
+                arr[index] = 1;
+                System.out.print(index);
+                alive--;
+                num = 0;
+            }
+            index = (index + 1) % n;
+        }
+        return 1;
+    }
+
+    @Test
+    public void lastRemaining2() {
+        int n = 5;
+        int m = 3;
+        System.out.println(lastRemaining2(n, m));
+    }
+
+    public int lastRemaining2(int n, int m) {
+        int f = 0;
+        for (int i = 2; i <= n; i++) {
+            f = (m + f) % i;
+        }
+        return f;
+    }
+
+    @Test
+    public void findDiagonalOrder() {
+//        int[][] mat = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+        int[][] mat = {{2, 3}};
+        int[] diagonalOrder = findDiagonalOrder(mat);
+        System.out.println(Arrays.toString(diagonalOrder));
+    }
+
+    /**
+     * 对角线遍历  498
+     *
+     * @param mat
+     * @return
+     */
+    public int[] findDiagonalOrder(int[][] mat) {
+        int n = mat[0].length; // 长
+        int m = mat.length;
+        int total = m + n - 1;
+        int[] res = new int[m * n];
+        int index = 0;
+        int count = 0;
+        while (count < total) {
+            // 第1，3，5。。。趟
+            int x1 = count < m ? count : m - 1;
+            int y1 = count - x1;
+            while (x1 >= 0 && y1 < n) {
+                res[index++] = mat[x1][y1];
+                y1++;
+                x1--;
+            }
+            count++;
+            // 第2，4，6趟
+            int y2 = count < n ? count : n - 1;
+            int x2 = count - y2;
+            while (y2 >= 0 && x2 < m) {
+                res[index++] = mat[x2][y2];
+                y2--;
+                x2++;
+            }
+            count++;
+        }
+        return res;
+    }
+
+    @Test
+    public void findDiagonalOrder1() {
+        int[][] mat = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+//        int[][] mat = {{2, 3}};
+        int[] diagonalOrder = findDiagonalOrder1(mat);
+        System.out.println(Arrays.toString(diagonalOrder));
+    }
+
+    public int[] findDiagonalOrder1(int[][] mat) {
+        int m = mat.length;
+        int n = mat[0].length;
+        int[] res = new int[m * n];
+        int index = 0;
+        // 使用flag标识 x,y的上限
+        boolean flag = true;
+        for (int i = 0; i < m + n - 1; i++) {
+            int pm = flag ? m : n;
+            int pn = flag ? n : m;
+
+            int x = i < pm ? i : pm - 1;
+            int y = i - x;
+            while (x >= 0 && y < pn) {
+                res[index++] = flag ? mat[x][y] : mat[y][x];
+                x--;
+                y++;
+            }
+            flag = !flag;
+        }
+        return res;
+    }
+
+    /**
+     * 后缀表达式求值 150  "10","6","9","3","+","-11","*","/","*","17","+","5","+"]
+     *
+     * @param tokens
+     * @return
+     */
+    public int evalRPN(String[] tokens) {
+        String reg = "[\\+\\-\\*\\/]";
+        Pattern pattern = Pattern.compile(reg);
+        Stack<String> stack = new Stack<>();
+        int res = 0;
+        for (int i = 0; i < tokens.length; i++) {
+            if (pattern.matcher(tokens[i]).matches()) {
+                int m = Integer.valueOf(stack.pop());
+                int n = Integer.valueOf(stack.pop());
+                res = expr(tokens[i], n, m);
+                stack.push(res + "");
+            } else {
+                stack.push(tokens[i]);
+            }
+        }
+        return Integer.valueOf(stack.pop());
+    }
+
+    @Test
+    public void evalRPN() {
+        System.out.println(Pattern.matches("[\\+\\-\\*\\/]", "+"));
+        System.out.println(Pattern.matches("[\\+\\-\\*\\/]", "-"));
+        System.out.println(Pattern.matches("[\\+\\-\\*\\/]", "*"));
+        System.out.println(Pattern.matches("[\\+\\-\\*\\/]", "/"));
+        System.out.println(Pattern.matches("[\\+\\-\\*\\/]", "123"));
+        System.out.println(Pattern.matches("[\\+\\-\\*\\/]", "12"));
+        String[] tokens = {"10", "6", "9", "3", "+", "-11", "*", "/", "*", "17", "+", "5", "+"};
+        System.out.println(evalRPN(tokens));
+    }
+
+    /**
+     * @param eval 运算符号
+     * @param i    左操作数
+     * @param j    右操作数
+     * @return
+     */
+    public int expr(String eval, int i, int j) {
+        switch (eval) {
+            case "+":
+                return i + j;
+            case "-":
+                return i - j;
+            case "*":
+                return i * j;
+            case "/":
+                return i / j;
+        }
+        return -1;
+    }
+
+
+    @Test
+    public void subarraySum() {
+//        int[] nums = {1,1,1};
+//        int[] nums = {1,2,3};
+        int[] nums = {28, 54, 7, -70, 22, 65, -6};
+        int k = 100;
+        System.out.println(subarraySum(nums, k));
+    }
+
+    /**
+     * 和为K的子数组的个数
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int subarraySum(int[] nums, int k) {
+        int i = 0;
+        int j = i + 1;
+        int count = 0;
+        int sum = 0;
+        while (i < nums.length) {
+            sum += nums[i];
+            if (nums[i] == k) {
+                count++;
+            }
+            while (j < nums.length) {
+                sum += nums[j];
+                if (sum == k) {
+                    count++;
+                }
+                j++;
+            }
+            sum = 0;
+            i++;
+            j = i + 1;
+        }
+        return count;
+    }
+
+    @Test
+    public void subarraysum1() {
+        int[] nums = {28, 54, 7, -70, 22, 65, -6};
+        int k = 100;
+        System.out.println(subarraysum1(nums, k));
+    }
+
+    public int subarraysum1(int[] nums, int k) {
+        // 计算以第i个元素结尾时，是否有子数组和为k
+        int count = 0;
+        for (int i = 0; i < nums.length; i++) {
+            int sum = 0;
+            for (int j = i; j >= 0; j--) {
+                sum += nums[j];
+                if (sum == k) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    @Test
+    public void subarraysum2() {
+        int[] nums = {28, 54, 7, -70, 22, 65, -6};
+        int k = 100;
+        System.out.println(subarraysum2(nums, k));
+    }
+
+    public int subarraysum2(int[] nums, int k) {
+        // 求出第i个元素的前缀和后，依次遍历 left到right的和是否为k
+        int count = 0;
+        int[] pre = new int[nums.length + 1];
+        pre[0] = 0;
+        for (int i = 1; i < pre.length; i++) {
+            pre[i] = pre[i - 1] + nums[i - 1];
+        }
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = i; j >= 0; j--) {
+                if (pre[i + 1] - pre[j] == k) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    @Test
+    public void subarraysum3() {
+        int[] nums = {28, 54, 7, -70, 22, 65, -6};
+        int k = 100;
+        System.out.println(subarraysum3(nums, k));
+    }
+
+    public int subarraysum3(int[] nums, int k) {
+        // p(i) 表示 前i个元素的前缀和
+        // 根据求子数组和为k得出  p(i)  p(j-1) = k   ==>  p(i) -k = p(j)
+        // 需要求出第i个元素时 map(p(i)-k)的个数，即p(j)的个数  遍历0-i 求出所有满足的条件的总个数
+        int count = 0;
+        Map<Integer, Integer> map = new HashMap<>();
+        // 初始化 表示0-i的子数组和为k的情况
+        map.put(0, 1);
+        // pre用来记录前i个前缀和
+        int pre = 0;
+        for (int i = 0; i < nums.length; i++) {
+            pre += nums[i];
+            if (map.containsKey(pre - k)) {
+                // 表示 存在子数组和为k的情况
+                count += map.get(pre - k);
+            }
+            // 将当前前缀和的记录存在到map中
+            map.put(pre, map.getOrDefault(pre, 0) + 1);
+        }
+        return count;
+    }
+
+    @Test
+    public void desc2oct() {
+        String s = "158";
+        String s1 = Integer.toOctalString(158);
+        System.out.println(s1);
+        System.out.println(dec2oct(s));
+    }
+
+    public String dec2oct(String src) {
+        int s = Integer.parseInt(src, 10);
+        Stack<Integer> stack = new Stack<>();
+        while (true) {
+            if (s / 8 == 0) {
+                stack.push(s % 8);
+                break;
+            }
+            stack.push(s % 8);
+            s = s / 8;
+        }
+        StringBuilder sb = new StringBuilder();
+        while (!stack.isEmpty()) {
+            sb.append(stack.pop());
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 20
+     * 给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串 s ，判断字符串是否有效。
+     *
+     * @param s
+     * @return
+     */
+    public boolean isValid(String s) {
+        // 使用栈进行括号匹配
+        Stack<Character> stack = new Stack<>();
+        Map<Character, Character> map = new HashMap<>();
+        map.put('(', ')');
+        map.put('[', ']');
+        map.put('{', '}');
+        for (int i = 0; i < s.length(); i++) {
+            Character c = s.charAt(i);
+            if (map.containsKey(c)) {
+                stack.push(c);
+            } else {
+                if (stack.isEmpty()) {
+                    return false;
+                }
+                Character pop = stack.pop();
+                if (!map.get(pop).equals(c)) {
+                    return false;
+                }
+            }
+        }
+        return stack.isEmpty();
+    }
+
+    @Test
+    public void isValid() {
+        String s = "()";
+        System.out.println(isValid(s));
+    }
+
+    @Test
+    public void handlerStr() {
+        /*Pattern pattern = Pattern.compile("[\\+\\-\\*\\/(\\)]");
+        Matcher matcher = pattern.matcher(suf);
+        while (matcher.find()) {
+            String group = matcher.group();
+            System.out.println(group);
+        }*/
+
+        Pattern p1 = Pattern.compile("\\d{1,}");
+        Pattern p2 = Pattern.compile("[\\+\\-\\*\\/(\\)]");
+        String suf = "(61+3)*(522*4+(431-2))";
+        Matcher m1 = p1.matcher(suf);
+        Matcher m2 = p2.matcher(suf);
+        List<String> list = new ArrayList<>();
+        while (true) {
+            String s;
+            if (m1.find()) {
+                s = m1.group();
+            } else if (m2.find()) {
+                s = m2.group();
+            } else {
+                break;
+            }
+            list.add(s);
+        }
+        System.out.println(list);
+    }
+
+    @Test
+    public void transform() {
+        // (6+3*(7-4))-8/2     6374-*+82/-
+        String[] suf = {"(", "6", "+", "3", "*", "(", "7", "-", "4", ")", ")", "-", "8", "/", "2"};
+        System.out.println(transform(suf));
+    }
+
+    /**
+     * 中缀表达式转后缀表达式
+     *
+     * @param suf
+     * @return
+     */
+    public String transform(String[] suf) {
+        /* 使用两个栈，一个数字栈，一个符号栈，当遇到数字时，将数字压入数字栈， 当遇到符号栈时，
+           比较运算符号的优先级（priority） 左括号最小， +-依次，/*最高，
+           比较当前符号与符号栈顶的元素  若当前元素的优先级大于栈顶元素, 则入栈， 若小于栈顶元素的优先级
+           ,则一直将栈顶的元素弹压，并压入数字栈中，
+           若遇到右括号，则一直弹栈，并入数栈，直到遇到左括号,
+           最后若符号栈中还有元素，则压入数字栈中，
+         */
+        Pattern p1 = Pattern.compile("\\d{1,}");
+        Pattern p2 = Pattern.compile("[\\+\\-\\*\\/(\\)]");
+        // 数字栈
+        Stack<String> s1 = new Stack<>();
+        // 符号栈
+        Stack<String> s2 = new Stack<>();
+        for (int i = 0; i < suf.length; i++) {
+            String s = suf[i];
+            if (p1.matcher(s).matches()) {
+                // 数字
+                s1.push(s);
+                continue;
+            }
+            // 匹配到符号，则需要比较优先级
+            if (s.equals(")")) {
+                // 若匹配到右括号，则直接弹出栈顶元素，直到遇到(
+                while (!s2.isEmpty()) {
+                    String pop = s2.pop();
+                    if (pop.equals("(")) {
+                        break;
+                    }
+                    s1.push(pop);
+                }
+            } else if (s.equals("(")) {
+                s2.push(s);
+            } else {
+                // 符号需要比较优先级别
+
+                while (!s2.isEmpty()) {
+                    int compare = priority(s) - priority(s2.peek());
+                    if (compare > 0) {
+                        // 栈顶元素优先级小于当前元素
+                        s2.push(s);
+                        break;
+                    } else {
+                        s1.push(s2.pop());
+                    }
+                }
+                if (s2.isEmpty()) {
+                    s2.push(s);
+                }
+            }
+        }
+        while (!s2.isEmpty()) {
+            s1.push(s2.pop());
+        }
+        // 计算后缀表达式的解
+        /*while (!s1.isEmpty()) {
+            String pop = s1.pop();
+            if (p1.matcher(pop).matches()) {
+                // 数字直接添加到栈中
+                s2.push(pop);
+            } else {
+                // 符号，则栈中头两个数字进行计算
+                Integer i1 = Integer.valueOf(s2.pop());
+                Integer i2 = Integer.valueOf(s2.pop());
+                int expr = expr(pop, i1, i2);
+                s2.push(expr+"");
+            }
+        }
+        System.out.println(s2.peek());*/
+        return s1.toString();
+    }
+
+    private int priority(String s1) {
+        if (s1.equals("(")) {
+            return 0;
+        } else if (s1.equals("+") || s1.equals("-")) {
+            return 1;
+        } else if (s1.equals("*") || s1.equals("/")) {
+            return 2;
+        }
+        return -1;
+    }
+
+    @Test
+    public void shugezi() {
+        int[][] arr = {
+                {1, 0, 1, 0},
+                {1, 1, 1, 1},
+                {0, 1, 0, 1},
+                {0, 0, 1, 1}};
+        int[] target = {3, 3};
+        System.out.println(shugezi(arr, target));
+    }
+
+    /**
+     * 数格子  给定一个 n*n 二维整型数组，在二维数组上随机分布着0和1的值。现输入一个坐标点，输出坐标周围一圈一的个数
+     *
+     * @param arr
+     * @param target
+     * @return
+     */
+    public int shugezi(int[][] arr, int[] target) {
+        int n = arr.length;
+        int i = target[0];
+        int j = target[1];
+        int count = 0;
+        for (int x = i - 1, p = 3; p > 0; x++, p--) {
+            for (int y = j - 1, q = 3; q > 0; y++, q--) {
+                if (x == i && y == j) {
+                    continue;
+                } else if (x >= 0 && y >= 0 && x < n && y < n) {
+                    if (arr[x][y] == 1) {
+                        count++;
+                    }
+                }
+            }
+        }
+        return count;
+    }
+
+    /**
+     * 格式化字符串输出
+     * 输入形如 AB-ABC-cABd-Cb@ 的字符串，输入待分隔长度k；
+     * 要求输出保留第一个“-”前面的字符串格式，后面的每k个字符一分格，
+     * 每三个字符中，大写字母数多的三个字母转大写，小写字母数多的三个字母转小写，一样多的不处理。
+     *
+     * @param src
+     */
+    public void sprint(String src, int k) {
+        int index = src.indexOf("-");
+        StringBuilder sb = new StringBuilder();
+//        sb.append(src.substring(index + 1)).replace(0,sb.length(), "-");
+        Arrays.stream(src.substring(index + 1).split("-")).forEach(sb::append);
+        String s = sb.toString();
+        sb.setLength(0);
+        for (int i = 0; i < s.length(); i += 3) {
+            int da = 0;
+            int xiao = 0;
+            int j = 0;
+            while (j < 3 && i+j < s.length()) {
+                if (s.charAt(i+j) >= 'A' && s.charAt(i+j) <= 'Z') {
+                    da++;
+                } else if (s.charAt(i+j) >= 'a' && s.charAt(i+j) <= 'z') {
+                    xiao++;
+                }
+                j++;
+            }
+            String s1 = s.substring(i, i+j);
+            sb.append(da > xiao ? s1.toUpperCase() : s1.toLowerCase());
+        }
+        k+=1;
+        for (int i = k-1; i < sb.length(); i+=k) {
+            sb.insert(i,"-");
+        }
+        sb.insert(0, src.substring(0,index+1));
+        System.out.println(sb);
+    }
+
+    @Test
+    public void sprint() {
+        String src = "AB-ABC-cABd-Cb@";
+        sprint(src,3);
+    }
+
+    @Test
+    public void insert() {
+        StringBuilder sb = new StringBuilder("afeaf");
+        sb.insert(1,"-");
+        System.out.println(sb);
+    }
+
+
 }
+
