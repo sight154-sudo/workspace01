@@ -1,0 +1,20 @@
+schema {
+    #定义查询
+    query: UserQuery
+}
+
+type Member {
+    memberId: String!
+    name: String!
+    age: Int
+}
+type UserQuery {
+    #指定对象以及参数类型
+    getMember(memberId:String): Member
+    getMemberByInput(param:PARAM): Member
+}
+
+input PARAM {
+    memberId: String
+    name: String
+}

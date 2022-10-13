@@ -4,8 +4,6 @@ import com.huawei.graphql.entity.Card;
 import com.huawei.graphql.entity.User;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
-import graphql.schema.Coercing;
-import graphql.schema.GraphQLCodeRegistry;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.idl.SchemaGenerator;
@@ -25,7 +23,7 @@ public class GraphQLSDLDemo {
                 .type("UserQuery", builder ->
                         builder.dataFetcher("queryUserById", environment -> {
                             //解析请求参数，根据业务返回结果
-                            Long id = Long.parseLong(environment.getArgument("id"));
+                            Long id = Long.parseLong(environment.getArgument("input"));
                             Card card = new Card("123456", id);
                             return new User(18, id, "user0" + id, card);
                         })

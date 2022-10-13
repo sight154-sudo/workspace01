@@ -4,7 +4,11 @@ import com.huawei.graphql.entity.User;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
 import graphql.Scalars;
-import graphql.schema.*;
+import graphql.schema.GraphQLFieldDefinition;
+import graphql.schema.GraphQLList;
+import graphql.schema.GraphQLObjectType;
+import graphql.schema.GraphQLSchema;
+import graphql.schema.StaticDataFetcher;
 
 public class GraphQLDemo {
     public static void main(String[] args) {

@@ -252,7 +252,7 @@ public class NodePractice {
      * @param root
      * @return
      */
-    public List<Integer> preorderTraversal(BinaryTreeNode root) {
+    public List<Integer> preorderTraversal(BinaryTreeNode<Integer> root) {
         if (root == null) return null;
         list.add(root.val);
         preorderTraversal(root.left);
@@ -627,24 +627,103 @@ public class NodePractice {
         levelForeach(root);
     }
 
+    /**
+     * 通过括号表示法构建一棵二叉树
+     * @param s
+     * @return
+     */
+    public BinaryTreeNode<Character> buildTreeByBracket(String s) {
+        // a{b{d, e{g,h{,I}}},c{f}}
+        // 使用数组模拟栈 , 当遇到{表示 ，刚入栈的节点为根节点，并将此节点入栈，k =1
+        // 遇到}表示，栈顶的元素子树创建完成，出栈
+        // 遇到,表示 ，开始右子节点 k =2
+        Stack<BinaryTreeNode<Character>> stack = new Stack<>();
+        // top表示栈顶指针，k = 1表示创建左子节点,k=2表示创建右子节点
+        int top = -1, index = 0, k = 0;
+        char ch;
+        BinaryTreeNode<Character> root = null;
+        BinaryTreeNode<Character> node = null;
+        while (index < s.length()) {
+            ch = s.charAt(index);
+            switch (ch){
+                case '{':
+                    stack.push(node);
+                    k = 1;
+                    break;
+                case '}':
+                    stack.pop();
+                    break;
+                case ',':
+                    k = 2;
+                    break;
+                default:
+                    node = new BinaryTreeNode();
+                    node.val = ch;
+                    if (root == null) {
+                        // 创建根节点
+                        root = node;
+                    } else {
+                        switch (k){
+                            case 1:
+                                stack.peek().left = node;
+                                break;
+                            case 2:
+                                stack.peek().right = node;
+                                break;
+                        }
+                    }
+
+            }
+            index++;
+        }
+        return root;
+    }
+
+    @Test
+    public void printBinaryTree() {
+        String s = "a{b{d, e{g,h{k,i}}},c{f}}";
+        System.out.println(printBinaryTree(s));
+    }
+
+    public String printBinaryTree(String s) {
+        BinaryTreeNode<Character> root = buildTreeByBracket(s);
+        // 使用栈模拟中序遍历 非递归
+        Stack<BinaryTreeNode<Character>> stack = new Stack<>();
+        BinaryTreeNode<Character> node = root;
+        StringBuilder sb = new StringBuilder();
+        while (!stack.isEmpty() || node != null) {
+            // 依次将左子树的左根节点入栈
+            while (node != null) {
+                stack.push(node);
+                node=  node.left;
+            }
+            if (!stack.isEmpty()) {
+                // 出栈，输出左节点
+                node = stack.pop();
+                sb.append(node.val);
+                node = node.right;
+            }
+        }
+        return sb.toString();
+    }
+
 }
 
 /**
  * 二叉树构造
  */
-class BinaryTreeNode {
-    int val;
+class BinaryTreeNode<T> {
+    T val;
     BinaryTreeNode left;
     BinaryTreeNode right;
 
     BinaryTreeNode() {
+        this.left = null;
+        this.right = null;
     }
 
-    BinaryTreeNode(int val) {
-        this.val = val;
-    }
 
-    BinaryTreeNode(int val, BinaryTreeNode left, BinaryTreeNode right) {
+    BinaryTreeNode(T val, BinaryTreeNode left, BinaryTreeNode right) {
         this.val = val;
         this.left = left;
         this.right = right;

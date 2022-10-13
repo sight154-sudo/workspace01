@@ -1,15 +1,10 @@
 package com.huawei.algorithm.sort;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.MapMaker;
 import com.google.common.collect.Maps;
-import com.huawei.algorithm.Node;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
-import javax.swing.*;
 import java.io.ByteArrayInputStream;
-import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,9 +13,9 @@ import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Random;
@@ -29,7 +24,6 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 /**
  * @author king
@@ -537,7 +531,8 @@ public class SortAlgorithm {
 
     /**
      * 数组中的逆序对\
-     * 在数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组成一个逆序对。输入一个数组，求出这个数组中的逆序对的总数。
+     * 在数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组成一个逆序对。
+     * 输入一个数组，求出这个数组中的逆序对的总数。
      *
      * @param nums
      * @return
@@ -1172,8 +1167,8 @@ public class SortAlgorithm {
 
     @Test
     public void canJump() {
-//        int[] arr = {2,3,1,1,4};
-        int[] arr = {3, 2, 1, 0, 4};
+        int[] arr = {2, 3, 1, 1, 4};
+//        int[] arr = {3, 2, 1, 0, 4};
         boolean res = canJump(arr);
         System.out.println(res);
     }
@@ -1259,8 +1254,8 @@ public class SortAlgorithm {
 
     @Test
     public void jump() {
-//        int[] arr = {2, 3, 0, 1, 4};
-        int[] arr = {1, 1, 1, 1, 4};
+        int[] arr = {2, 3, 0, 1, 4};
+//        int[] arr = {1, 1, 1, 1, 4};
         int res = jump(arr);
         System.out.println(res);
     }
@@ -1919,6 +1914,13 @@ public class SortAlgorithm {
         System.out.println("i = " + i);
     }
 
+    /**
+     * 给你一个整数数组 nums ，请你找出数组中乘积最大的非空连续子数组（该子数组中至少包含一个数字），
+     * 并返回该子数组所对应的乘积。
+     *
+     * @param nums
+     * @return
+     */
     public int maxProduct(int[] nums) {
         // dp[i] 表示经过第i个元素的乘积最大的值
         int[] res = new int[nums.length];
@@ -1944,6 +1946,14 @@ public class SortAlgorithm {
         System.out.println("i = " + i);
     }
 
+    /**
+     * 给你一个整数数组 nums ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+     * <p>
+     * 子数组 是数组中的一个连续部分。
+     *
+     * @param nums
+     * @return
+     */
     public int maxSubArray(int[] nums) {
         int[] res = new int[nums.length];
         res[0] = nums[0];
@@ -3645,6 +3655,7 @@ public class SortAlgorithm {
             }
             index = (index + 1) % n;
         }
+        System.out.println(Arrays.toString(arr));
         return 1;
     }
 
@@ -4006,7 +4017,8 @@ public class SortAlgorithm {
     @Test
     public void transform() {
         // (6+3*(7-4))-8/2     6374-*+82/-
-        String[] suf = {"(", "6", "+", "3", "*", "(", "7", "-", "4", ")", ")", "-", "8", "/", "2"};
+//        String[] suf = {"(", "6", "+", "3", "*", "(", "7", "-", "4", ")", ")", "-", "8", "/", "2"};
+        String[] suf = {"6", "-", "(", "3", "+", "2", ")", "*", "3"};
         System.out.println(transform(suf));
     }
 
@@ -4155,38 +4167,1161 @@ public class SortAlgorithm {
             int da = 0;
             int xiao = 0;
             int j = 0;
-            while (j < 3 && i+j < s.length()) {
-                if (s.charAt(i+j) >= 'A' && s.charAt(i+j) <= 'Z') {
+            while (j < 3 && i + j < s.length()) {
+                if (s.charAt(i + j) >= 'A' && s.charAt(i + j) <= 'Z') {
                     da++;
-                } else if (s.charAt(i+j) >= 'a' && s.charAt(i+j) <= 'z') {
+                } else if (s.charAt(i + j) >= 'a' && s.charAt(i + j) <= 'z') {
                     xiao++;
                 }
                 j++;
             }
-            String s1 = s.substring(i, i+j);
+            String s1 = s.substring(i, i + j);
             sb.append(da > xiao ? s1.toUpperCase() : s1.toLowerCase());
         }
-        k+=1;
-        for (int i = k-1; i < sb.length(); i+=k) {
-            sb.insert(i,"-");
+        k += 1;
+        for (int i = k - 1; i < sb.length(); i += k) {
+            sb.insert(i, "-");
         }
-        sb.insert(0, src.substring(0,index+1));
+        sb.insert(0, src.substring(0, index + 1));
         System.out.println(sb);
     }
 
     @Test
     public void sprint() {
         String src = "AB-ABC-cABd-Cb@";
-        sprint(src,3);
+        sprint(src, 3);
     }
 
     @Test
     public void insert() {
         StringBuilder sb = new StringBuilder("afeaf");
-        sb.insert(1,"-");
+        sb.insert(1, "-");
         System.out.println(sb);
     }
 
+    @Test
+    public void treeFolded() {
+        int[][] arr = {
+                {3, 1},
+                {5, 1},
+                {4, 3},
+                {10, 5},
+                {11, 5},
+                {12, 4},
+                {9, 10},
+                {8, 9}
+        };
+        int k = 5;
+        treeFolded(arr, k);
+    }
 
+    public void treeFolded(int[][] arr, int k) {
+        int n = arr.length;
+        // 使用标识判断第i个数组是否存在
+        int[] alive = new int[n];
+        // 使用集合保存需要删除的子节点
+        List<Integer> list = new ArrayList<>();
+        List<Integer> temp = new ArrayList<>();
+        temp.add(k);
+        while (!temp.isEmpty()) {
+            list.addAll(temp);
+            temp.clear();
+            for (int j = list.size() - 1; j >= 0; j--) {
+                for (int i = 0; i < n; i++) {
+                    if (alive[i] == 0 && arr[i][1] == list.get(j)) {
+                        // 当前节点为需要删除的子节点，标记该数组，并将子节点添加到temp中
+                        alive[i] = 1;
+                        temp.add(arr[i][0]);
+                    }
+                }
+                list.remove(j);
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (alive[i] == 0 && arr[i][0] != k) {
+                System.out.println(arr[i][0] + " " + arr[i][1]);
+            }
+        }
+    }
+
+    /**
+     * 求解方程式
+     * 求解一个给定的方程，将x以字符串 "x=#value" 的形式返回。该方程仅包含 '+' ， '-' 操作，变量 x 和其对应系数。
+     * 如果方程没有解，请返回 "No solution" 。如果方程有无限解，则返回 “Infinite solutions” 。
+     * <p>
+     * 题目保证，如果方程中只有一个解，则 'x' 的值是一个整数。
+     *
+     * @param equation
+     * @return
+     */
+    public String solveEquation(String equation) {
+        // 将右边项移动到左边，符号置反， 使用factor保存系数项的值 ， 使用val保存常数项的值   结果为 -val/factor
+        // 使用sign1保存默认项为1， 在=号左边时为1，在=号右边时为-1
+        // 使用sign2保存系统项的正负  使用flag判断系数项是否有值，因为x前可能系数为1
+        int factor = 0, val = 0, sign1 = 1, index = 0;
+        int n = equation.length();
+        while (index < n) {
+            if (equation.charAt(index) == '=') {
+                // 表示计算右边项，sign1标识为-1
+                sign1 = -1;
+                index++;
+                continue;
+            }
+            int sign2 = sign1;
+            if (equation.charAt(index) == '+' || equation.charAt(index) == '-') {
+                // 系数项为负时，需要转换
+                sign2 = equation.charAt(index) == '-' ? -sign1 : sign1;
+                index++;
+            }
+            // 使用num保存常数项
+            int num = 0;
+            // 使用flag标识x前是否有常数项
+            boolean flag = false;
+            while (index < n && Character.isDigit(equation.charAt(index))) {
+                num = num * 10 + equation.charAt(index) - 48;
+                flag = true;
+                index++;
+            }
+            // 计算系数项与常数项
+            if (index < n && equation.charAt(index) == 'x') {
+                factor += flag ? num * sign2 : sign2;
+                index++;
+            } else {
+                val += num * sign2;
+            }
+        }
+        // 处理结果
+        if (factor == 0 && val == 0) {
+            return "Infinite solutions";
+        } else if (factor == 0 && val != 0) {
+            return "No solution";
+        }
+        return "x=" + ((-val) / factor);
+    }
+
+    @Test
+    public void solveEquation() {
+//        String equation = "x+5-3+x=6+x-2" ;
+//        String equation = "2x=x" ;
+        String equation = "3x=33+22+11";
+//        String equation = "x+5-3+x=6+x-2" ;
+        System.out.println(solveEquation(equation));
+    }
+
+    /**
+     * 给定一个非空整型数组，其元素数据类型为整型，请按照数组元素十进制最低位从小到大进行排序，十进制最低位相同的元素，相对位置保持不变。
+     * 当数组元素为负值时，十进制最低位等同于去除符号位后对应十进制值最低位。
+     *
+     * @param arr
+     */
+    public void sortByLower(int[] arr) {
+        int len = arr.length;
+        for (int i = 0; i < len; i++) {
+            for (int j = 0; j < len - i - 1; j++) {
+                int m = arr[j] < 0 ? arr[j] * -1 % 10 : arr[j] % 10;
+                int n = arr[j + 1] < 0 ? arr[j + 1] * -1 % 10 : arr[j + 1] % 10;
+                if (m > n) {
+                    swap(arr, j, j + 1);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void sortByLower() {
+        int[] arr = {-21, 1, 2, 5, 22, 11, 55, -101, 42, 8, 7, 32};
+        sortByLower(arr);
+        System.out.println(Arrays.toString(arr));
+    }
+
+    /**
+     * 早餐组合 一维整型数组 staple 中记录了每种主食的价格，一维整型数组 drinks 中记录了每种饮料的价格。
+     * 小扣的计划选择一份主食和一款饮料，且花费不超过 x 元。请返回小扣共有多少种购买方案。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode.cn/problems/2vYnGI
+     *
+     * @param staple
+     * @param drinks
+     * @param x
+     * @return
+     */
+    public int breakfastNumber(int[] staple, int[] drinks, int x) {
+        // 暴力法
+        int m = staple.length;
+        int n = drinks.length;
+        int total = 0;
+        for (int i = 0; i < m; i++) {
+            int max = x - staple[i];
+            for (int j = 0; j < n; j++) {
+                if (max > 0 && drinks[j] <= max) {
+                    total++;
+                }
+            }
+        }
+        return total;
+    }
+
+    @Test
+    public void breakfastNumbers() {
+        int[] staple = {10, 20, 5};
+        int[] drinks = {5, 5, 2};
+        int x = 15;
+        System.out.println(breakfastNumber1(staple, drinks, x));
+    }
+
+    public int breakfastNumber1(int[] staple, int[] drinks, int x) {
+        // 排序+二分法
+        int m = staple.length;
+        int n = drinks.length - 1;
+        Arrays.sort(staple);
+        Arrays.sort(drinks);
+        long total = 0;
+        for (int i = 0; i < m; i++) {
+            while (n >= 0 && drinks[n] + staple[i] > x) {
+                n--;
+            }
+            total += n + 1;
+
+        }
+        return (int) (total % 1000000007);
+    }
+
+    @Test
+    public void breakfastNumbers2() {
+        int[] staple = {2, 1, 1};
+        int[] drinks = {8, 9, 5, 1};
+        int x = 9;
+        System.out.println(breakfastNumber2(staple, drinks, x));
+    }
+
+    public int breakfastNumber2(int[] staple, int[] drinks, int x) {
+        // 排序+二分法
+        int m = staple.length;
+        Arrays.sort(staple);
+        Arrays.sort(drinks);
+        long total = 0;
+        for (int i = 0; i < m; i++) {
+            int target = x - staple[i];
+            if (target < 0) {
+                continue;
+            }
+            int index = binarySearch1(drinks, target);
+            total += index;
+        }
+        return (int) (total % 1000000007);
+    }
+
+    private int binarySearch1(int[] drinks, int i) {
+        // 找出drinks数组中比i小的数的个数
+        int left = 0;
+        int right = drinks.length - 1;
+        while (left <= right) {
+            int mid = (left & right) + ((left ^ right) >> 1);
+            if (drinks[mid] > i) {
+                right = mid - 1;
+            } else if (drinks[mid] <= i) {
+                left = mid + 1;
+            }
+        }
+        return drinks[left] > i ? left : left + 1;
+    }
+
+    @Test
+    public void test() {
+        int i = (2 & 3) + ((2 ^ 3) >> 1);
+        System.out.println(i);
+    }
+
+    @Test
+    public void threeSum() {
+        int[] nums = {-1, 0, 1, 2, -1, -4};
+//        System.out.println(threeSum(nums));
+        System.out.println(7258 ^ 6579 ^ 2602 ^ 6716 ^ 3050 ^ 3564 ^ 5396 ^ 1773);
+    }
+
+    /**
+     * 给你一个包含 n 个整数的数组nums，判断nums中是否存在三个元素 a，b，c ，
+     * 使得a + b + c = 0 ？请你找出所有和为 0 且不重复的三元组
+     * 注意：答案中不可以包含重复的三元组。
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode.cn/problems/3sum
+     *
+     * @param nums
+     * @return
+     */
+    public List<List<Integer>> threeSum(int[] nums) {
+        // 暴力
+        List<List<Integer>> list = new ArrayList<>();
+        int len = nums.length;
+        Set<Integer> set = new LinkedHashSet<>();
+        int index = len - 1;
+        for (int i = 0; i < index; i++) {
+            if (!set.add(nums[i])) ;
+            {
+                while (i > index && !set.add(nums[index])) {
+                    index--;
+                }
+                int temp = nums[i];
+                nums[i] = nums[index];
+                nums[index] = temp;
+            }
+        }
+        for (int i = 0; i < index; i++) {
+            for (int j = i + 1; j < index; j++) {
+                for (int k = j + 1; k < index; k++) {
+                    if (nums[i] + nums[j] + nums[k] == 0) {
+                        List<Integer> temp = new ArrayList<>();
+                        temp.add(nums[i]);
+                        temp.add(nums[j]);
+                        temp.add(nums[k]);
+                        list.add(temp);
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
+    /**
+     * 全排序
+     * 给定一个不含重复数字的数组 nums ，返回其 所有可能的全排列 。你可以 按任意顺序 返回答案。
+     *
+     * @param nums
+     * @return
+     */
+    public List<List<Integer>> permute(int[] nums) {
+        // [1,2,3]  => [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
+        List<List<Integer>> lists = new ArrayList<>();
+        List<Integer> list = new ArrayList<>();
+        permute(nums, lists, list);
+        return lists;
+    }
+
+    private void permute(int[] nums, List<List<Integer>> lists, List<Integer> list) {
+        if (list.size() == nums.length) {
+            lists.add(new ArrayList<>(list));
+        }
+        for (int num : nums) {
+            if (list.contains(num)) {
+                continue;
+            }
+            list.add(num);
+            permute(nums, lists, list);
+            list.remove(list.size() - 1);
+        }
+    }
+
+    @Test
+    public void permute() {
+//        int[] nums = {1,2,3};
+//        int[] nums = {1, 0};
+        int[] nums = {1, 1, 2};
+        List<List<Integer>> permute = permute(nums);
+        System.out.println(permute);
+    }
+
+    public List<List<Integer>> permuteII(int[] nums) {
+        List<List<Integer>> lists = new ArrayList<>();
+        List<Integer> list = new ArrayList<>();
+        boolean[] sign = new boolean[nums.length];
+        Arrays.sort(nums);
+        permuteII(nums, 0, lists, list, sign);
+        return lists;
+    }
+
+    @Test
+    public void permuteII() {
+        int[] nums = {1, 1, 2};
+        System.out.println(permuteII(nums));
+    }
+
+    private void permuteII(int[] nums, int index, List<List<Integer>> lists, List<Integer> list, boolean[] sign) {
+        if (list.size() == nums.length) {
+            lists.add(new ArrayList<>(list));
+            return;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (sign[i] || (i > 0 && nums[i] == nums[i - 1] && !sign[i - 1])) {
+                continue;
+            }
+            list.add(nums[i]);
+            sign[i] = true;
+            permuteII(nums, index + 1, lists, list, sign);
+            sign[i] = false;
+            list.remove(index);
+        }
+    }
+
+    /**
+     * 分糖果
+     * 给你一个长度为 n 的整数数组 candyType ，返回： Alice 在仅吃掉 n / 2 枚糖的情况下，可以吃到糖的 最多 种类数。
+     *
+     * @param candyType
+     * @return
+     */
+    public int distributeCandies(int[] candyType) {
+        Arrays.sort(candyType);
+        int target = candyType.length / 2;
+        int total = 1;
+        int pre = candyType[0];
+        for (int i = 1; i < candyType.length; i++) {
+            if (total == target) {
+                break;
+            }
+            if (candyType[i] != pre) {
+                total++;
+                pre = candyType[i];
+            }
+        }
+        return total;
+    }
+
+    public int distributeCandies1(int[] candyType) {
+        int target = candyType.length / 2;
+        Set<Integer> set = new HashSet<>();
+        for (int i = 0; i < candyType.length; i++) {
+            if (set.size() == target) {
+                break;
+            }
+            set.add(candyType[i]);
+        }
+        return set.size();
+    }
+
+    @Test
+    public void distributeCandies() {
+        int[] candyType = {1, 1, 2, 2, 3, 3};
+//        int[] candyType = {1,1,2,3};
+//        int[] candyType = {6,6,6,6};
+        System.out.println(distributeCandies1(candyType));
+    }
+
+    /**
+     * 分糖果II
+     * 给第一个小朋友 1 颗糖果，第二个小朋友 2 颗，依此类推，直到给最后一个小朋友 n颗糖果。
+     * 然后，我们再回到队伍的起点，给第一个小朋友  n+ 1 颗糖果，第二个小朋友 n+ 2 颗，依此类推，
+     * 直到给最后一个小朋友 2 * n颗糖果。
+     * 重复上述过程（每次都比上一次多给出一颗糖果，当到达队伍终点后再次从队伍起点开始），直到我们分完所有的糖果。注意，就算我们手中的剩下糖果数不够（不比前一次发出的糖果多），这些糖果也会全部发给当前的小朋友。
+     *
+     * @param candies
+     * @param num_people
+     * @return
+     */
+    public int[] distributeCandies(int candies, int num_people) {
+        int[] res = new int[num_people];
+        int n = 1;
+        int index = 0;
+        while (candies > 0) {
+            if (candies < n) {
+                n = candies;
+            }
+            res[index] = res[index] + n;
+            candies -= n;
+            n++;
+            index = (index + 1) % num_people;
+        }
+        return res;
+    }
+
+    @Test
+    public void distributeCandies2() {
+        int[] res = distributeCandies(10, 3);
+        System.out.println(Arrays.toString(res));
+    }
+
+    public int shareApple(int[] apples) {
+        // 先遍历计算满足A的重量
+        int a = 0;
+        for (int i = 0; i < apples.length; i++) {
+            a ^= apples[i];
+        }
+        int sum = Arrays.stream(apples).sum();
+        System.out.println(String.format("a = %s  and sum = %s", a, sum));
+        int target = sum - a;
+        // 转换为背包最大载重为target时，所能最多的重量
+        int[] dp = new int[target + 1];
+        // 初始化 最大为0时，最多为0
+        // 转换方程 dp[i] = max(dp[i-1],dp[i-apples[i]]+apples[i])
+        for (int i = 0; i < apples.length; i++) {
+            for (int j = target; j >= apples[i]; j--) {
+                dp[j] = Math.max(dp[j], dp[j - apples[i]] + apples[i]);
+            }
+        }
+        System.out.println(Arrays.toString(dp));
+        return dp[target];
+    }
+
+    @Test
+    public void shareApples() {
+        int[] apples = {1, 2, 6};
+        System.out.println(shareApple(apples));
+    }
+
+    public String printBinaryTree(String s) {
+        return "";
+    }
+
+
+    /**
+     * 组合总数
+     * 给你一个 无重复元素 的整数数组candidates 和一个目标整数target，找出candidates中可以使数字和为目标数target 的 所有不同组合 ，并以列表形式返回。你可以按 任意顺序 返回这些组合。
+     * candidates 中的 同一个 数字可以 无限制重复被选取 。如果至少一个数字的被选数量不同，则两种组合是不同的。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode.cn/problems/combination-sum
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param candidates
+     * @param target
+     * @return
+     */
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> lists = new ArrayList<>();
+        List<Integer> list = new ArrayList<>();
+        combinationSum(candidates, target, lists, list, 0, 0);
+        return lists;
+    }
+
+    @Test
+    public void combinationSum() {
+//        int[] candidates = {2, 3, 6, 7};
+        int[] candidates = {2, 3, 6, 7};
+        int target = 7;
+        List<List<Integer>> lists = combinationSum(candidates, target);
+        System.out.println(lists);
+    }
+
+    private void combinationSum(int[] candidates, int target, List<List<Integer>> lists, List<Integer> list, int index, int sum) {
+        if (index >= candidates.length || sum > target) {
+            if (sum == target) {
+                lists.add(new ArrayList<>(list));
+            }
+            return;
+        }
+        // 选择当前数
+        if (sum < target) {
+            list.add(candidates[index]);
+            combinationSum(candidates, target, lists, list, index, sum + candidates[index]);
+            list.remove(list.size() - 1);
+        }
+        // 不选当前数
+        combinationSum(candidates, target, lists, list, index + 1, sum);
+    }
+
+    /**
+     * 组合
+     * 给定两个整数 n 和 k，返回范围 [1, n] 中所有可能的 k 个数的组合。
+     * <p>
+     * 你可以按 任何顺序 返回答案。
+     *
+     * @param n
+     * @param k
+     * @return
+     */
+    public List<List<Integer>> combine(int n, int k) {
+        List<List<Integer>> lists = new ArrayList<>();
+        List<Integer> list = new ArrayList<>();
+        combine(n, k, 1, lists, list);
+        return lists;
+    }
+
+    @Test
+    public void combine() {
+        int n = 4;
+        int k = 2;
+        System.out.println(combine(n, k));
+    }
+
+    private void combine(int n, int k, int num, List<List<Integer>> lists, List<Integer> list) {
+        if (num > n + 1) {
+            return;
+        }
+        if (list.size() == k) {
+            lists.add(new ArrayList<>(list));
+            return;
+        }
+        // 选择当前数
+        list.add(num);
+        combine(n, k, num + 1, lists, list);
+        list.remove(list.size() - 1);
+        combine(n, k, num + 1, lists, list);
+    }
+
+    /**
+     * 零钱兑换  322
+     * 并返回可以凑成总金额所需的 最少的硬币个数 。如果没有任何一种硬币组合能组成总金额，返回 -1 。
+     * <p>
+     * 你可以认为每种硬币的数量是无限的。
+     *
+     * @param coins
+     * @param amount
+     * @return
+     */
+    public int coinChange1(int[] coins, int amount) {
+        // f(m) = Math.min(f(m- coins[i])+1, f(m-coins[i+1])+1,...)
+        int[] dp = new int[amount + 1];
+        // 初始化
+        dp[0] = 0;
+        for (int i = 1; i <= amount; i++) {
+            dp[i] = Integer.MAX_VALUE;
+            for (int j = 0; j < coins.length; j++) {
+                if (i - coins[j] >= 0 && dp[i - coins[j]] != Integer.MAX_VALUE) {
+                    dp[i] = Math.min(dp[i], dp[i - coins[j]] + 1);
+                }
+            }
+        }
+        return dp[amount];
+    }
+
+    @Test
+    public void coinChange1() {
+        int[] coins = {2, 5, 7};
+        System.out.println(coinChange(coins, 27));
+    }
+
+    int min_coin = Integer.MAX_VALUE;
+
+    public int coinChange2(int[] coins, int amount) {
+        coinChange2(coins, amount, 0, 0, 0);
+        return min_coin == Integer.MAX_VALUE ? -1 : min_coin;
+    }
+
+    private void coinChange2(int[] coins, int amount, int index, int sum, int coinNum) {
+        if (index >= coins.length || sum > amount) {
+            if (sum == amount && min_coin > coinNum) {
+                min_coin = coinNum;
+            }
+            return;
+        }
+        coinChange2(coins, amount, index, sum + coins[index], coinNum + 1);
+        // 不选
+        coinChange2(coins, amount, index + 1, sum, coinNum);
+    }
+
+    @Test
+    public void coinChange2() {
+//        int[] coins = {2, 5, 7};
+        int[] coins = {1, 2, 5};
+        System.out.println(coinChange2(coins, 11));
+    }
+
+    public int coinChange3(int[] coins, int amount) {
+        if (amount < 1) {
+            return 0;
+        }
+        int[] counts = new int[amount];
+        int res = coinChange3(coins, amount, counts);
+        System.out.println(Arrays.toString(counts));
+        return res;
+    }
+
+    @Test
+    public void coinChange3() {
+//        int[] coins = {2, 3, 5};
+        int[] coins = {1, 2, 5};
+        int amount = 3;
+        System.out.println(coinChange3(coins, amount));
+    }
+
+    private int coinChange3(int[] coins, int rem, int[] counts) {
+        if (rem < 0) {
+            // 此方案不通
+            return -1;
+        }
+        if (rem == 0) {
+            return 0;
+        }
+        if (counts[rem - 1] != 0) {
+            // 返回记录金额为rem时的最小硬币数, 减少回溯计算
+            return counts[rem - 1];
+        }
+        int min = Integer.MAX_VALUE;
+        for (int coin : coins) {
+            int res = coinChange3(coins, rem - coin, counts);
+            if (res >= 0 && res < min) {
+                // 说明此方案可行，且硬币少于初始值
+                min = res + 1;
+            }
+        }
+        counts[rem - 1] = min == Integer.MAX_VALUE ? -1 : min;
+        return counts[rem - 1];
+    }
+
+
+    /**
+     * 数塔问题
+     *
+     * @param lists
+     * @return
+     */
+    public int maxRoute(List<List<Integer>> lists) {
+        // dp[i][j]表示 第i层，j列时最大路径
+        // 有两种情况，最左列，或最右列dp[i][j] = dp[i-1][0]+list.get(0)
+        int[][] dp = new int[lists.size()][lists.get(lists.size() - 1).size()];
+        int max = lists.get(0).get(0);
+        dp[0][0] = max;
+        for (int i = 1; i < lists.size(); i++) {
+            for (int j = 0; j < lists.get(i).size(); j++) {
+                int num = lists.get(i).get(j);
+                dp[i][j] = Math.max(dp[i - 1][j - 1] + num, dp[i - 1][j] + num);
+                max = Math.max(max, dp[i][j]);
+            }
+        }
+        return max;
+    }
+
+    /**
+     * 回溯算法
+     *
+     * @param lists
+     * @return
+     */
+    public int maxRoute1(List<List<Integer>> lists) {
+        return maxRoute1(lists, 0, 0);
+//        return max_route;
+    }
+
+    private int maxRoute1(List<List<Integer>> lists, int x, int y) {
+        if (x == lists.size() - 1) {
+            return lists.get(x).get(y);
+        }
+        return lists.get(x).get(y) + Math.max(maxRoute1(lists, x + 1, y), maxRoute1(lists, x + 1, y + 1));
+    }
+
+    int max_route = Integer.MIN_VALUE;
+
+    @Test
+    public void maxRoute() {
+        List<List<Integer>> list = new ArrayList<>();
+        list.add(Lists.newArrayList(7));
+        list.add(Lists.newArrayList(3, 8));
+        list.add(Lists.newArrayList(8, 1, 0));
+        list.add(Lists.newArrayList(2, 7, 4, 4));
+        list.add(Lists.newArrayList(4, 5, 2, 6, 5));
+        System.out.println(maxRoute2(list));
+    }
+
+    public int maxRoute2(List<List<Integer>> lists) {
+        // 回溯加枝剪
+        int[][] dp = new int[lists.size()][lists.size()];
+        return maxRoute2(lists, 0, 0, dp);
+    }
+
+    private int maxRoute2(List<List<Integer>> lists, int x, int y, int[][] dp) {
+        if (x == lists.size() - 1) {
+            return lists.get(x).get(y);
+        }
+        if (dp[x][y] != 0) {
+            return dp[x][y];
+        }
+        // 记录x,y的最大路径
+        dp[x][y] = lists.get(x).get(y) + Math.max(maxRoute2(lists, x + 1, y, dp), maxRoute2(lists, x + 1, y + 1, dp));
+        return dp[x][y];
+    }
+
+    /**
+     * 零钱兑换
+     * 给你一个整数数组 coins 表示不同面额的硬币，另给一个整数 amount 表示总金额。
+     * <p>
+     * 请你计算并返回可以凑成总金额的硬币组合数。如果任何硬币组合都无法凑出总金额，返回 0 。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode.cn/problems/coin-change-2
+     *
+     * @param amount
+     * @param coins
+     * @return
+     */
+    public int coinChangeII(int amount, int[] coins) {
+        // 此题与数组总和相似
+        List<List<Integer>> lists = new ArrayList<>();
+        List<Integer> list = new ArrayList<>();
+//        coinChangeII(amount, coins, 0, lists, list);
+        int[] count = new int[amount];
+        int res = coinChangeII(amount, coins, 0, list, count);
+//        System.out.println(lists);
+        System.out.println(Arrays.toString(count));
+        return res;
+    }
+
+    @Test
+    public void coinChangeII() {
+        int[] coins = {1, 2, 5};
+//        int[] coins = {3,5,7,8,9,10,11};
+        int amount = 5;
+        System.out.println(coinChangeII(amount, coins));
+    }
+
+    int coinChange = 0;
+
+    private int coinChangeII(int amount, int[] coins, int index, List<Integer> list, int[] count) {
+        if (amount < 0) {
+            return -1;
+        }
+        if (amount == 0) {
+            return 0;
+        }
+        if (count[amount - 1] != 0) {
+            return count[amount - 1];
+        }
+        /*int n = 0;
+        for (int coin : coins) {
+            int res = coinChangeII(amount - coin, coins, 0, list, count);
+            if (res >= 0 ) {
+                if (res == 0) {
+                    n++;
+                } else {
+                    n=res;
+                }
+            }
+        }
+        count[amount-1] = n == 0?0:n;
+        return count[amount - 1];*/
+        list.add(coins[index]);
+        // 放index的硬币
+        int res = coinChangeII(amount - coins[index], coins, index, list, count);
+
+        list.remove(list.size() - 1);
+        // 不放index的硬币
+        coinChangeII(amount, coins, index + 1, list, count);
+        return res;
+    }
+
+    private void coinChangeII(int amount, int[] coins, int index, List<List<Integer>> lists, List<Integer> list) {
+        if (amount <= 0 || index >= coins.length) {
+            if (amount == 0) {
+                coinChange++;
+            }
+            return;
+        }
+        list.add(coins[index]);
+        // 放index的硬币
+        coinChangeII(amount - coins[index], coins, index, lists, list);
+        list.remove(list.size() - 1);
+        // 不放index的硬币
+        coinChangeII(amount, coins, index + 1, lists, list);
+    }
+
+    @Test
+    public void change() {
+        int[] coins = {1, 2, 5};
+        int amount = 5;
+        System.out.println(change(amount, coins));
+    }
+
+    public int change(int amount, int[] coins) {
+        // dp[i][j] 表示放第i个硬币时，最大金额为j,时，有dp[i][j]种方式
+        // dp[i][j] 有两种情况，当coins[i] > j 时，放不了，dp[i-1][j] , 当coins[i] < j 时, 放得了， dp[i-j][j]
+        int[][] dp = new int[coins.length + 1][amount + 1];
+        for (int i = 0; i < coins.length + 1; i++) {
+            dp[i][0] = 1;
+        }
+        for (int i = 1; i <= coins.length; i++) {
+            for (int j = 0; j <= amount; j++) {
+                dp[i][j] = dp[i - 1][j];
+                if (coins[i - 1] <= j) {
+                    dp[i][j] += dp[i][j - coins[i - 1]];
+                }
+            }
+        }
+        for (int i = 0; i <= coins.length; i++) {
+            System.out.println(Arrays.toString(dp[i]));
+        }
+        return dp[coins.length][amount];
+    }
+
+    public int changeII(int amount, int[] coins) {
+        int[] dp = new int[amount + 1];
+        dp[0] = 1;
+        for (int i = 0; i < coins.length; i++) {
+            for (int j = coins[i]; j <= amount; j++) {
+                dp[j] += dp[j - coins[i]];
+            }
+        }
+        return dp[amount];
+    }
+
+    @Test
+    public void changeII() {
+        int[] coins = {1, 2, 5};
+        int amount = 5;
+        System.out.println(changeII(amount, coins));
+    }
+
+
+    public boolean jumpGame(int[] jump) {
+        int dis = jump[0];
+        for (int i = 0; i < jump.length; i++) {
+            if (dis < i) {
+                return false;
+            }
+            dis = Math.max(dis, jump[i] + i);
+        }
+        return true;
+    }
+
+    int min_jump = Integer.MAX_VALUE;
+
+    public int jumpGame1(int[] jump) {
+        return -1;
+    }
+
+    /**
+     * 完美数
+     * 对于一个 正整数，如果它和除了它自身以外的所有 正因子 之和相等，我们称它为 「完美数」。
+     * 28 = 1 + 2 + 4 + 7 + 14
+     * 1, 2, 4, 7, 和 14 是 28 的所有正因子。
+     *
+     * @param num
+     * @return
+     */
+    public boolean checkPerfectNumber(int num) {
+        if (num < 6) {
+            return false;
+        }
+        int sum = 1;
+        int index = 2;
+        while (index < num) {
+            if (num % index == 0) {
+                sum += index;
+            }
+            index++;
+        }
+        return sum == num;
+    }
+
+    @Test
+    public void checkPerfectNumber() {
+        int num = 28;
+        System.out.println(checkPerfectNumberII(2016));
+    }
+
+    public boolean checkPerfectNumberII(int num) {
+        if (num < 6) {
+            return false;
+        }
+        int sum = 1;
+        int index = 2;
+        while (index < Math.sqrt(num)) {
+            if (num % index == 0) {
+                sum += index;
+                sum += num / index;
+            }
+            index++;
+        }
+        return sum == num;
+    }
+
+    public int jumpII(int[] arr) {
+        // 从后向前推导 每次取跳跃的最大步数
+        int position = arr.length - 1;
+        int step = 0;
+        while (position > 0) {
+            for (int i = 0; i < position; i++) {
+                if (i + arr[i] >= position) {
+                    position = i;
+                    step++;
+                    break;
+                }
+            }
+        }
+        return step;
+    }
+
+    public int jumpII2(int[] arr) {
+        if (arr.length == 1) {
+            return 1;
+        }
+        int step = 0;
+        int start = 0;
+        int end = arr[0];
+        while (end < arr.length) {
+            int maxPosition = 0;
+            while (start <= end) {
+                maxPosition = Math.max(maxPosition, start + arr[start]);
+                start++;
+            }
+            start = end;
+            end = maxPosition;
+            step++;
+        }
+        return step;
+    }
+
+    public int jumpII3(int[] arr) {
+        // 优化
+        // 从前往后跳, 取初始点为跳跃的最大距离, 遍历数组，更新最大距离, 当最大距离>= arr.length-1时，得到最小步数
+        int maxPosition = 0;
+        // end表示更新增加步数
+        int end = 0;
+        int step = 0;
+        for (int i = 0; i < arr.length - 1; i++) {
+            maxPosition = Math.max(maxPosition, i + arr[i]);
+            if (i == end) {
+                end = maxPosition;
+                step++;
+            }
+        }
+        return step;
+    }
+
+    /**
+     * 数青蛙
+     * 给你一个字符串 croakOfFrogs，它表示不同青蛙发出的蛙鸣声（字符串 "croak" ）的组合。
+     * 由于同一时间可以有多只青蛙呱呱作响，所以croakOfFrogs 中会混合多个 “croak” 。
+     * 请你返回模拟字符串中所有蛙鸣所需不同青蛙的最少数目。
+     * <p>
+     * 要想发出蛙鸣 "croak"，青蛙必须 依序 输出 ‘c’, ’r’, ’o’, ’a’, ’k’ 这 5 个字母。如果没有输出全部五个字母，
+     * 那么它就不会发出声音。如果字符串 croakOfFrogs 不是由若干有效的 "croak" 字符混合而成，请返回 -1 。
+     *
+     * @param croakOfFrogs
+     * @return
+     */
+    public int minNumberOfFrogs(String croakOfFrogs) {
+        // 当遇到c字符时，表示有一只青蛙， 当遇到k时，表示有一只青蛙已经叫完，
+        // 保证发声合法，则c >= r && r>=o o >=a a>=k
+        int c = 0, r = 0, o = 0, a = 0, k = 0;
+        // 青蛙的数量
+        int frog = 0;
+        // 结果
+        int res = 0;
+        char[] chs = croakOfFrogs.toCharArray();
+        for (char ch : chs) {
+            if (ch == 'c') {
+                c++;
+                frog++; // 需要有一只青蛙发声
+            } else if (ch == 'r') {
+                r++;
+            } else if (ch == 'o') {
+                o++;
+            } else if (ch == 'a') {
+                a++;
+            } else if (ch == 'k') {
+                k++;
+                frog--; // 表示一只青蛙已经叫完，可以进行下一轮
+            }
+            // 统计结果
+            res = Math.max(res, frog);
+            if (c >= r && r >= o && o >= a && a >= k) {
+                continue;
+            } else {
+                return -1;
+            }
+        }
+        if (c != r || r != o || o != a || a != k) {
+            return -1;
+        }
+        return res;
+    }
+
+    @Test
+    public void minNumberOfFrogsII() {
+        String frogs = "croakcroak";
+        System.out.println(minNumberOfFrogsII(frogs));
+    }
+
+    /**
+     * 数青蛙
+     *
+     * @param croakOfFrogs
+     * @return
+     */
+    public int minNumberOfFrogsII(String croakOfFrogs) {
+        int c = 0, r = 0, o = 0, a = 0, k = 0;
+        int res = 0;
+        char[] chars = croakOfFrogs.toCharArray();
+        for (char ch : chars) {
+            if (ch == 'c') {
+                if (k > 0) {
+                    k--;
+                } else {
+                    res++;
+                }
+                c++;
+            } else if (ch == 'r') {
+                r++;
+                c--;
+            } else if (ch == 'o') {
+                o++;
+                r--;
+            } else if (ch == 'a') {
+                a++;
+                o--;
+            } else if (ch == 'k') {
+                k++;
+                a--;
+            }
+
+            if (c < 0 || r < 0 || o < 0 || a < 0 || k < 0) {
+                return -1;
+            }
+        }
+        if (c != 0 || r != 0 || o != 0 || a != 0) {
+            return -1;
+        }
+        return res;
+    }
+
+    @Test
+    public void sortList() {
+        List<Integer> list = Lists.newArrayList(23, 12, 52, 315, 223);
+        list.stream().sorted(Integer::compareTo).min(Integer::min);
+        System.out.println(list);
+    }
+
+    @Test
+    public void topK() {
+        int[] arr = {324, 35, 234, 535, 3421, 53, 234, 234, 53, 34, 14};
+        int k = 5;
+        PriorityQueue<Integer> pq = new PriorityQueue<>(k, Comparator.comparingInt(o -> o));
+        for (int i = 0; i < arr.length; i++) {
+            if (pq.size() < k) {
+                pq.offer(arr[i]);
+            } else {
+                int peek = pq.peek();
+                if (arr[i] > peek) {
+                    pq.poll();
+                    pq.offer(arr[i]);
+                }
+            }
+        }
+        while (!pq.isEmpty()) {
+            System.out.println(pq.poll());
+        }
+    }
+
+    /**
+     * 11. 盛最多水的容器
+     * 给定一个长度为 n 的整数数组height。有n条垂线，第 i 条线的两个端点是(i, 0)和(i, height[i])。
+     * <p>
+     * 找出其中的两条线，使得它们与x轴共同构成的容器可以容纳最多的水。
+     * <p>
+     * 返回容器可以储存的最大水量。
+     * <p>
+     * 说明：你不能倾斜容器。
+     *
+     * @param height
+     * @return
+     */
+    public int maxArea(int[] height) {
+        // [1,8,6,2,5,4,8,3,7]  => 8,7 * 7  42
+        // 暴力
+        int max = Integer.MIN_VALUE;
+        for (int i = 0, len = height.length; i < len; i++) {
+            for (int j = i + 1; j < len; j++) {
+                int h = height[j] > height[i] ? height[i] : height[j];
+                int l = j - i;
+                max = Math.max(max, h * l);
+            }
+        }
+        return max;
+    }
+
+    @Test
+    public void maxArea() {
+        int[] height = {1, 8, 6, 2, 5, 4, 8, 3, 7};
+        System.out.println(maxArea(height));
+    }
 }
 

@@ -9,6 +9,13 @@ type UserQuery {
     #指定对象以及参数类型
     queryUser : User
     queryUserById(id:ID) : User
+    getMember(memberId:ID!): Member
+}
+
+type Member {
+    memberId: ID!
+    name: String!
+    age: Int
 }
 
 #定义对象

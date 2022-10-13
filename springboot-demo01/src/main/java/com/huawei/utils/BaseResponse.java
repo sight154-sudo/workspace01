@@ -35,4 +35,6 @@ public class BaseResponse<T> {
     public static BaseResponse failed() {
         return new BaseResponse(HttpStatus.HTTP_INTERNAL_ERROR, " operation failed");
     }
+
+
 }

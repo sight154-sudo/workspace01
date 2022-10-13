@@ -18,8 +18,19 @@
         insert into ld_api(id,api_uuid,api_name,api_method,api_createtime,api_modifytime,api_deleteflag)
         values(#{id},#{apiUUID},#{apiName},#{apiMethod},#{createtime},#{modifytime},#{deleteflag})
     </insert>
+    <sql id="baseMap">
+        id,
+        api_uuid apiUUID,
+        api_name apiName,
+        api_method apiMethod,
+        api_createtime createtime,
+        api_modifytime modifytime,
+        api_deleteflag deleteflag
+    </sql>
+
     <select id="queryApi" parameterType="com.huawei.po.ApiEntity" resultType="com.huawei.po.ApiEntity">
-        select *
+        select
+        <include refid="baseMap"/>
         from ld_api
         <where>
             <if test="apiUUID != null and apiUUID != ''">

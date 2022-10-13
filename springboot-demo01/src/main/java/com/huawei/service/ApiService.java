@@ -15,4 +15,6 @@ public interface ApiService {
 
     BaseResponse<Map> addApi(ApiEntity apiEntity);
     BaseResponse<JSONObject> queryApi(ApiEntity entity);
+
+    void operatorTtl(String param);
 }

@@ -1,12 +1,12 @@
 package com.huawei.controller;
 
-import cn.hutool.json.JSON;
+import cn.hutool.http.HttpStatus;
 import cn.hutool.json.JSONObject;
+import com.huawei.config.ContextUtils;
 import com.huawei.po.ApiEntity;
 import com.huawei.service.ApiService;
 import com.huawei.utils.BaseResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,5 +35,13 @@ public class ApiController {
     @GetMapping("/query")
     public BaseResponse<JSONObject> queryApi(@RequestBody ApiEntity apiEntity) {
         return apiService.queryApi(apiEntity);
+    }
+
+    @GetMapping("/exec")
+    public BaseResponse<Object> ttlTest(String param) {
+        ContextUtils.put("log"," main log");
+        apiService.operatorTtl(param);
+        Object log = ContextUtils.get("log");
+        return new BaseResponse<Object>(HttpStatus.HTTP_OK, "operation success", log);
     }
 }
