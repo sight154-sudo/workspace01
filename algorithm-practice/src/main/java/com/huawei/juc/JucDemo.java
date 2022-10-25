@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -17,6 +18,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author king
@@ -24,13 +26,76 @@ import java.util.regex.Pattern;
  * @Desc
  */
 public class JucDemo {
+
+    static List<NetMall> list = Arrays.asList(
+            new NetMall("jd"),
+            new NetMall("pdd"),
+            new NetMall("taobao")
+    );
+
+    public static List<String> getMallStep(String productName) {
+        return list.stream()
+                .map(mall -> String.format("%s in %s price is %.3f", productName, mall.mallName, mall.computePrice(productName)))
+                .collect(Collectors.toList());
+    }
+
+    public static List<String> getMallAsync(String productName) {
+        return list.stream()
+                .map(mall -> CompletableFuture.supplyAsync(() ->
+                        String.format("%s in %s price is %.3f", productName, mall.mallName, mall.computePrice(productName)))).collect(Collectors.toList())
+                .stream()
+                .map(CompletableFuture::join)
+                .collect(Collectors.toList());
+    }
+
+
     public static void main(String[] args) throws Exception {
 //        m1();
 //        m2();
 //        m3();
 //        m4();
 //        m5();
-        System.out.println(ThreadLocalRandom.current().nextDouble()*2);
+//        System.out.println(ThreadLocalRandom.current().nextDouble()*2+'a');
+
+
+        long start1 = System.currentTimeMillis();
+        List<String> list1 = getMallStep("mysql");
+        for (String s : list1) {
+            System.out.println(s);
+        }
+        long end1 = System.currentTimeMillis();
+        System.out.println(String.format("programmer cost %s ms", end1 - start1));
+
+        System.out.println();
+
+        long start2 = System.currentTimeMillis();
+        List<String> list2 = getMallAsync("mysql");
+        for (String s : list2) {
+            System.out.println(s);
+        }
+        long end2 = System.currentTimeMillis();
+        System.out.println(String.format("programmer cost %s ms", end2 - start2));
+    }
+
+    static class NetMall{
+        private String mallName;
+
+        public NetMall(String mallName) {
+            this.mallName = mallName;
+        }
+
+        public String getMallName() {
+            return mallName;
+        }
+
+        public void setMallName(String mallName) {
+            this.mallName = mallName;
+        }
+
+        public double computePrice(String productName) {
+            try {TimeUnit.SECONDS.sleep(1);} catch (InterruptedException e) {e.printStackTrace();}
+            return ThreadLocalRandom.current().nextDouble()*2 + productName.charAt(0);
+        }
     }
 
     private static void m5() throws InterruptedException, java.util.concurrent.ExecutionException {
@@ -90,6 +155,7 @@ public class JucDemo {
 
     @Test
     public void testSupplier() {
+        // 测试生产者函数式编程
         int i = getInteger(() -> 1 + 2);
 
         String s = getString(() -> 1 + "  ");
@@ -122,6 +188,7 @@ public class JucDemo {
 
     @Test
     public void testConsumer() {
+        // 测试消费者函数式编程
 //        operatorString("lisi", s-> System.out.println(s));
 //        operatorString("zhangsan", StringUtils::reverse, System.out::println);
         String[] arr = {"林青霞,30", "张曼玉,35", "王祖贤,33"};
@@ -145,6 +212,7 @@ public class JucDemo {
 
     @Test
     public void testPredicate() {
+        // 判断参数是否满足条件 boolean
         boolean b1 = checkString("hello", s -> s.length() > 8);
         System.out.println("b1 = " + b1);
 
@@ -178,6 +246,7 @@ public class JucDemo {
 
     @Test
     public void testFunction() {
+        // 类型转换 r->t
         convert("12", Integer::valueOf);
         convert(13, i-> String.valueOf(i+335));
 

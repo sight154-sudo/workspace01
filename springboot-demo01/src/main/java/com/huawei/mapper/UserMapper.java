@@ -14,4 +14,8 @@ public interface UserMapper {
     public List<User> findAll(User user);
 
     public User findById(Integer id);
+
+    public User login(User user);
+
+    public User queryUserInfo(String username);
 }

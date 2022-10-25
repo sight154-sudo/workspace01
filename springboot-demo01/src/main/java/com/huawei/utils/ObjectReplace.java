@@ -17,9 +17,9 @@ import java.util.Map;
  */
 public class ObjectReplace {
     public static void main(String[] args) throws Exception {
-        User user1 = new User(1,"zhangsan",true,12,1000d,new Date(),new Date(),new Date());
+        User user1 = new User(1,"zhangsan", null, true,12,1000d,new Date(),new Date(),new Date());
 
-        User user2 = new User(2,"lisi",false,23,1500d,new Date(),new Date(),new Date());
+        User user2 = new User(2,"lisi", null, false,23,1500d,new Date(),new Date(),new Date());
 
         Object info = exchangeEntityInfo(user1, user2, new Object[]{"id", "userName", "age"});
 

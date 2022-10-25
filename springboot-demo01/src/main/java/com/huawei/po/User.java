@@ -1,8 +1,6 @@
 package com.huawei.po;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
@@ -12,11 +10,10 @@ import java.util.Date;
  * @Desc
  */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class User {
     private Integer id;
-    private String userName;
+    private String username;
+    private String password;
     private Boolean gender;
     private Integer age;
     private Double salary;
@@ -24,4 +21,18 @@ public class User {
     private Date createdTime;
     private Date updatedTime;
 
+    public User() {
+    }
+
+    public User(Integer id, String username, String password, Boolean gender, Integer age, Double salary, Date birthday, Date createdTime, Date updatedTime) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.gender = gender;
+        this.age = age;
+        this.salary = salary;
+        this.birthday = birthday;
+        this.createdTime = createdTime;
+        this.updatedTime = updatedTime;
+    }
 }

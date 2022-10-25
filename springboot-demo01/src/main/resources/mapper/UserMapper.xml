@@ -10,5 +10,11 @@
     <select id="findById" parameterType="java.lang.String" resultType="com.huawei.po.User">
         select * from user where id = #{id}
     </select>
+    <select id="login" resultType="com.huawei.po.User" parameterType="com.huawei.po.User">
+        select * from user where username = #{username} and password = #{password};
+    </select>
+    <select id="queryUserInfo" resultType="com.huawei.po.User" parameterType="java.lang.String">
+        select * from user where username = #{user.username};
+    </select>
 
 </mapper>
