@@ -6,6 +6,8 @@ import com.huawei.config.ContextUtils;
 import com.huawei.mapper.UserMapper;
 import com.huawei.po.User;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -17,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import java.util.Base64;
+import java.util.Locale;
 
 import static com.huawei.constant.PublicConstant.SYSTEM_USER_SESSION;
 
@@ -28,12 +31,16 @@ import static com.huawei.constant.PublicConstant.SYSTEM_USER_SESSION;
 @Component
 public class GlobalInterceptor implements HandlerInterceptor {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalInterceptor.class);
+
     @Autowired
     private UserMapper userMapper;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // 获得cookie
+        String requestURI = request.getRequestURI();
+        LOGGER.info(String.format(Locale.ROOT, "requestURI is %s", requestURI));
         Cookie[] cookies = request.getCookies();
         // 没有cookie信息，则重定向到登录界面
         if (null == cookies) {

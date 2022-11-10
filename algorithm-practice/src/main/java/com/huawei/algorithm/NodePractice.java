@@ -601,12 +601,12 @@ public class NodePractice {
         for (int i = 0; i < m; i++) {
             map.put(inorder[i], i);
         }
-        return buildTreeByPrePost1(postorder, map, 0 , m - 1);
+        return buildTreeByPrePost1(postorder, map, 0, m - 1);
     }
 
     int index = 4;
 
-    private BinaryTreeNode buildTreeByPrePost1(int[] postorder, Map<Integer, Integer> map ,int begin, int end) {
+    private BinaryTreeNode buildTreeByPrePost1(int[] postorder, Map<Integer, Integer> map, int begin, int end) {
         if (begin > end) {
             return null;
         }
@@ -614,8 +614,8 @@ public class NodePractice {
         int pindex = map.get(val);
         BinaryTreeNode root = new BinaryTreeNode(val, null, null);
         index--;
-        root.right = buildTreeByPrePost1(postorder, map, pindex+1, end);
-        root.left = buildTreeByPrePost1(postorder, map, begin, pindex-1);
+        root.right = buildTreeByPrePost1(postorder, map, pindex + 1, end);
+        root.left = buildTreeByPrePost1(postorder, map, begin, pindex - 1);
         return root;
     }
 
@@ -629,6 +629,7 @@ public class NodePractice {
 
     /**
      * 通过括号表示法构建一棵二叉树
+     *
      * @param s
      * @return
      */
@@ -645,7 +646,7 @@ public class NodePractice {
         BinaryTreeNode<Character> node = null;
         while (index < s.length()) {
             ch = s.charAt(index);
-            switch (ch){
+            switch (ch) {
                 case '{':
                     stack.push(node);
                     k = 1;
@@ -663,7 +664,7 @@ public class NodePractice {
                         // 创建根节点
                         root = node;
                     } else {
-                        switch (k){
+                        switch (k) {
                             case 1:
                                 stack.peek().left = node;
                                 break;
@@ -678,6 +679,69 @@ public class NodePractice {
         }
         return root;
     }
+
+    /**
+     * 给你两个非空 的链表，表示两个非负的整数。它们每位数字都是按照逆序的方式存储的，并且每个节点只能存储一位数字。
+     * <p>
+     * 请你将两个数相加，并以相同形式返回一个表示和的链表。
+     * <p>
+     * 你可以假设除了数字 0 之外，这两个数都不会以 0开头。
+     * <p>
+     * 2. 两数相加
+     *
+     * @param l1
+     * @param l2
+     * @return
+     */
+    public Node addTwoNumbers(Node l1, Node l2) {
+        // l1:3-5-4   l2:5-6-4-1   => 8-1-9-1
+        Node head = new Node();
+        Node cur = head;
+        int preNum = 0;
+        while (l1 != null && l2 != null) {
+            int num = l1.val + l2.val + preNum;
+            Node tmp = new Node();
+            tmp.val = num >= 10 ? num - 10 : num;
+            cur.next = tmp;
+            preNum = num >= 10 ? 1 : 0;
+            l1 = l1.next;
+            l2 = l2.next;
+            cur = tmp;
+        }
+        while (l1 != null) {
+            int num = l1.val + preNum;
+            Node tmp = new Node();
+            tmp.val = num >= 10 ? num - 10 : num;
+            cur.next = tmp;
+            preNum = num > 10 ? 1 : 0;
+            l1 = l1.next;
+            cur = tmp;
+        }
+        while (l2 != null) {
+            int num = l2.val + preNum;
+            Node tmp = new Node();
+            tmp.val = num >= 10 ? num - 10 : num;
+            cur.next = tmp;
+            preNum = num > 10 ? 1 : 0;
+            l2 = l2.next;
+            cur = tmp;
+        }
+        if (preNum != 0) {
+            Node tmp = new Node(preNum, null);
+            cur.next = tmp;
+        }
+
+        return head.next;
+    }
+
+    @Test
+    public void addTwoNumbers() {
+        Node l1 = constructNode(new int[]{2,4,3});
+        Node l2 = constructNode(new int[]{5,6,4});
+        Node node = addTwoNumbers(l1, l2);
+        printNode(node);
+    }
+
 
     @Test
     public void printBinaryTree() {
@@ -695,7 +759,7 @@ public class NodePractice {
             // 依次将左子树的左根节点入栈
             while (node != null) {
                 stack.push(node);
-                node=  node.left;
+                node = node.left;
             }
             if (!stack.isEmpty()) {
                 // 出栈，输出左节点

@@ -19,9 +19,27 @@ public class CompletableFutureDemo {
 //        m1();
         ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 10, 10, TimeUnit.SECONDS, new LinkedBlockingDeque<>(100), Executors.defaultThreadFactory(), new ThreadPoolExecutor.AbortPolicy());
 
-
-
-
+        Integer join = CompletableFuture.supplyAsync(() -> {
+            return 1;
+        },threadPoolExecutor).handle((f,e) -> {
+            int i = 1/0;
+            System.out.println("------1-----------");
+            return f + 2;
+        }).handle((f,e) -> {
+            System.out.println("------2-----------");
+            return f + 3;
+        }).handle((f,e) -> {
+            System.out.println("------3-----------");
+            return f + 4;
+        }).whenComplete((f, e) -> {
+            if (e == null) {
+                System.out.println(f);
+            }
+        }).exceptionally(e -> {
+            e.printStackTrace();
+            return 0;
+        }).join();
+        System.out.println(join);
         threadPoolExecutor.shutdown();
     }
 

@@ -3,11 +3,16 @@ package com.huawei.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.huawei.po.Student;
 import com.huawei.service.StudentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -17,6 +22,8 @@ import java.util.Map;
  */
 @RestController
 public class StudentController {
+
+    private static final Logger logger = LoggerFactory.getLogger(StudentController.class);
 
     @Autowired
     private StudentService studentService;
@@ -32,8 +39,18 @@ public class StudentController {
     }
 
     @PostMapping("student/upload")
-    public String uploadFile(@RequestPart("file") MultipartFile file, @RequestPart("stu") Student stu) {
+    public String uploadFile(@RequestPart("file") MultipartFile file, @RequestPart("stu") Student stu, HttpServletRequest request) {
         System.out.println(stu);
+        String originalFilename = file.getOriginalFilename();
+        long size = file.getSize();
+        logger.info(String.format(Locale.ROOT, "The upload file name is %s, And file size is %d", originalFilename, size));
+        String contextPath = request.getContextPath();
+        System.out.println(contextPath);
+        String servletPath = request.getServletPath();
+        System.out.println(servletPath);
+        String realPath = request.getServletContext().getRealPath("/");
+        System.out.println("realPath = " + realPath);
+//        file.transferTo(new File());
         return stu.toString();
     }
 }
