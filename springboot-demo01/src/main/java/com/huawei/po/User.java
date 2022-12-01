@@ -1,8 +1,12 @@
 package com.huawei.po;
 
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Pattern;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author king
@@ -12,7 +16,9 @@ import java.util.Date;
 @Data
 public class User {
     private Integer id;
+    @Length(min = 2, max = 12)
     private String username;
+    @Pattern(regexp = "[A_Z]\\w{4,6}")
     private String password;
     private Boolean gender;
     private Integer age;
@@ -20,6 +26,7 @@ public class User {
     private Date birthday;
     private Date createdTime;
     private Date updatedTime;
+    private List<OrderVo> orders;
 
     public User() {
     }

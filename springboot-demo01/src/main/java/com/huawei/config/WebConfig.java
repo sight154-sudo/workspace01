@@ -50,10 +50,10 @@ public class WebConfig implements WebMvcConfigurer {
     @Autowired
     private GlobalInterceptor globalInterceptor;
 
-    @Override
+    /*@Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(globalInterceptor) //拦截器注册对象
                 .addPathPatterns("/**") //指定要拦截的请求
                 .excludePathPatterns("/login"); //排除请求
-    }
+    }*/
 }

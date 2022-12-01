@@ -61,7 +61,7 @@ public class ApiServiceImpl implements ApiService {
     public BaseResponse<JSONObject> queryApi(ApiEntity entity) {
         List<ApiEntity> apiEntity = apiMapper.queryApi(entity);
         JSONObject json = new JSONObject();
-        json.put("result", apiEntity);
+        json.set("result", apiEntity);
         return new BaseResponse<JSONObject>(HttpStatus.HTTP_OK, "ok", json);
     }
 

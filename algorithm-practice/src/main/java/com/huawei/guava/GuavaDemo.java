@@ -10,6 +10,7 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -279,6 +280,6 @@ public class GuavaDemo {
     }
 
     public static void main(String[] args) {
-
+        System.out.println(String.format(Locale.ROOT, "%.2f 华氏度 = %.2f摄氏度", 190f, (190-30)/1.8f));
     }
 }

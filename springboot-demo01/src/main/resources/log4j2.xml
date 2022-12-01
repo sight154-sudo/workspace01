@@ -23,7 +23,7 @@
     <loggers>
         <!--包名-->
         <logger name="com.huawei" level="debug"/>
-        <root level="debug">
+        <root level="info">
             <appenderref ref="CONSOLE"/>
             <appender-ref ref="RollingFile"/>
         </root>

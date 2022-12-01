@@ -32,6 +32,14 @@ public class BaseResponse<T> {
         return new BaseResponse(HttpStatus.HTTP_OK, "operation success");
     }
 
+    public static BaseResponse ok(String message) {
+        return new BaseResponse(HttpStatus.HTTP_OK, message);
+    }
+
+    public static <T> BaseResponse ok(String message, T t) {
+        return new BaseResponse(HttpStatus.HTTP_OK, message, t);
+    }
+
     public static BaseResponse failed() {
         return new BaseResponse(HttpStatus.HTTP_INTERNAL_ERROR, " operation failed");
     }

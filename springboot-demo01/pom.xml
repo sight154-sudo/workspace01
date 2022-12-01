@@ -81,6 +81,10 @@
             <artifactId>spring-boot-starter-log4j2</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-spring-boot-starter-jaxws</artifactId>
             <version>3.2.4</version>
@@ -90,6 +94,12 @@
                     <artifactId>validation-api</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <!-- 参数校验hiberate-->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>6.0.8.Final</version>
         </dependency>
         <!--<dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -120,5 +130,76 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.1.1</version>
+        </dependency>
     </dependencies>
+
+    <build>
+        <resources>
+            <!--指定src/main/resources资源要过滤-->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <!-- 可执行jar插件    assembly打包-->
+            <!--<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    &lt;!&ndash; 配置描述符文件 &ndash;&gt;&lt;!&ndash; 也可以使用Maven预配置的描述符 &ndash;&gt;
+&lt;!&ndash;                    <descriptor>src/main/assembly/assembly.xml</descriptor>&ndash;&gt;
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            &lt;!&ndash;指定主程序入口&ndash;&gt;
+                            <mainClass>com.huawei.LivedataApplication.java</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <executions>
+                    &lt;!&ndash;执行器 mvn assembly:assembly&ndash;&gt;
+                    <execution>
+                        <id>make-assembly</id>
+                        &lt;!&ndash;绑定到package生命周期阶段上&ndash;&gt;
+                        <phase>package</phase>
+                        <goals>
+                            &lt;!&ndash;该打包任务只运行一次&ndash;&gt;
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>-->
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <!--<archive>
+                        <manifest>
+                            &lt;!&ndash; 指定入口函数 &ndash;&gt;
+                            <mainClass>com.xx.main.HelloMavenJar</mainClass>
+                            &lt;!&ndash; 是否添加依赖的jar路径配置 &ndash;&gt;
+                            <addClasspath>true</addClasspath>
+                            &lt;!&ndash; 依赖的jar包存放未知，和生成的jar放在同一级目录下 &ndash;&gt;
+                            <classpathPrefix>lib/</classpathPrefix>
+                        </manifest>
+                    </archive>-->
+                    <!-- 不打包com.yh.excludes下面的所有类 -->
+<!--                    <excludes>com/xx/excludes/*</excludes>-->
+                    <source>8</source>
+                    <target>8</target>
+                    <encoding>UTF-8</encoding>
+
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <!-- mvn clean package -Dmaven.test.skip=true -gs .\src\main\resources\settings.xml -f pom.xml-->
 </project>

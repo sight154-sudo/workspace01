@@ -695,35 +695,20 @@ public class NodePractice {
      */
     public Node addTwoNumbers(Node l1, Node l2) {
         // l1:3-5-4   l2:5-6-4-1   => 8-1-9-1
+        // 补齐长度不足的链表
         Node head = new Node();
         Node cur = head;
         int preNum = 0;
-        while (l1 != null && l2 != null) {
-            int num = l1.val + l2.val + preNum;
+        while (l1 != null || l2 != null) {
+            int a = l1 == null ? 0 : l1.val;
+            int b = l2 == null ? 0 : l2.val;
+            int num = a + b + preNum;
             Node tmp = new Node();
             tmp.val = num >= 10 ? num - 10 : num;
             cur.next = tmp;
             preNum = num >= 10 ? 1 : 0;
-            l1 = l1.next;
-            l2 = l2.next;
-            cur = tmp;
-        }
-        while (l1 != null) {
-            int num = l1.val + preNum;
-            Node tmp = new Node();
-            tmp.val = num >= 10 ? num - 10 : num;
-            cur.next = tmp;
-            preNum = num > 10 ? 1 : 0;
-            l1 = l1.next;
-            cur = tmp;
-        }
-        while (l2 != null) {
-            int num = l2.val + preNum;
-            Node tmp = new Node();
-            tmp.val = num >= 10 ? num - 10 : num;
-            cur.next = tmp;
-            preNum = num > 10 ? 1 : 0;
-            l2 = l2.next;
+            l1 = l1 == null ? null : l1.next;
+            l2 = l2 == null ? null : l2.next;
             cur = tmp;
         }
         if (preNum != 0) {
@@ -736,8 +721,8 @@ public class NodePractice {
 
     @Test
     public void addTwoNumbers() {
-        Node l1 = constructNode(new int[]{2,4,3});
-        Node l2 = constructNode(new int[]{5,6,4});
+        Node l1 = constructNode(new int[]{2, 4, 3});
+        Node l2 = constructNode(new int[]{5, 6, 4, 4});
         Node node = addTwoNumbers(l1, l2);
         printNode(node);
     }

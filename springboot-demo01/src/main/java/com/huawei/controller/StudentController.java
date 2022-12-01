@@ -1,6 +1,5 @@
 package com.huawei.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.huawei.po.Student;
 import com.huawei.service.StudentService;
 import org.slf4j.Logger;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
