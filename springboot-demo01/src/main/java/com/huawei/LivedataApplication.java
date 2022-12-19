@@ -2,6 +2,7 @@ package com.huawei;
 
 import com.huawei.po.OrderEntity;
 import com.huawei.service.OrderService;
+import com.huawei.utils.SpringContextUtils;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -28,12 +29,13 @@ public class LivedataApplication implements ApplicationRunner {
 
 
     public static void main(String[] args) {
-        SpringApplication.run(LivedataApplication.class);
+        ConfigurableApplicationContext run = SpringApplication.run(LivedataApplication.class);
     }
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        orderService.addOrder(new OrderEntity("001",1100d));
+        OrderService orderService = SpringContextUtils.getApplicationContext().getBean("orderServiceImpl", OrderService.class);
+        orderService.addOrder(new OrderEntity("101",1100d));
     }
 
 }

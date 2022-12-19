@@ -23,14 +23,14 @@ public class OrderServiceImpl implements OrderService {
     private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     @Override
-    @RecordLog(value = "save order info!", clazz = OrderEntityConvertImpl.class)
+    @RecordLog(value = "save order info!", orderId = "#{orderEntity.orderId}", clazz = OrderEntityConvertImpl.class)
     public boolean addOrder(OrderEntity orderEntity) {
         logger.info(String.format(Locale.ROOT, "add order"));
         return false;
     }
 
     @Override
-    @RecordLog(value = "modify order info", clazz = OrderVoConvertImpl.class)
+    @RecordLog(value = "modify order info", orderId = "#{order.orderId}", clazz = OrderVoConvertImpl.class)
     public boolean updateOrder(OrderVo order) {
         logger.info(String.format(Locale.ROOT, "update order"));
         return false;

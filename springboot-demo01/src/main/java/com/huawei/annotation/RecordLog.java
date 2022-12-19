@@ -19,5 +19,7 @@ import java.lang.annotation.Target;
 public @interface RecordLog {
     String value() default "";
 
+    String orderId() default "";
+
     Class<? extends IConvert> clazz();
 }
