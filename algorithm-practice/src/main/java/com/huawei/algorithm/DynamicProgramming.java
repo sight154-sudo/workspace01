@@ -115,7 +115,7 @@ public class DynamicProgramming {
     public void insertSort() {
         int[] arr = {5, 1, 3, 2, 4, 24, 2365, 23, 523, 423, 4, 124, 2432};
         System.out.println(Arrays.toString(arr));
-        insertSort(arr);
+        insertSortPro(arr);
         System.out.println(Arrays.toString(arr));
     }
 
@@ -136,6 +136,23 @@ public class DynamicProgramming {
                 }
             }
             r++;
+        }
+    }
+
+    public void insertSortPro(int[] arr) {
+        if (arr.length<1) return;
+        int len = arr.length;
+        for (int i = 1; i < len; i++) {
+            int val = arr[i];
+            int j = i-1;
+            for (; j >= 0; j--) {
+                if (arr[j] > val) {
+                    arr[j+1] = arr[j];
+                } else {
+                    break;
+                }
+            }
+            arr[j+1] = val;
         }
     }
 

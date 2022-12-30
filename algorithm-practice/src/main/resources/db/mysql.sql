@@ -51,3 +51,23 @@ begin
     end while;
 end
 
+
+
+-- 去除重复数据，保留日期最近的数据
+select
+    a.id,a.user_id,a.problems,a.last_updated_date, b.*
+from t_test a
+         left join t_test b on a.user_id = b.user_id  and a.last_updated_date < b.last_updated_date
+where b.id is null;
+
+explain
+select
+    a.*
+from t_test a
+where a.last_updated_date in
+      (select max(last_updated_date) from t_test b where a.user_id = b.user_id);
+
+
+select a.*
+from t_test a
+where  not exists(select 1 from t_test b where a.user_id = b.user_id and b.last_updated_date > a.last_updated_date);
