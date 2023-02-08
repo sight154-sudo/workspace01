@@ -1,13 +1,16 @@
 package com.huawei.controller;
 
 import com.google.common.io.Files;
+import com.google.gson.JsonObject;
 import com.huawei.utils.BaseResponse;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.plaf.synth.SynthScrollBarUI;
 import javax.xml.ws.Response;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -30,11 +33,12 @@ public class DownloadController {
 
 
     @PostMapping("download")
-    public void download(HttpServletResponse response) throws UnsupportedEncodingException {
+    public void download(@RequestBody JsonObject jsonObject, HttpServletResponse response) throws UnsupportedEncodingException {
         String fileName = "test.zip";
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
         response.setHeader("Content-Disposition", "attachment;filename=" + new String(fileName.getBytes("UTF-8"), "ISO-8859-1"));
         ZipOutputStream out = null;
+        long s = System.currentTimeMillis();
         byte[] buffer = new byte[1024];
         try {
             File file1 = new File("C:\\Users\\King\\Downloads\\aaa.pdf");
@@ -47,7 +51,7 @@ public class DownloadController {
                 out.putNextEntry(new ZipEntry(list.getName()));
                 int len;
                 while ((len = in.read(buffer)) != -1) {
-                    out.write(buffer, 0 , len);
+                    out.write(buffer, 0, len);
                 }
                 in.close();
             }
@@ -60,7 +64,7 @@ public class DownloadController {
                 e.printStackTrace();
             }
         }
-
+        System.out.println(System.currentTimeMillis() - s);
         /*try {
             response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
             response.setHeader("Content-Disposition", "attachment;filename=" + new String(fileName.getBytes("UTF-8"), "ISO-8859-1"));

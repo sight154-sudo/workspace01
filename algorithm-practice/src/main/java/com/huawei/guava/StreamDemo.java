@@ -5,6 +5,8 @@ import cn.hutool.json.JSONUtil;
 import com.google.common.collect.Lists;
 import com.huawei.graphql.entity.Card;
 import com.huawei.graphql.entity.User;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.junit.Test;
 
 import java.io.File;
@@ -53,6 +55,7 @@ public class StreamDemo {
 
     public static void main(String[] args) throws IOException {
         File file1 = new File("C:\\Users\\King\\Downloads\\aaa.pdf");
+        file1.renameTo(new File(""));
         File file2 = new File("C:\\Users\\King\\Downloads\\bbb.pdf");
         ZipOutputStream out = new ZipOutputStream(new FileOutputStream("C:\\Users\\King\\Downloads\\test.zip"));
         List<File> lists = Arrays.asList(file1, file2);
