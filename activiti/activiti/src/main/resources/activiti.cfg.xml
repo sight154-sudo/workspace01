@@ -11,12 +11,19 @@ http://www.springframework.org/schema/tx
 http://www.springframework.org/schema/tx/spring-tx.xsd">
     <!-- 默认id对应的值 为processEngineConfiguration -->
     <!-- processEngine Activiti的流程引擎 -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="url" value="jdbc:mysql:///activiti"/>
+        <property name="username" value="root"/>
+        <property name="password" value="root"/>
+        <property name="maxActive" value="4"/>
+    </bean>
+
     <bean id="processEngineConfiguration"
           class="org.activiti.engine.impl.cfg.StandaloneProcessEngineConfiguration">
         <property name="jdbcDriver" value="com.mysql.jdbc.Driver"/>
         <property name="jdbcUrl" value="jdbc:mysql:///activiti"/>
         <property name="jdbcUsername" value="root"/>
-        <property name="jdbcPassword" value="123456"/>
+        <property name="jdbcPassword" value="root"/>
         <!-- activiti数据库表处理策略 -->
         <property name="databaseSchemaUpdate" value="true"/>
     </bean>
