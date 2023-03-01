@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huawei.mapper.PersonDao">
+
+    <resultMap id="baseMapper" type="com.huawei.wrong.example.po.Person">
+        <id property="id" column="id" jdbcType="VARCHAR"></id>
+        <result property="name" column="name"/>
+        <!--<association property="orders" column="o_id" javaType="com.huawei.wrong.example.po.Order" select="selectOrder">
+            <id property="orderId" column="order_id"/>
+            <result property="personId" column="p_id"/>
+            <result property="orderName" column="name"/>
+            <result property="price" column="price"/>
+        </association>-->
+        <association property="orders" column="o_id" resultMap="orderMapper"/>
+    </resultMap>
+
+    <resultMap id="orderMapper" type="com.huawei.wrong.example.po.Order">
+        <id property="orderId" column="order_id"/>
+        <result property="personId" column="p_id"/>
+        <result property="orderName" column="orderName"/>
+        <result property="price" column="price"/>
+    </resultMap>
+
+    <select id="queryPerson" resultMap="baseMapper">
+        select
+            p.id id,
+            p.name name,
+            o.order_id,
+            o.p_id p_id,
+            o.name orderName,
+            o.price
+        from t_person p
+        left join t_order o on o.p_id = p.id
+        where 1 = 1
+    </select>
+    <select id="selectPerson" resultMap="baseMapper">
+        select
+            *
+        from t_person
+    </select>
+
+    <select id="selectOrder" resultType="com.huawei.wrong.example.po.Order">
+        select
+            *
+        from t_order
+        where p_id = #{id}
+    </select>
+</mapper>

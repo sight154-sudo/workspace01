@@ -28,6 +28,6 @@ rebel.xml
 *.bak
 **/bin/
 #test
-**/test/
+#**/test/
 
 .gradle
