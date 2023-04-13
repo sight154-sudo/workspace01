@@ -13,7 +13,7 @@
             <result property="orderName" column="name"/>
             <result property="price" column="price"/>
         </association>-->
-        <association property="orders" resultMap="orderMapper"/>
+        <association property="orders" column="o_id" resultMap="orderMapper"/>
     </resultMap>
 
     <resultMap id="orderMapper" type="com.huawei.wrong.example.po.Order">

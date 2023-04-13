@@ -109,6 +109,7 @@
             <version>RELEASE</version>
             <scope>compile</scope>
         </dependency>
+<<<<<<< HEAD
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
@@ -124,5 +125,7 @@
             <artifactId>poi-ooxml</artifactId>
             <version>4.0.1</version>
         </dependency>
+=======
+>>>>>>> parent of 346e9c8 (添加项目脚本)
     </dependencies>
 </project>

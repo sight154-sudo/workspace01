@@ -30,6 +30,7 @@ public class LinkedPractice {
         if (node == null) {
             return head;
         }
+        Integer a = 123;
         ListNode next = node.next;
         while (next != null) {
             while (next != null && next.val == node.val) {
