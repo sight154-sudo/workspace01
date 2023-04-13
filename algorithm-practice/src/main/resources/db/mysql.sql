@@ -71,3 +71,16 @@ where a.last_updated_date in
 select a.*
 from t_test a
 where  not exists(select 1 from t_test b where a.user_id = b.user_id and b.last_updated_date > a.last_updated_date);
+
+-- 求出第二高薪水的sql,没有第二高的薪水时返回null  employee(id int,salary int);
+-- (1)
+select (
+select distinct salary
+from employee
+order by salary desc
+limit 1 offset 1) as secondHighestSalary;
+-- (2) IFNULL函数
+select IFNULL((SELECT distinct salary from employee order by salary desc limit 1,1) , null) as secondHighestSalary;
+-- (3) 第二高薪水为除去最高薪水的最高薪水 聚合函数会
+select max(salary)
+from employee where salary < (select max(salary) from employee);

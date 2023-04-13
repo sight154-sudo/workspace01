@@ -1,7 +1,10 @@
 package com.chatgpt;
 
 import java.io.FileOutputStream;
+import java.io.InputStream;
+
 import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.poi.ss.usermodel.*;
@@ -10,9 +13,10 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 public class ExcelToPdfConverter {
     
     public static void main(String[] args) throws Exception {
-        
+
+        InputStream in = ExcelToPdfConverter.class.getClassLoader().getResourceAsStream("data.xlsx");
         // Read Excel data
-        Workbook workbook = new XSSFWorkbook("input.xlsx");
+        Workbook workbook = new XSSFWorkbook(in);
         Sheet sheet = workbook.getSheetAt(0);
         Row row;
         Cell cell;
