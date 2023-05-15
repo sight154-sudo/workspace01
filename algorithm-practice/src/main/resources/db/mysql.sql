@@ -16,7 +16,10 @@ from ld_api
 where id = (select id from ld_api group by id having count(*) > 1)
  and api_name != (select api_name from ld_api group by id having count(*) >1 limit 1 );
 
-
+-- 删除重复数据保留id最小的
+delete p1 from person p1, person p2
+where p1.email = p2.email
+    and p1.id > p2.id
 
 -- rand_name函数
 CREATE DEFINER=`root`@`localhost` FUNCTION `rand_name`(num int) RETURNS varchar(32) CHARSET utf8

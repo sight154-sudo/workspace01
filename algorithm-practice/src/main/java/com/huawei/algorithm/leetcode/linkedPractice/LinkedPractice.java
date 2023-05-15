@@ -1,6 +1,8 @@
 package com.huawei.algorithm.leetcode.linkedPractice;
 
 import com.huawei.algorithm.Node;
+import com.sun.org.apache.bcel.internal.generic.NEW;
+import org.apache.poi.ss.formula.functions.T;
 import org.junit.Test;
 
 /**
@@ -11,7 +13,7 @@ import org.junit.Test;
 public class LinkedPractice {
     @Test
     public void deleteDuplicatesTest() {
-        int[] arr = {1,1,2,3,3};
+        int[] arr = {1, 1, 2, 3, 3};
         ListNode node = ListNode.constructNode(arr);
 //        ListNode node = new ListNode();
         printNode(node);
@@ -58,4 +60,40 @@ public class LinkedPractice {
         sb.append("null");
         System.out.println(sb.toString());
     }
+
+    @Test
+    public void isSameTreeTest() {
+    }
+
+    /**
+     * 给你两棵二叉树的根节点 p 和 q ，编写一个函数来检验这两棵树是否相同。
+     * 如果两个树在结构上相同，并且节点具有相同的值，则认为它们是相同的。
+     *
+     * @param p
+     * @param q
+     * @return booean
+     */
+    public boolean isSameTree(BinaryTreeNode<Integer> p, BinaryTreeNode<Integer> q) {
+        if (p == null && q == null) {
+            return true;
+        }
+        if (p == null || q == null) {
+            return false;
+        }
+        if (p.val == q.val) {
+            boolean b1 = isSameTree(p.left, q.left);
+            boolean b2 = isSameTree(p.right, q.right);
+            return b1 && b2;
+        }
+        return false;
+    }
+
+    @Test
+    public void buildBinaryTreeNodeTest() {
+        Integer[] arr = {null, 10, 5, null, null, 15};
+        BinaryTreeNode<Integer> head = new BinaryTreeNode<>();
+        head = head.buildBinaryTreeNode( arr, 1);
+        head.printBinaryTreeNode();
+    }
+
 }
