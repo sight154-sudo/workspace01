@@ -12,6 +12,9 @@ public class User {
 
     private Card card;
 
+    public User() {
+    }
+
     public User(int age, long id, String name, Card card) {
         this.age = age;
         this.id = id;

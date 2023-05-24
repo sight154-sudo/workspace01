@@ -44,7 +44,7 @@ public class MyTestClassLoaderTest {
             }
         }
 
-        /*protected Class<?> loadClass(String name, boolean resolve)
+        protected Class<?> loadClass(String name, boolean resolve)
                 throws ClassNotFoundException
         {
             synchronized (super.getClassLoadingLock(name)) {
@@ -56,11 +56,11 @@ public class MyTestClassLoaderTest {
                         // If still not found, then invoke findClass in order
                         // to find the class.
                         long t1 = System.nanoTime();
-                        c = findClass(name);
-                        *//*if (name.startsWith("com.tuling")) {
+                        if (name.startsWith("com.tuling")) {
+                            c = findClass(name);
                         } else {
                             c = getParent().loadClass(name);
-                        }*//*
+                        }
                         // this is the defining class loader; record the stats
                         sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);
                         sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);
@@ -72,15 +72,21 @@ public class MyTestClassLoaderTest {
                 }
                 return c;
             }
-        }*/
+        }
     }
 
 
     public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
         MyTestClassLoader myTestClassLoader = new MyTestClassLoader("d:\\test\\");
-        Class<?> clazz = myTestClassLoader.loadClass("java.tuling.User1");
+        Class<?> clazz = myTestClassLoader.loadClass("com.tuling.User1");
         Method method = clazz.getMethod("sout", null);
         method.invoke(clazz.newInstance(),null);
+        System.out.println(clazz.getClassLoader().getClass().getName());
+        System.out.println(clazz.getClassLoader().getParent().getClass().getName());
+        MyTestClassLoader myTestClassLoader2 = new MyTestClassLoader("d:\\test1\\");
+        Class<?> clazz2 = myTestClassLoader2.loadClass("com.tuling.User1");
+        Method method2 = clazz2.getMethod("sout", null);
+        method2.invoke(clazz.newInstance(),null);
         System.out.println(clazz.getClassLoader().getClass().getName());
         System.out.println(clazz.getClassLoader().getParent().getClass().getName());
     }

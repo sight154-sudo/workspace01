@@ -7,6 +7,6 @@ package com.tuling;
  */
 public class User1 {
     public void sout(){
-        System.out.println("run user1");
+        System.out.println("另一个版本的User1 --- run user1");
     }
 }
