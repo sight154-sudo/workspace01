@@ -14,7 +14,7 @@ public class Math {
 
     public int compute() {
         int a = 1;
-        int b = 3;
+        int b = 4;
         int c = (a+b)*10;
         return c;
     }
