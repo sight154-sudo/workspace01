@@ -9,6 +9,7 @@ import org.openjdk.jol.info.ClassLayout;
  */
 public class JolMain {
     public static void main(String[] args) {
+        // 启用指针压缩:--XX:+UseCompressedOops(默认开启)，禁止指针压缩:--XX:-UseCompressedOops
         ClassLayout classLayout = ClassLayout.parseInstance(new Object());
         System.out.println(classLayout.toPrintable());
         ClassLayout classLayout1 = ClassLayout.parseInstance(new int[]{});
