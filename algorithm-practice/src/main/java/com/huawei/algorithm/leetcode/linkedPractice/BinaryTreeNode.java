@@ -3,9 +3,9 @@ package com.huawei.algorithm.leetcode.linkedPractice;
 import java.util.Objects;
 
 public class BinaryTreeNode<T> {
-    T val;
-    BinaryTreeNode left;
-    BinaryTreeNode right;
+    public T val;
+    public BinaryTreeNode left;
+    public BinaryTreeNode right;
 
     BinaryTreeNode() {
         this.left = null;

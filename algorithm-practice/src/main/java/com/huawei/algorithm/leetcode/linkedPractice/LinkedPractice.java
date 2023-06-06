@@ -11,6 +11,41 @@ import org.junit.Test;
  * @Desc
  */
 public class LinkedPractice {
+
+    public ListNode reverseListNode(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+        ListNode pre = null;
+        ListNode cur = head;
+        while (cur != null) {
+            ListNode tmp = cur.next;
+            cur.next = pre;
+            pre = cur;
+            cur = tmp;
+        }
+        return pre;
+    }
+
+    public ListNode ReverseListNodeByRecursion(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode node = ReverseListNodeByRecursion(head.next);
+        head.next.next = head;
+        head.next = null;
+        return node;
+    }
+
+
+    @Test
+    public void testReverseListNode() {
+        ListNode listNode = ListNode.constructNode(new int[]{1, 2, 3});
+        printNode(listNode);
+        ListNode node = ReverseListNodeByRecursion(listNode);
+        printNode(node);
+    }
+
     @Test
     public void deleteDuplicatesTest() {
         int[] arr = {1, 1, 2, 3, 3};
