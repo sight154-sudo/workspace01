@@ -29,7 +29,7 @@ public class MyArrayStack<T> {
         if (size == 0) {
             throw new RuntimeException("栈中没有元素了!!!");
         }
-        return (T) arr[index];
+        return (T) arr[index-1];
     }
 
     public T push(T t) {
@@ -50,5 +50,22 @@ public class MyArrayStack<T> {
         System.arraycopy(arr, 0 , newObj, 0, arr.length);
         arr = newObj;
     }
+
+    public static void main(String[] args) {
+        MyArrayStack<Integer> myArrayStack = new MyArrayStack<>(5);
+        myArrayStack.push(1);
+        myArrayStack.push(2);
+        myArrayStack.push(3);
+        myArrayStack.push(4);
+        myArrayStack.push(5);
+        myArrayStack.push(6);
+        myArrayStack.push(7);
+        System.out.println(myArrayStack.peek());
+    }
+
+
+    /**
+     * TODO 实现一个特殊栈，既有栈的常见功能，也可以直接返回栈中的最小元素
+     */
 
 }

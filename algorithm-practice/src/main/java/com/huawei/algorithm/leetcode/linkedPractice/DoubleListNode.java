@@ -10,7 +10,8 @@ public class DoubleListNode<T> {
     public DoubleListNode pre;
     public DoubleListNode next;
 
-    public DoubleListNode() {
+    public DoubleListNode(T val) {
+        this.val = val;
     }
 
     public DoubleListNode(T val, DoubleListNode pre, DoubleListNode next) {

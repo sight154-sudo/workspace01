@@ -29,11 +29,20 @@ public class MyArrayQueue<T> {
     }
 
     private void resize() {
-
+        Object[] obj = new Object[arr.length * 2];
+        System.arraycopy(arr,pop, obj,0, arr.length-pop);
+        if (pop == push) {
+            for (int i = 0,index = arr.length-pop-1; i < pop; i++,index++) {
+                obj[index] = arr[i];
+            }
+        }
+        pop = 0;
+        push = arr.length;
+        arr = (T[]) obj;
     }
 
     public T poll() {
-        if (size == 0 || push == pop) {
+        if (size == 0) {
             throw new RuntimeException("队列中没有元素了");
         }
         size--;
@@ -43,11 +52,24 @@ public class MyArrayQueue<T> {
     }
 
     private int nextIndex(int idx) {
-        return idx + 1 == size ? 0 : idx + 1;
+        return idx + 1 < arr.length ? idx+1 : 0;
     }
 
     public boolean isEmpty() {
         return size == 0;
+    }
+
+
+    public static void main(String[] args) {
+        MyArrayQueue<Integer> arrayQueue = new MyArrayQueue<Integer>(3);
+        arrayQueue.offer(1);
+        arrayQueue.offer(2);
+        System.out.println(arrayQueue.poll());
+        arrayQueue.offer(3);
+        arrayQueue.offer(4);
+        System.out.println(arrayQueue.poll());
+        arrayQueue.offer(5);
+        arrayQueue.offer(6);
     }
 
 

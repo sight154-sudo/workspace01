@@ -42,8 +42,7 @@ public class DoubleNodeStack<T> {
     }
 
     private T init(T t) {
-        head = new DoubleListNode();
-        head.val = t;
+        head = new DoubleListNode(t);
         end = head;
         return t;
     }

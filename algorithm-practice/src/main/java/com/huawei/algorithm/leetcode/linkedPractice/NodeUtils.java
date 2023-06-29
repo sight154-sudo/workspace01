@@ -16,7 +16,20 @@ public class NodeUtils {
      * @param head
      */
     public static void printListNode(ListNode head) {
-
+        if (head == null) {
+            return;
+        }
+        ListNode cur = head;
+        StringBuilder sb = new StringBuilder();
+        while (cur != null) {
+            if (cur.next == null) {
+                sb.append(cur.val);
+                break;
+            }
+            sb.append(cur.val+"->");
+            cur = cur.next;
+        }
+        System.out.println(sb);
     }
 
     /**
@@ -24,13 +37,19 @@ public class NodeUtils {
      * @param arr
      * @return
      */
-    public static ListNode constructListNode(int[] arr) {
-
-        return null;
+    public static ListNode constructNode(int[] arr) {
+        ListNode head = new ListNode();
+        ListNode cur = head;
+        for (int i : arr) {
+            ListNode tmp = new ListNode(i, null);
+            cur.next = tmp;
+            cur = tmp;
+        }
+        return head.next;
     }
 
     public static void preOrderBinaryTreeNode(BinaryTreeNode<T> head) {
-        if (head != null) {
+        if (head == null) {
             return;
         }
         System.out.print(head.val+"->");
@@ -38,8 +57,17 @@ public class NodeUtils {
         preOrderBinaryTreeNode(head.right);
     }
 
+    public static void midOrderBinaryTreeNode(BinaryTreeNode<T> head) {
+        if (head == null) {
+            return;
+        }
+        preOrderBinaryTreeNode(head.left);
+        System.out.print(head.val+"->");
+        preOrderBinaryTreeNode(head.right);
+    }
+
     public static void postOrderBinaryTreeNode(BinaryTreeNode<T> head) {
-        if (head != null) {
+        if (head == null) {
             return;
         }
         preOrderBinaryTreeNode(head.left);
@@ -51,9 +79,27 @@ public class NodeUtils {
 
     }
 
-    public static <T> BinaryTreeNode<T> constructBinaryTreeNode(int[] arr) {
+    public static BinaryTreeNode constructBinaryTreeNode(int[] arr) {
+        if (arr == null || arr.length < 2) {
+            return null;
+        }
+        return constructBinaryTreeNode(arr, 1);
+    }
 
-        return null;
+    private static BinaryTreeNode constructBinaryTreeNode(int[] arr, int index) {
+        if (index >= arr.length || arr[index] == -1 ) {
+            return null;
+        }
+        BinaryTreeNode<Integer> head = new BinaryTreeNode(arr[index]);
+        head.left  = constructBinaryTreeNode(arr, 2*index);
+        head.right = constructBinaryTreeNode(arr, 2*index+1);
+        return head;
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {-1, 1,2,2,-1,3,3,-1};
+        BinaryTreeNode head = NodeUtils.constructBinaryTreeNode(arr);
+        NodeUtils.preOrderBinaryTreeNode(head);
     }
 
 }

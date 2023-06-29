@@ -21,15 +21,4 @@ public class ListNode {
         this.val = val;
         this.next = next;
     }
-
-    public static ListNode constructNode(int[] arr) {
-        ListNode head = new ListNode();
-        ListNode cur = head;
-        for (int i : arr) {
-            ListNode tmp = new ListNode(i, null);
-            cur.next = tmp;
-            cur = tmp;
-        }
-        return head.next;
-    }
 }
