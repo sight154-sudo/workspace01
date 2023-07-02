@@ -4,12 +4,16 @@ import com.huawei.algorithm.Node;
 import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.apache.poi.ss.formula.functions.T;
 import org.junit.Test;
+import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author king
@@ -350,6 +354,395 @@ public class LinkedPractice {
         }
         cur.next = great;
         return node.next;
+    }
+
+    public ListNode getMidNode1(ListNode head) {
+        ListNode slow = head;
+        ListNode fast = head;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        return slow;
+    }
+
+    public ListNode getMidPreNode(ListNode head) {
+        ListNode pre = null;
+        ListNode slow = head;
+        ListNode fast = head;
+        while (fast != null && fast.next != null) {
+            pre = slow;
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        return pre;
+    }
+
+
+    @Test
+    public void getMidNodeTest() {
+        ListNode head = NodeUtils.constructNode(new int[]{1, 2, 3, 4, 5, 6});
+        System.out.println(getMidPreNode(head).val);
+    }
+
+    @Test
+    public void palindromeNodeTest() {
+        ListNode head = NodeUtils.constructNode(new int[]{1, 2, 3, 2, 1});
+        System.out.println(palindromeNode(head));
+        NodeUtils.printListNode(head);
+    }
+
+    public boolean palindromeNode(ListNode head) {
+        // 判断回文链表 先找到链表的中点后翻转后半部分的链表，比较是否为回文链表
+        if (head == null) {
+            return false;
+        }
+        ListNode mid = getMidNode(head);
+        ListNode node = mid.next;
+        mid.next = null;
+        ListNode pre = null;
+        ListNode cur = null;
+        while (node != null) {
+            cur = node.next;
+            node.next = pre;
+            pre = node;
+            node = cur;
+        }
+        boolean ans = true;
+        while (pre != null && head != null) {
+            if (pre.val != head.val) {
+                ans = false;
+            }
+            cur = pre.next;
+            pre.next = node;
+            node = pre;
+            pre = cur;
+            head = head.next;
+        }
+        mid.next = node;
+        return ans;
+    }
+
+    @Test
+    public void threePartitionTest() {
+        ListNode head = NodeUtils.constructNode(new int[]{1, 2, 3, 4, 2, 3, 5, 2, 4, 5, 6});
+        NodeUtils.printListNode(head);
+        ListNode node = threePartition2(head, 4);
+        NodeUtils.printListNode(node);
+    }
+
+    /**
+     * 将链表中按小，中，大三个部分形式存放
+     *
+     * @param head
+     * @return
+     */
+    public ListNode threePartition(ListNode head, int val) {
+        ListNode less = null;
+        ListNode mid = null;
+        ListNode greater = null;
+        ListNode cur = head;
+        while (cur != null) {
+            ListNode tmp = cur.next;
+            ListNode node = cur;
+            if (cur.val > val) {
+                node.next = greater;
+                greater = node;
+            } else if (cur.val < val) {
+                node.next = less;
+                less = node;
+            } else {
+                node.next = mid;
+                mid = node;
+            }
+            cur = tmp;
+        }
+        cur = less;
+        while (cur.next != null) {
+            cur = cur.next;
+        }
+        cur.next = mid;
+        while (cur.next != null) {
+            cur = cur.next;
+        }
+        cur.next = greater;
+        return less;
+    }
+
+    public ListNode threePartition2(ListNode head, int target) {
+        ListNode lessHead = null;
+        ListNode lessEnd = null;
+        ListNode midHead = null;
+        ListNode midEnd = null;
+        ListNode greaterHead = null;
+        ListNode greaterEnd = null;
+        while (head != null) {
+            if (head.val > target) {
+                if (greaterEnd != null) {
+                    greaterEnd.next = head;
+                    greaterEnd = greaterEnd.next;
+                } else {
+                    greaterHead = head;
+                    greaterEnd = head;
+                }
+            } else if (head.val < target) {
+                if (lessEnd != null) {
+                    lessEnd.next = head;
+                    lessEnd = lessEnd.next;
+                } else {
+                    lessHead = head;
+                    lessEnd = head;
+                }
+            } else {
+                if (midEnd != null) {
+                    midEnd.next = head;
+                    midEnd = midEnd.next;
+                } else {
+                    midHead = head;
+                    midEnd = head;
+                }
+            }
+            head = head.next;
+        }
+        lessEnd.next = midHead;
+        midEnd.next = greaterHead;
+        return lessHead;
+    }
+
+    static class Node {
+        int val;
+        Node rand;
+        Node next;
+
+        public Node(int val) {
+            this.val = val;
+        }
+    }
+
+    @Test
+    public void copyRandNodeTest() {
+        Node a1 = new Node(1);
+        Node a2 = new Node(2);
+        Node a3 = new Node(3);
+        a1.next = a2;
+        a2.next = a3;
+        a1.rand = a3;
+        a2.rand = a1;
+        a3.rand = null;
+        Node node = copyRandNode(a1);
+        System.out.println(node.val);
+    }
+
+    public Node copyRandNode1(Node src) {
+        Map<Node, Node> map = new HashMap<>();
+        Node head = src;
+        while (src != null) {
+            map.put(src, new Node(src.val));
+            src = src.next;
+        }
+        Node cur = head;
+        while (cur != null) {
+            Node node = map.get(cur);
+            node.next = map.get(cur.next);
+            node.rand = map.get(cur.rand);
+            cur = cur.next;
+        }
+        return map.get(head);
+    }
+
+    /**
+     * 拷贝链表
+     * @param head
+     * @return
+     */
+    public Node copyRandNode(Node head) {
+        Node node = head;
+        while (node != null) {
+            Node next = node.next;
+            Node cur = new Node(node.val);
+            node.next = cur;
+            cur.next = next;
+            node = next;
+        }
+        node = head;
+        while (node != null) {
+            Node next = node.next.next;
+            node.next.rand = node.rand == null ? null : node.rand.next;
+            node = next;
+        }
+        node = head;
+        Node ans = head.next;
+        while (node != null) {
+            Node cur = node.next;
+            Node next = node.next.next;
+            node.next = next == null ? next : cur.next;
+            cur.next = next == null ? next : next.next;
+            node = next;
+        }
+        return ans;
+    }
+
+    public ListNode getLoopNode(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+        ListNode slow = head;
+        ListNode fast = head;
+        boolean loop = false;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+            if (slow == fast) {
+                loop = true;
+                break;
+            }
+        }
+        if (!loop) {
+            return null;
+        }
+        fast = head;
+        while (fast != slow) {
+            slow = slow.next;
+            fast = fast.next;
+        }
+        return fast;
+    }
+
+    @Test
+    public void getNoLoopNodeTest() {
+        ListNode node = NodeUtils.constructNode(new int[]{8, 4, 5});
+        ListNode head1 = new ListNode(4);
+        ListNode n2 = new ListNode(1);
+        /*ListNode n3 = new ListNode(3);
+        ListNode n4 = new ListNode(29);*/
+        ListNode head2 = new ListNode(5);
+        ListNode m2 = new ListNode(6);
+        ListNode m3 = new ListNode(1);
+        n2.next = node;
+//        n3.next = n4;
+//        n4.next = node;
+        m2.next = m3;
+        m3.next = node;
+        head1.next = n2;
+        head2.next = m2;
+        ListNode noLoopNode = getNoLoopNode(head1, head2);
+        System.out.println(noLoopNode.val);
+    }
+
+    /**
+     * 获取没有环的链表的相交节点
+     *
+     * @param headA
+     * @param headB
+     * @return
+     */
+    public ListNode getNoLoopNode(ListNode headA, ListNode headB) {
+        ListNode end1 = headA;
+        ListNode end2 = headB;
+        int n = 0;
+        while (end1.next != null) {
+            n++;
+            end1 = end1.next;
+        }
+        while (end2.next != null) {
+            n--;
+            end2 = end2.next;
+        }
+        // 两条无环链表无相交节点
+        if (end1 != end2) {
+            return null;
+        }
+        end1 = n >= 0 ? headA : headB;
+        end2 = end1 == headA ? headB : headA;
+        n = Math.abs(n);
+        // 长的链表先走n步
+        while (n > 0) {
+            n--;
+            end1 = end1.next;
+        }
+        // 再一起走，若两个节点相同，表示为相交节点
+        while (end1 != end2) {
+            end1 = end1.next;
+            end2 = end2.next;
+        }
+        return end1;
+    }
+
+    /**
+     * 获取两个有环链表的相交节点
+     *
+     * @param head1
+     * @param head2
+     * @return
+     */
+    public ListNode getBothLoopNode(ListNode head1, ListNode loop1, ListNode head2, ListNode loop2) {
+        if (loop1 == loop2) {
+            ListNode node1 = head1;
+            ListNode node2 = head2;
+            int n = 0;
+            while (node1 != loop1) {
+                node1 = node1.next;
+                n++;
+            }
+            while (node2 != loop2) {
+                node2 = node2.next;
+                n--;
+            }
+            node1 = n >= 0 ? head1 : head2;
+            node2 = node1 == head1 ? head2 : head1;
+            n = Math.abs(n);
+            while (n > 0) {
+                node1 = node1.next;
+                n--;
+            }
+            while (node1 != node2) {
+                node1 = node1.next;
+                node2 = node2.next;
+            }
+            return node1;
+        } else {
+            ListNode cur1 = loop1.next;
+            while (cur1 != loop1) {
+                if (cur1 == loop2) {
+                    return cur1;
+                }
+                cur1 = cur1.next;
+            }
+            return null;
+        }
+    }
+
+    @Test
+    public void getIntersectionNodeTest() {
+        ListNode head1 = NodeUtils.constructNode(new int[]{1,2,3,4,5});
+        ListNode m2 = new ListNode(10);
+        ListNode m3 = new ListNode(11);
+        ListNode m4 = new ListNode(12);
+        ListNode m5 = new ListNode(13);
+        ListNode head2 = new ListNode(2);
+        ListNode n2 = new ListNode(10);
+        ListNode n3 = new ListNode(11);
+        ListNode n4 = new ListNode(12);
+        ListNode n5 = new ListNode(13);
+        head2.next = n2;
+        n2.next = n3;
+        n3.next = n4;
+        n4.next = n5;
+        n5.next = n3;
+        ListNode intersectionNode = getIntersectionNode(head1, head2);
+        System.out.println(intersectionNode == null);
+    }
+
+    public ListNode getIntersectionNode(ListNode head1, ListNode head2) {
+        ListNode loop1 = getLoopNode(head1);
+        ListNode loop2 = getLoopNode(head2);
+        if (loop1 == null && loop2 == null) {
+            return getNoLoopNode(head1, head2);
+        }
+        if (loop1 != null && loop2 != null) {
+            return getBothLoopNode(head1, loop1, head2, loop2);
+        }
+        return null;
     }
 
 }

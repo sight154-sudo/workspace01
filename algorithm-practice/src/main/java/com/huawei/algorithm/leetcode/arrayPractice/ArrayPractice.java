@@ -1,5 +1,6 @@
 package com.huawei.algorithm.leetcode.arrayPractice;
 
+import com.sun.prism.sw.SWPipeline;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -305,4 +306,48 @@ public class ArrayPractice {
         }
         return -1;
     }
+
+    /**
+     * 给定一个包含红色、白色和蓝色、共n 个元素的数组 nums ，原地对它们进行排序，使得相同颜色的元素相邻，并按照红色、白色、蓝色顺序排列。
+     * 我们使用整数 0、1 和 2 分别表示红色、白色和蓝色
+     * 链接：https://leetcode.cn/problems/sort-colors  75
+     * @param nums
+     */
+    public void sortColors(int[] nums) {
+        int[] tmp = new int[3];
+        for (int i = 0; i < nums.length; i++) {
+            int index = nums[i];
+            tmp[index]++;
+        }
+        int[] ans = new int[nums.length];
+        int idx = 0;
+        for (int i = 0; i < tmp.length; i++) {
+            while (tmp[i]-- > 0) {
+                ans[idx++] = i;
+            }
+        }
+        System.arraycopy(ans, 0, nums, 0 , nums.length);
+    }
+
+    @Test
+    public void sortColorsTest() {
+        int[] arr = {2,0,2,1,1,0};
+        sortColors1(arr);
+        System.out.println(Arrays.toString(arr));
+    }
+
+    public void sortColors1(int[] nums) {
+        int pre = -1;
+        int suf = nums.length;
+        for (int i = 0; i < suf;) {
+            if (nums[i] == 2) {
+                swap(nums, --suf, i);
+            } else if (nums[i] == 0) {
+                swap(nums, ++pre, i++);
+            } else {
+                i++;
+            }
+        }
+    }
+
 }
