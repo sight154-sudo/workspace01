@@ -7,12 +7,12 @@ public class BinaryTreeNode<T> {
     public BinaryTreeNode left;
     public BinaryTreeNode right;
 
-    BinaryTreeNode() {
+    public BinaryTreeNode() {
         this.left = null;
         this.right = null;
     }
 
-    BinaryTreeNode(T val) {
+    public BinaryTreeNode(T val) {
         this.val = val;
     }
 

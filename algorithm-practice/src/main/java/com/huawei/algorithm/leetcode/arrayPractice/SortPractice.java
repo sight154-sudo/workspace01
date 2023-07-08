@@ -1,10 +1,21 @@
 package com.huawei.algorithm.leetcode.arrayPractice;
 
+import com.huawei.algorithm.leetcode.linkedPractice.BinaryTreeNode;
 import com.huawei.algorithm.leetcode.linkedPractice.ListNode;
 import com.huawei.algorithm.leetcode.linkedPractice.NodeUtils;
+import org.apache.poi.ss.formula.functions.T;
 import org.junit.Test;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Stack;
 
 /**
  * @author king
@@ -714,7 +725,7 @@ public class SortPractice {
     public int partition(int[] arr, int left, int right, int num) {
         int L = left;
         // 左边界
-        int p = left-1;
+        int p = left - 1;
         // 如果arr[L] > num L++  若arr[L] <=num  则与左边界的下一个位置交换位置 L++ 边界位置++
         while (L <= right) {
             if (arr[L] > num) {
@@ -729,20 +740,21 @@ public class SortPractice {
     @Test
     public void partitionThirdTest() {
         int[] arr = {4, 2, 6, 8, 1, 2, 1};
-        System.out.println(Arrays.toString(partitionThird(arr, 0, 4,2)));
+        System.out.println(Arrays.toString(partitionThird(arr, 0, 4, 2)));
     }
 
     /**
      * 给定一个数组arr,和一个数num，请把小于num的数放在数组的左边，等于num的数放在数组的中间，大于num的数放在数组的右边。
      * 要求额外空间复杂度O(1)，时间复杂度O(N)
+     *
      * @param arr
      * @param num
      * @return
      */
     public int[] partitionThird(int[] arr, int left, int right, int num) {
         int L = left;
-        int boundaryL = left-1;
-        int boundaryR = right+1;
+        int boundaryL = left - 1;
+        int boundaryR = right + 1;
         int R = right;
         // 如果arr[L] > num 与arr[R]交换位置 R-- 右边界--
         // 如果arr[L] == num L++,
@@ -802,6 +814,566 @@ public class SortPractice {
         quickSort02(arr, index[1], right, right);
     }
 
+    @Test
+    public void binaryTreeNodePrintTest() {
+        BinaryTreeNode head = NodeUtils.constructBinaryTreeNode(new int[]{-1, 1, 2, 3, 4, 5, -1, 7, -1, -1, 6, 7});
+        inPrintNoRecursion(head);
+        midPrintNoRecursion(head);
+        midPrintNoRecursion1(head);
+        orderPrintNoRecursion(head);
+        orderPrintNoRecursion1(head);
+    }
 
+    public void inPrintNoRecursion(BinaryTreeNode<Integer> node) {
+        // 二叉树先序遍历
+        if (node == null) {
+            return;
+        }
+        Stack<BinaryTreeNode> stack = new Stack<>();
+        stack.push(node);
+        List<Integer> list = new ArrayList<>();
+        while (!stack.isEmpty()) {
+            BinaryTreeNode<Integer> cur = stack.pop();
+            list.add(cur.val);
+            if (cur.right != null) {
+                stack.push(cur.right);
+            }
+            if (cur.left != null) {
+                stack.push(cur.left);
+            }
+        }
+        System.out.println(list);
+    }
+
+    public void midPrintNoRecursion(BinaryTreeNode<Integer> head) {
+        if (head == null) {
+            return;
+        }
+        Stack<BinaryTreeNode> stack = new Stack<>();
+        List<Integer> list = new ArrayList<>();
+        while (head != null || !stack.isEmpty()) {
+            while (head != null) {
+                stack.push(head);
+                head = head.left;
+            }
+            head = stack.pop();
+            list.add(head.val);
+            if (head.right == null) {
+                head = null;
+            } else {
+                head = head.right;
+            }
+        }
+        System.out.println(list);
+    }
+
+    public void midPrintNoRecursion1(BinaryTreeNode<Integer> head) {
+        if (head == null) {
+            return;
+        }
+        Stack<BinaryTreeNode> stack = new Stack<>();
+        List<Integer> list = new ArrayList<>();
+        while (head != null || !stack.isEmpty()) {
+            while (head != null) {
+                stack.push(head);
+                head = head.left;
+            }
+            if (!stack.isEmpty()) {
+                head = stack.pop();
+                list.add(head.val);
+                head = head.right;
+            }
+        }
+        System.out.println(list);
+    }
+
+
+    public void orderPrintNoRecursion(BinaryTreeNode<Integer> node) {
+        // 二叉树后序遍历
+        if (node == null) {
+            return;
+        }
+        Stack<BinaryTreeNode> stack = new Stack<>();
+        stack.push(node);
+        Stack<BinaryTreeNode> ans = new Stack<>();
+        List<Integer> list = new ArrayList<>();
+        while (!stack.isEmpty()) {
+            BinaryTreeNode<Integer> cur = stack.pop();
+            ans.push(cur);
+            if (cur.left != null) {
+                stack.push(cur.left);
+            }
+            if (cur.right != null) {
+                stack.push(cur.right);
+            }
+        }
+        while (!ans.isEmpty()) {
+            BinaryTreeNode<Integer> pop = ans.pop();
+            list.add(pop.val);
+        }
+        System.out.println(list);
+    }
+
+    public void orderPrintNoRecursion1(BinaryTreeNode<Integer> node) {
+        if (node == null) {
+            return;
+        }
+        Stack<BinaryTreeNode> stack = new Stack<>();
+        List<Integer> list = new ArrayList<>();
+        BinaryTreeNode<Integer> pre = null;
+        while (node != null || !stack.isEmpty()) {
+            while (node != null) {
+                stack.push(node);
+                node = node.left;
+            }
+            node = stack.peek();
+            if (node.right == null || node.right == pre) {
+                list.add(node.val);
+                stack.pop();
+                pre = node;
+                node = null;
+            } else {
+                node = node.right;
+            }
+        }
+        System.out.println(list);
+    }
+
+    @Test
+    public void preNodeSerializeTest() {
+        BinaryTreeNode head = NodeUtils.constructBinaryTreeNode(new int[]{-1, 1, 2, 3, 4, 5, -1, 7, -1, -1, 6, 7});
+        NodeUtils.preOrderNoRecursion(head);
+        Queue queue = preNodeSerial(head);
+        System.out.println(queue);
+        BinaryTreeNode head2 = preDeSerialize(queue);
+        NodeUtils.preOrderNoRecursion(head2);
+        System.out.println("-----------------------------------");
+        NodeUtils.postOrderBinaryTreeNodeByRecursion(head);
+        Deque<String> postQueue = postNodeSerial(head);
+        System.out.println(postQueue);
+        BinaryTreeNode head3 = postDeSerialize(postQueue);
+        NodeUtils.postOrderBinaryTreeNodeByRecursion(head3);
+        System.out.println("============================");
+        NodeUtils.levelPrint(head);
+        Queue<String> levelNode = levelNodeSerial(head);
+        System.out.println(levelNode);
+        BinaryTreeNode head4 = levelDeSerialize(levelNode);
+        NodeUtils.levelPrint(head4);
+    }
+
+    public Queue<String> preNodeSerial(BinaryTreeNode<T> head) {
+        if (head == null) {
+            return null;
+        }
+        Queue<String> queue = new LinkedList<>();
+        preNodeSerial(head, queue);
+        return queue;
+    }
+
+    private void preNodeSerial(BinaryTreeNode<T> head, Queue<String> queue) {
+        if (head == null) {
+            queue.add(null);
+            return;
+        }
+        queue.add(String.valueOf(head.val));
+        preNodeSerial(head.left, queue);
+        preNodeSerial(head.right, queue);
+    }
+
+    public BinaryTreeNode<Integer> preDeSerialize(Queue<String> queue) {
+        if (queue == null || queue.isEmpty()) {
+            return null;
+        }
+        String peek = queue.peek();
+        if (null == peek) {
+            queue.poll();
+            return null;
+        }
+        queue.poll();
+        BinaryTreeNode<Integer> head = new BinaryTreeNode<>(Integer.valueOf(peek));
+        head.left = preDeSerialize(queue);
+        head.right = preDeSerialize(queue);
+        return head;
+    }
+
+    public Deque<String> postNodeSerial(BinaryTreeNode head) {
+        if (head == null) {
+            return null;
+        }
+        Deque<String> queue = new LinkedList<>();
+        postNodeSerial(head, queue);
+        return queue;
+    }
+
+    private void postNodeSerial(BinaryTreeNode head, Deque<String> queue) {
+        if (head == null) {
+            queue.add(null);
+            return;
+        }
+        postNodeSerial(head.left, queue);
+        postNodeSerial(head.right, queue);
+        queue.add(String.valueOf(head.val));
+    }
+
+    public BinaryTreeNode postDeSerialize(Deque<String> queue) {
+        if (queue == null || queue.isEmpty()) {
+            return null;
+        }
+        String peek = queue.pollLast();
+        ;
+        if (null == peek) {
+            return null;
+        }
+        BinaryTreeNode<Integer> head = new BinaryTreeNode(Integer.valueOf(peek));
+        head.right = postDeSerialize(queue);
+        head.left = postDeSerialize(queue);
+        return head;
+    }
+
+    public Queue<String> levelNodeSerial(BinaryTreeNode head) {
+        if (head == null) {
+            return null;
+        }
+        Queue<String> queue = new LinkedList<>();
+        levelNodeSerial(head, queue);
+        return queue;
+    }
+
+    private void levelNodeSerial(BinaryTreeNode head, Queue<String> queue) {
+        Queue<BinaryTreeNode> tmp = new LinkedList<>();
+        tmp.add(head);
+        if (head != null) {
+            queue.add(String.valueOf(head.val));
+        }
+        while (!tmp.isEmpty()) {
+            BinaryTreeNode cur = tmp.poll();
+            if (cur.left != null) {
+                queue.add(String.valueOf(cur.left.val));
+                tmp.add(cur.left);
+            } else {
+                queue.add(null);
+            }
+            if (cur.right != null) {
+                queue.add(String.valueOf(cur.right.val));
+                tmp.add(cur.right);
+            } else {
+                queue.add(null);
+            }
+        }
+    }
+
+    public BinaryTreeNode levelDeSerialize(Queue<String> queue) {
+        if (queue == null || queue.isEmpty()) {
+            return null;
+        }
+        String poll = queue.poll();
+        BinaryTreeNode<Integer> head = new BinaryTreeNode(Integer.valueOf(poll));
+        Queue<BinaryTreeNode> node = new LinkedList<>();
+        node.add(head);
+        BinaryTreeNode<Integer> cur = null;
+        while (!queue.isEmpty()) {
+            cur = node.poll();
+            cur.left = generateNode(queue.poll());
+            cur.right = generateNode(queue.poll());
+            if (cur.left != null) {
+                node.add(cur.left);
+            }
+            if (cur.right != null) {
+                node.add(cur.right);
+            }
+        }
+        return head;
+    }
+
+    private BinaryTreeNode generateNode(String poll) {
+        if (poll == null) {
+            return null;
+        }
+        return new BinaryTreeNode(Integer.valueOf(poll));
+    }
+
+    @Test
+    public void maxTreeNodeWeightTest() {
+        BinaryTreeNode head = NodeUtils.constructBinaryTreeNode(new int[]{-1, 1, 2, 3, 4, 5, 9, 7, -1, -1, 6, 7});
+        System.out.println(maxTreeNodeWeight(head));
+    }
+
+    public int maxTreeNodeWeight(BinaryTreeNode head) {
+        if (head == null) {
+            return 0;
+        }
+        Queue<BinaryTreeNode> queue = new LinkedList<>();
+        BinaryTreeNode curEnd = head;
+        BinaryTreeNode nextEnd = null;
+        int max = 0;
+        int num = 0;
+        queue.add(head);
+        while (!queue.isEmpty()) {
+            BinaryTreeNode cur = queue.poll();
+            num++;
+            if (cur.left != null) {
+                queue.add(cur.left);
+                nextEnd = cur.left;
+            }
+            if (cur.right != null) {
+                queue.add(cur.right);
+                nextEnd = cur.right;
+            }
+            if (cur == curEnd) {
+                max = Math.max(max, num);
+                num = 0;
+                curEnd = nextEnd;
+            }
+        }
+        return max;
+    }
+
+    public int maxTreeNodeWeight1(BinaryTreeNode head) {
+        if (head == null) {
+            return 0;
+        }
+        int ans = 0;
+        int curLevel = 1;
+        int curLevelNodes = 0;
+        Map<BinaryTreeNode, Integer> map = new HashMap<>();
+        Queue<BinaryTreeNode> queue = new LinkedList<>();
+        queue.add(head);
+        map.put(head, 1);
+        while (!queue.isEmpty()) {
+            BinaryTreeNode cur = queue.poll();
+            int curLevelNode = map.get(cur);
+            if (cur.left != null) {
+                queue.add(cur.left);
+                map.put(cur.left, map.get(cur) + 1);
+            }
+            if (cur.right != null) {
+                queue.add(cur.right);
+                map.put(cur.right, map.get(cur) + 1);
+            }
+            if (curLevel == curLevelNode) {
+                curLevelNodes++;
+            } else {
+                ans = Math.max(ans, curLevelNodes);
+                curLevel++;
+                curLevelNodes = 0;
+            }
+        }
+        return Math.max(ans, curLevelNodes);
+    }
+
+    static class Node {
+        // 定义一棵有父节点的二叉树
+        int val;
+        Node left;
+        Node right;
+        Node parent;
+
+        public Node(int val) {
+            this.val = val;
+        }
+    }
+
+    @Test
+    public void getPostNodeTest() {
+        Node head = new Node(1);
+        Node n1 = new Node(2);
+        Node n2 = new Node(3);
+        Node n3 = new Node(4);
+        Node n4 = new Node(5);
+        Node n5 = new Node(6);
+        Node n6 = new Node(7);
+        Node n7 = new Node(8);
+        head.left = n1;
+        head.right = n2;
+        n1.left = n3;
+        n1.right = n4;
+        n1.parent = head;
+        n2.right = n7;
+        n2.parent = head;
+        n3.parent = n1;
+        n4.parent = n1;
+        n4.left = n5;
+        n4.right = n6;
+        n5.parent = n4;
+        n6.parent = n4;
+        n7.parent = n2;
+        Node postNode1 = getPostNode1(head, n6);
+        System.out.println(postNode1.val);
+        Node postNode2 = getPostNode(head, n6);
+        System.out.println(postNode2.val);
+    }
+
+    /**
+     * 给定一棵二叉树和一个目标节点，求这个节点的后继节点
+     *
+     * @param head
+     * @return
+     */
+    public Node getPostNode1(Node head, Node node) {
+        Stack<Node> stack = new Stack<>();
+        List<Node> list = new ArrayList<>();
+        while (head != null || !stack.isEmpty()) {
+            while (head != null) {
+                stack.push(head);
+                head = head.left;
+            }
+            if (!stack.isEmpty()) {
+                head = stack.pop();
+                list.add(head);
+                head = head.right;
+            }
+        }
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i) == node) {
+                if (i + 1 == list.size()) {
+                    return null;
+                }
+                return list.get(i + 1);
+            }
+        }
+        return null;
+    }
+
+    public Node getPostNode(Node head, Node node) {
+        if (node == null) {
+            return null;
+        }
+        if (node.right != null) {
+            Node cur = node.right;
+            while (cur.left != null) {
+                cur = cur.left;
+            }
+            return cur;
+        } else {
+            Node parent = node.parent;
+            Node cur = node;
+            while (parent != null && parent.right == cur) {
+                cur = parent;
+                parent = cur.parent;
+            }
+            return parent;
+        }
+    }
+
+    public void processFold(int n) {
+        process(1, n , true);
+    }
+
+    /**
+     *
+     * @param i 当前层数
+     * @param n 总共有n层
+     * @param down 是否是凹折痕
+     */
+    private void process(int i, int n, boolean down) {
+        if (i > n) {
+            return;
+        }
+        process(i+1, n , true);
+        System.out.print(down?"凹 ": "凸 ");
+        process(i+1, n , false);
+    }
+
+    @Test
+    public void processFoldTest() {
+        processFold(3);
+    }
+
+    public boolean isCompleteTree(BinaryTreeNode head) {
+        if (head == null) {
+            return true;
+        }
+        Queue<BinaryTreeNode> queue = new LinkedList<>();
+        queue.add(head);
+        BinaryTreeNode left = null;
+        BinaryTreeNode right = null;
+        boolean isLeaf = false;
+        while (!queue.isEmpty()) {
+            BinaryTreeNode cur = queue.poll();
+            left = cur.left;
+            right = cur.right;
+            if ((isLeaf && (left != null || right != null)) || (left == null && right != null)) {
+                return false;
+            }
+            if (left != null) {
+                queue.add(left);
+            }
+            if (right != null) {
+                queue.add(right);
+            }
+            if (left == null || right == null) {
+                isLeaf = true;
+            }
+        }
+        return true;
+    }
+
+    static class Info{
+        boolean isBalanced;
+        int height;
+        public Info(boolean i,int h) {
+            isBalanced = i;
+            height = h;
+        }
+    }
+
+    /**
+     * 给定一个二叉树，判断它是否是高度平衡的二叉树。
+     * @param head
+     * @return boolean
+     */
+    public boolean isBalanced(BinaryTreeNode head) {
+        return processBalance(head).isBalanced;
+    }
+
+    private Info processBalance(BinaryTreeNode head) {
+        if (head == null) {
+            return new Info(true, 0);
+        }
+        Info leftInfo = processBalance(head.left);
+        Info rightInfo = processBalance(head.right);
+        int height = Math.max(leftInfo.height, rightInfo.height) + 1;
+        boolean isBalanced = true;
+        if (!leftInfo.isBalanced) {
+            isBalanced = false;
+        }
+        if (!rightInfo.isBalanced) {
+            isBalanced = false;
+        }
+        if (Math.abs(leftInfo.height - rightInfo.height) > 1) {
+            isBalanced = false;
+        }
+        return new Info(isBalanced, height);
+    }
+
+    public boolean isBalanced1(BinaryTreeNode head) {
+        if (head == null) {
+            return true;
+        }
+        return Math.abs(height(head.left) - height(head.right)) < 2 && isBalanced1(head.left) && isBalanced1(head.right);
+    }
+
+    public int height(BinaryTreeNode head) {
+        if (head == null) {
+            return 0;
+        }
+        return Math.max(height(head.left), height(head.right)) + 1;
+    }
+
+    public boolean isBalanced2(BinaryTreeNode head) {
+        return balanced(head) != -1;
+    }
+
+    public int balanced(BinaryTreeNode head) {
+        if (head == null) {
+            return 0;
+        }
+        int leftHeight = balanced(head.left);
+        int rightHeight = balanced(head.right);
+        if (leftHeight == -1 || rightHeight == -1 || Math.abs(leftHeight - rightHeight) > 1) {
+            return -1;
+        }
+        return Math.max(leftHeight, rightHeight) + 1;
+    }
 
 }
