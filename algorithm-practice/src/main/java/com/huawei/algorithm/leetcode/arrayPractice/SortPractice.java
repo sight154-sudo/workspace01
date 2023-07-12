@@ -3,6 +3,8 @@ package com.huawei.algorithm.leetcode.arrayPractice;
 import com.huawei.algorithm.leetcode.linkedPractice.BinaryTreeNode;
 import com.huawei.algorithm.leetcode.linkedPractice.ListNode;
 import com.huawei.algorithm.leetcode.linkedPractice.NodeUtils;
+import lombok.val;
+import org.antlr.v4.runtime.tree.Tree;
 import org.apache.poi.ss.formula.functions.T;
 import org.junit.Test;
 
@@ -1256,22 +1258,21 @@ public class SortPractice {
     }
 
     public void processFold(int n) {
-        process(1, n , true);
+        process(1, n, true);
     }
 
     /**
-     *
-     * @param i 当前层数
-     * @param n 总共有n层
+     * @param i    当前层数
+     * @param n    总共有n层
      * @param down 是否是凹折痕
      */
     private void process(int i, int n, boolean down) {
         if (i > n) {
             return;
         }
-        process(i+1, n , true);
-        System.out.print(down?"凹 ": "凸 ");
-        process(i+1, n , false);
+        process(i + 1, n, true);
+        System.out.print(down ? "凹 " : "凸 ");
+        process(i + 1, n, false);
     }
 
     @Test
@@ -1308,17 +1309,19 @@ public class SortPractice {
         return true;
     }
 
-    static class Info{
+    static class Info {
         boolean isBalanced;
         int height;
-        public Info(boolean i,int h) {
+
+        public Info(boolean i, int h) {
             isBalanced = i;
             height = h;
         }
     }
 
     /**
-     * 给定一个二叉树，判断它是否是高度平衡的二叉树。
+     * 给定一个二叉树，判断它是否是高度平衡的二叉树。  110
+     *
      * @param head
      * @return boolean
      */
@@ -1376,4 +1379,451 @@ public class SortPractice {
         return Math.max(leftHeight, rightHeight) + 1;
     }
 
+    static class BsfInfo {
+        boolean isBsf;
+        int max;
+        int min;
+
+        public BsfInfo(boolean i, int ma, int mi) {
+            isBsf = i;
+            max = ma;
+            min = mi;
+        }
+    }
+
+    public boolean isBSF(BinaryTreeNode head) {
+        if (head == null) {
+            return true;
+        }
+        return isBSFProcess(head).isBsf;
+    }
+
+    public BsfInfo isBSFProcess(BinaryTreeNode<Integer> head) {
+        if (head == null) {
+            return null;
+        }
+        BsfInfo leftInfo = isBSFProcess(head.left);
+        BsfInfo rightInfo = isBSFProcess(head.right);
+        boolean isBSF = true;
+        int max = head.val;
+        int min = head.val;
+        if (leftInfo != null) {
+            max = Math.max(max, leftInfo.max);
+            min = Math.min(min, leftInfo.min);
+        }
+        if (rightInfo != null) {
+            max = Math.max(max, rightInfo.max);
+            min = Math.min(min, rightInfo.min);
+        }
+        if (leftInfo != null && !leftInfo.isBsf) {
+            isBSF = false;
+        }
+        if (rightInfo != null && !rightInfo.isBsf) {
+            isBSF = false;
+        }
+        if (leftInfo != null && head.val <= leftInfo.max) {
+            isBSF = false;
+        }
+        if (rightInfo != null && head.val >= rightInfo.min) {
+            isBSF = false;
+        }
+        return new BsfInfo(isBSF, max, min);
+    }
+
+    @Test
+    public void isBsfNode1Test() {
+        BinaryTreeNode<Integer> head = NodeUtils.constructBinaryTreeNode(new int[]{-1, 2, 1, 3});
+        System.out.println(isBsfNode3(head));
+    }
+
+    public boolean isBsfNode1(BinaryTreeNode<Integer> head) {
+        return isBsfNode1(head, Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+
+    private boolean isBsfNode1(BinaryTreeNode<Integer> head, long lower, long upper) {
+        if (head == null) {
+            return true;
+        }
+        long val = head.val.longValue();
+        if (val <= lower || val >= upper) {
+            return false;
+        }
+        return isBsfNode1(head.left, lower, val) && isBsfNode1(head.right, val, upper);
+    }
+
+    long pre = Long.MIN_VALUE;
+
+    public boolean isBsfNode2(BinaryTreeNode<Integer> head) {
+        if (head == null) {
+            return true;
+        }
+        // 使用中序遍历 ，二叉搜索树为递增序列
+        Deque<BinaryTreeNode> queue = new LinkedList<>();
+        Long pre1 = Long.MIN_VALUE;
+        while (head != null || !queue.isEmpty()) {
+            while (head != null) {
+                queue.addLast(head);
+                head = head.left;
+            }
+            if (!queue.isEmpty()) {
+                BinaryTreeNode<Integer> cur = queue.removeLast();
+                long val = cur.val.longValue();
+                // 若比上一个节点小，则不是搜索树
+                if (val <= pre1) {
+                    return false;
+                }
+                pre1 = val;
+                head = cur.right;
+            }
+        }
+        return true;
+    }
+
+    public boolean isBsfNode3(BinaryTreeNode<Integer> root) {
+        if (root == null) {
+            return true;
+        }
+        if (!isBsfNode3(root.left)) {
+            return false;
+        }
+        if (root.val <= pre) {
+            return false;
+        }
+        pre = root.val;
+        return isBsfNode3(root.right);
+    }
+
+
+    static class DistanceInfo {
+        // maxDis代表当前节点下左树或者右树的最大距离
+        int maxDis;
+        // maxDeep代表当前节点下左树或者右树的最大深度
+        int maxDeep;
+
+        public DistanceInfo(int i, int j) {
+            maxDis = i;
+            maxDeep = j;
+        }
+    }
+
+    /**
+     * 给定一颗二叉树，任何两个节点之间都存在距离，返回整颗树的最大距离
+     * @param head
+     * @return
+     */
+    public int getMaxDistance(BinaryTreeNode head) {
+        return getMaxDisProcess(head).maxDis;
+    }
+
+    public DistanceInfo getMaxDisProcess(BinaryTreeNode head) {
+        if (head == null) {
+            return new DistanceInfo(0, 0);
+        }
+        DistanceInfo leftInfo = getMaxDisProcess(head.left);
+        DistanceInfo rightInfo = getMaxDisProcess(head.right);
+        // 当前节点的最大深度为 max(left, right) + 1;
+        int maxDeep = Math.max(leftInfo.maxDeep, rightInfo.maxDeep) + 1;
+        // 当前节点的最大距离为 max(max(left, right), maxDeep)
+        int p1 = leftInfo.maxDis;
+        int p2 = rightInfo.maxDis;
+        int p3 = leftInfo.maxDeep + rightInfo.maxDeep + 1;
+        int maxDis = Math.max(Math.max(p1, p2), p3);
+        return new DistanceInfo(maxDis, maxDeep);
+    }
+
+    @Test
+    public void binaryTreePathTest() {
+        BinaryTreeNode<Integer> head = NodeUtils.constructBinaryTreeNode(new int[]{-1, 2, 1, 3, 4, 6, 7, 8});
+        System.out.println(binaryTreePaths2(head));
+    }
+
+    /**
+     * 给你一个二叉树的根节点 root ，按 任意顺序 ，返回所有从根节点到叶子节点的路径。 257
+     *
+     * @param root
+     * @return
+     */
+    public List<String> binaryTreePaths(BinaryTreeNode root) {
+        if (root == null) {
+            return null;
+        }
+        List<String> list = new ArrayList<>();
+        binaryTreePaths(root, "", list);
+        return list;
+    }
+
+    private void binaryTreePaths(BinaryTreeNode root, String s, List<String> list) {
+        if (root == null) {
+            return;
+        }
+        StringBuilder sb = new StringBuilder(s);
+        sb.append(root.val);
+        if (root.left == null && root.right == null) {
+            list.add(sb.toString());
+        } else {
+            sb.append("->");
+            binaryTreePaths(root.left, sb.toString(), list);
+            binaryTreePaths(root.right, sb.toString(), list);
+        }
+    }
+
+    public List<String> binaryTreePaths2(BinaryTreeNode root) {
+        if (root == null) {
+            return null;
+        }
+        // 使用先序遍历深度搜索，打印所有路径
+        List<String> res = new ArrayList<>();
+        Stack stack = new Stack();
+        stack.add(root);
+        // 保存节点的同时，保存对应的路径子串
+        stack.add(root.val + "");
+        while (!stack.isEmpty()) {
+            // 先取路径
+            String str = (String) stack.pop();
+            // 再取节点
+            BinaryTreeNode cur = (BinaryTreeNode) stack.pop();
+            // 当前节点为叶子节点时，添加到集合中
+            if (cur.left == null && cur.right == null) {
+                res.add(str);
+            }
+            if (cur.right != null) {
+                stack.add(cur.right);
+                stack.add(str + "->" + cur.right.val);
+            }
+            if (cur.left != null) {
+                stack.add(cur.left);
+                stack.add(str + "->" + cur.left.val);
+            }
+        }
+        return res;
+    }
+
+    static class SubInfo {
+        /**
+         * 1.子树为二叉搜索树时头节点为不在x时, 最大节点数为 max(leftMax, rightMax)
+         * 2. 子树为二叉搜索树时头节点为在x时， 需要判断，子树是否是二叉搜索树， 且子树的最大节点数
+         * ans = max(max(leftMax,rightMax), max(leftNodes,rightNodes)+1))
+         */
+        int maxSubTreeSize;
+        int allSize;
+        long max;
+        long min;
+
+        public SubInfo(int isBSF, int nodes, long max, long min) {
+            this.maxSubTreeSize = isBSF;
+            this.allSize = nodes;
+            this.max = max;
+            this.min = min;
+        }
+    }
+
+    /**
+     * 求二叉树中最大树为搜索二叉树的节点数目
+     */
+    @Test
+    public void getSubBsfMaxNodesTest() {
+        BinaryTreeNode head = NodeUtils.constructBinaryTreeNode(new int[]{-1, 8, 6, 11, 4, 5, -1, 12});
+        System.out.println(getSubBSFMaxNodes(head));
+    }
+
+    public int getSubBSFMaxNodes(BinaryTreeNode head) {
+        return getSubBSFMaxNodesProcess(head).maxSubTreeSize;
+    }
+
+    public SubInfo getSubBSFMaxNodesProcess(BinaryTreeNode<Integer> head) {
+        if (head == null) {
+            return new SubInfo(0, 0, Long.MIN_VALUE, Long.MAX_VALUE);
+        }
+        SubInfo leftInfo = getSubBSFMaxNodesProcess(head.left);
+        SubInfo rightInfo = getSubBSFMaxNodesProcess(head.right);
+        long val = head.val.longValue();
+        long max = Math.max(val, Math.max(leftInfo.max, rightInfo.max));
+        long min = Math.min(val, Math.min(leftInfo.min, rightInfo.min));
+        int allSize = leftInfo.allSize + rightInfo.allSize + 1;
+        int p1 = leftInfo.maxSubTreeSize;
+        int p2 = rightInfo.maxSubTreeSize;
+        int p3 = -1;
+        if (leftInfo.maxSubTreeSize == leftInfo.allSize && rightInfo.maxSubTreeSize == rightInfo.allSize &&
+                leftInfo.max < val && rightInfo.min > val) {
+            p3 = leftInfo.allSize + rightInfo.allSize + 1;
+        }
+        int maxSubTreeSize = Math.max(p1, Math.max(p2, p3));
+        return new SubInfo(maxSubTreeSize, allSize, max, min);
+    }
+
+    static class CompleteInfo {
+        // 当前树的高度
+        int height;
+        // 当前树的节点数
+        int nodes;
+
+        public CompleteInfo(int i, int j) {
+            height = i;
+            nodes = j;
+        }
+    }
+
+    /**
+     * 是否是完全二叉树，
+     * @param head
+     * @return
+     */
+    public boolean isCompleteNode(BinaryTreeNode head) {
+        CompleteInfo info = isCompleteNodeProcess(head);
+        return (1 << info.height) - 1 == info.nodes;
+    }
+
+    private CompleteInfo isCompleteNodeProcess(BinaryTreeNode head) {
+        if (head == null) {
+            return new CompleteInfo(0, 0);
+        }
+        CompleteInfo leftInfo = isCompleteNodeProcess(head.left);
+        CompleteInfo rightInfo = isCompleteNodeProcess(head.right);
+
+        int height = Math.max(leftInfo.height, rightInfo.height) + 1;
+        int nodes = leftInfo.nodes + rightInfo.nodes + 1;
+        return new CompleteInfo(height, nodes);
+    }
+
+    @Test
+    public void isCompleteNodeTest() {
+        BinaryTreeNode head = NodeUtils.constructBinaryTreeNode(new int[]{-1, 5, 3, 7, 2, 4, 6, 8, 5, 6, 1, 6, 2, 4, 7, 8});
+        NodeUtils.levelPrint(head);
+        System.out.println(isCompleteNode(head));
+    }
+
+    static class FullInfo {
+        boolean isFull;
+        boolean isCsf;
+        int height;
+
+        public FullInfo(boolean f, boolean c, int h) {
+            isFull = f;
+            isCsf = c;
+            height = h;
+        }
+    }
+
+    public boolean isFullTreeNode(BinaryTreeNode root) {
+        return isFullProcess(root).isCsf;
+    }
+
+    public FullInfo isFullProcess(BinaryTreeNode root) {
+        if (root == null) {
+            return new FullInfo(true, true, 0);
+        }
+        FullInfo leftInfo = isFullProcess(root.left);
+        FullInfo rightInfo = isFullProcess(root.right);
+        int height = Math.max(leftInfo.height, rightInfo.height) + 1;
+        boolean isFull = leftInfo.isFull && rightInfo.isFull && leftInfo.height == rightInfo.height;
+        boolean isCsf = false;
+        if (leftInfo.isFull && rightInfo.isFull && (leftInfo.height == rightInfo.height || leftInfo.height == rightInfo.height + 1)) {
+            isCsf = true;
+        } else if (leftInfo.isFull && rightInfo.isCsf && leftInfo.height == rightInfo.height) {
+            isCsf = true;
+        } else if (leftInfo.isCsf && rightInfo.isFull && leftInfo.height == rightInfo.height + 1) {
+            isCsf = true;
+        }
+        return new FullInfo(isFull, isCsf, height);
+    }
+
+
+    static class ManyNodeInfo {
+        int cMax;
+        int nMax;
+
+        public ManyNodeInfo(int c, int n) {
+            cMax = c;
+            nMax = n;
+        }
+    }
+
+    static class TreeNodes {
+        int val;
+        List<TreeNodes> list;
+
+        public TreeNodes(int val) {
+            this.val = val;
+        }
+
+        public TreeNodes(int val, List<TreeNodes> list) {
+            this.val = val;
+            this.list = list;
+        }
+    }
+
+    /**
+     * 给定一颗多叉树， 保证每个子节点都只有一个父节点，
+     * 条件1： 每一节点都有对应的happy值  对应节点的val
+     * 条件2： 若选中了一个节点，则与其相关的父节点，也子节点不能被选中
+     * 求： 在这颗多叉树上选择节点的happy值和的最大值
+     *
+     * @param root
+     * @return
+     */
+    public int treeNodesMax(TreeNodes root) {
+        ManyNodeInfo manyNodeInfo = treeNodesProcess(root);
+        return Math.max(manyNodeInfo.cMax, manyNodeInfo.nMax);
+    }
+
+    public ManyNodeInfo treeNodesProcess(TreeNodes root) {
+        if (root == null) {
+            return new ManyNodeInfo(0, 0);
+        }
+        List<TreeNodes> nodes = root.list;
+        int cMax = root.val;
+        int nMax = 0;
+        for (TreeNodes node : nodes) {
+            ManyNodeInfo info = treeNodesProcess(node);
+            cMax += info.nMax;
+            nMax += Math.max(info.cMax, info.nMax);
+        }
+        return new ManyNodeInfo(cMax, nMax);
+    }
+
+    static class CommonInfo {
+        boolean findA;
+        boolean findB;
+        BinaryTreeNode ans;
+
+        public CommonInfo(boolean a, boolean b, BinaryTreeNode ans) {
+            findA = a;
+            findB = b;
+            this.ans = ans;
+        }
+    }
+
+    public BinaryTreeNode lowestCommonAncestor(BinaryTreeNode root, BinaryTreeNode p, BinaryTreeNode q) {
+        return commonAncestorProcess(root, p, q).ans;
+    }
+
+    public CommonInfo commonAncestorProcess(BinaryTreeNode root, BinaryTreeNode p, BinaryTreeNode q) {
+        if (root == null) {
+            return new CommonInfo(false, false, null);
+        }
+        CommonInfo leftInfo = commonAncestorProcess(root.left, p, q);
+        CommonInfo rightInfo = commonAncestorProcess(root.right, p, q);
+        boolean findA = (root == p || leftInfo.findA || rightInfo.findA);
+        boolean findB = (root == q || leftInfo.findB || rightInfo.findB);
+        BinaryTreeNode ans = null;
+        if (leftInfo.ans != null) {
+            ans = leftInfo.ans;
+        } else if (rightInfo.ans != null) {
+            ans = rightInfo.ans;
+        } else {
+            if (findA && findB) {
+                ans = root;
+            }
+        }
+        return new CommonInfo(findA, findB, ans);
+    }
+
+    /**
+     * 给定一个二叉树的头节点，返回这颗二叉树中最大搜索二叉树的头节点
+     * @param root
+     * @return
+     */
+    public BinaryTreeNode getMaxBsfHeadNode(BinaryTreeNode root) {
+        return null;
+    }
 }

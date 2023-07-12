@@ -50,4 +50,8 @@ public class BinaryTreeNode<T> {
         this.right.printBinaryTreeNode();
     }
 
+    public static void main(String[] args) {
+        Integer a = 1;
+        Long b = a.longValue();
+    }
 }

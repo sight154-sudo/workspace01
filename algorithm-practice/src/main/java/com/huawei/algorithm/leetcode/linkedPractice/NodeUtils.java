@@ -5,9 +5,11 @@ import com.huawei.algorithm.leetcode.linkedPractice.ListNode;
 import org.apache.poi.ss.formula.functions.T;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 import java.util.Stack;
 
 /**
@@ -19,6 +21,7 @@ public class NodeUtils {
 
     /**
      * 打印链表
+     *
      * @param head
      */
     public static void printListNode(ListNode head) {
@@ -32,7 +35,7 @@ public class NodeUtils {
                 sb.append(cur.val);
                 break;
             }
-            sb.append(cur.val+"->");
+            sb.append(cur.val + "->");
             cur = cur.next;
         }
         System.out.println(sb);
@@ -40,6 +43,7 @@ public class NodeUtils {
 
     /**
      * 构建链表
+     *
      * @param arr
      * @return
      */
@@ -58,7 +62,7 @@ public class NodeUtils {
         if (head == null) {
             return;
         }
-        System.out.print(head.val+"->");
+        System.out.print(head.val + "->");
         preOrderBinaryTreeNode(head.left);
         preOrderBinaryTreeNode(head.right);
     }
@@ -108,7 +112,7 @@ public class NodeUtils {
             return;
         }
         preOrderBinaryTreeNode(head.left);
-        System.out.print(head.val+"->");
+        System.out.print(head.val + "->");
         preOrderBinaryTreeNode(head.right);
     }
 
@@ -138,7 +142,7 @@ public class NodeUtils {
         }
         preOrderBinaryTreeNode(head.left);
         preOrderBinaryTreeNode(head.right);
-        System.out.print(head.val+"->");
+        System.out.print(head.val + "->");
     }
 
     public static void postOrderBinaryTreeNodeByRecursion(BinaryTreeNode<T> head) {
@@ -218,19 +222,130 @@ public class NodeUtils {
     }
 
     private static BinaryTreeNode constructBinaryTreeNode(int[] arr, int index) {
-        if (index >= arr.length || arr[index] == -1 ) {
+        if (index >= arr.length || arr[index] == -1) {
             return null;
         }
         BinaryTreeNode<Integer> head = new BinaryTreeNode(arr[index]);
-        head.left  = constructBinaryTreeNode(arr, 2*index);
-        head.right = constructBinaryTreeNode(arr, 2*index+1);
+        head.left = constructBinaryTreeNode(arr, 2 * index);
+        head.right = constructBinaryTreeNode(arr, 2 * index + 1);
         return head;
     }
 
     public static void main(String[] args) {
-        int[] arr = {-1, 1,2,2,-1,3,3,-1};
+        int[] arr = {-1, 1, 2, 2, -1, 3, 3, -1};
         BinaryTreeNode head = NodeUtils.constructBinaryTreeNode(arr);
         NodeUtils.preOrderBinaryTreeNode(head);
+        System.out.println();
+        BinaryTreeNode root = NodeUtils.generateRandomTreeNode(NodeUtils.generateRandomArray(10, 100, false));
+        Queue queue = NodeUtils.levelNodeSerialize(root);
+        System.out.println(queue);
+        BinaryTreeNode root1 = NodeUtils.generateRandomBinaryTree(3, 100, new HashSet<Integer>());
+        Queue queue1 = NodeUtils.levelNodeSerialize(root1);
+        System.out.println(queue1);
+    }
+
+    public static Queue<String> levelNodeSerialize(BinaryTreeNode<Integer> root) {
+        if (root == null) {
+            return null;
+        }
+        Queue<BinaryTreeNode> queue = new LinkedList<>();
+        Queue<String> ans = new LinkedList<>();
+        queue.add(root);
+        ans.add(String.valueOf(root.val));
+        while (!queue.isEmpty()) {
+            BinaryTreeNode<Integer> cur = queue.poll();
+            if (cur.left != null) {
+                queue.add(cur.left);
+                ans.add(String.valueOf(cur.left.val));
+            } else {
+                ans.add(null);
+            }
+            if (cur.right != null) {
+                queue.add(cur.right);
+                ans.add(String.valueOf(cur.right.val));
+            } else {
+                ans.add(null);
+            }
+        }
+        return ans;
+    }
+
+    public static int[] generateRandomArray(int size, int maxVal, boolean repeat) {
+        int[] arr = new int[size];
+        Set<Integer> set = new HashSet<>();
+        for (int i = 0; i < size; i++) {
+            int val = generateRandomNum(maxVal);
+            while (!repeat && set.contains(val)) {
+                val = generateRandomNum(maxVal);
+                set.add(val);
+            }
+            arr[i] = val;
+        }
+        return arr;
+    }
+
+    public static BinaryTreeNode generateRandomTreeNode(int[] arr) {
+        BinaryTreeNode root = null;
+        for (int i = 0; i < arr.length; i++) {
+            root = generateRandomNode(root, arr[i]);
+        }
+        return root;
+    }
+
+    public static BinaryTreeNode copyTreeNode(BinaryTreeNode root) {
+        if (root == null) {
+            return null;
+        }
+        BinaryTreeNode head = new BinaryTreeNode(root.val);
+        head.left = copyTreeNode(root.left);
+        head.right = copyTreeNode(root.right);
+        return head;
+    }
+
+    private static BinaryTreeNode generateRandomNode(BinaryTreeNode root, int val) {
+        if (root == null) {
+            return new BinaryTreeNode(val);
+        }
+        if (Math.random() > 0.5) {
+            root.left = generateRandomNode(root.left, val);
+        } else {
+            root.right = generateRandomNode(root.right, val);
+        }
+        return root;
+    }
+
+    public static int generateRandomNum(int maxVal) {
+        return (int) (Math.random() * (maxVal + 1)) - (int) (Math.random() * maxVal);
+    }
+
+    public static BinaryTreeNode generateRandomBinaryTree(int deep, int maxVal, Set<Integer> set) {
+        if (deep <= 0) {
+            return null;
+        }
+        int val = generateRandomNum(maxVal);
+        while (set.contains(val)) {
+            val = generateRandomNum(maxVal);
+            set.add(val);
+        }
+        BinaryTreeNode head = new BinaryTreeNode<>(val);
+        head.left = generateRandomBinaryTree(deep - 1, maxVal, set);
+        head.right = generateRandomBinaryTree(deep - 1, maxVal, set);
+        return head;
+    }
+
+    public static BinaryTreeNode generateRandomBinaryTree1(int deep, int maxVal, Set<Integer> set) {
+        if (deep <= 0) {
+            return null;
+        }
+        int val = generateRandomNum(maxVal);
+        while (set.contains(val)) {
+            val = generateRandomNum(maxVal);
+            set.add(val);
+        }
+        BinaryTreeNode head = new BinaryTreeNode<>(val);
+        head.left = generateRandomBinaryTree1(deep - 1, maxVal, set);
+        head.right = generateRandomBinaryTree1(deep - 1, maxVal, set);
+        return head;
     }
 
 }
