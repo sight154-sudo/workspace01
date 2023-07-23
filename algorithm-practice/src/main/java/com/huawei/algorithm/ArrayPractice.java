@@ -2,6 +2,7 @@ package com.huawei.algorithm;
 
 import org.junit.Test;
 
+import java.sql.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -130,9 +131,9 @@ public class ArrayPractice {
 
     @Test
     public void testSearchInsert() {
-        int[] nums = {1,3,5,7};
+        int[] nums = {1, 3, 5, 7};
         int target = 7;
-        int index = searchInsert(nums,target);
+        int index = searchInsert(nums, target);
         System.out.println("index = " + index);
     }
 
@@ -145,7 +146,7 @@ public class ArrayPractice {
      */
     public int searchInsert(int[] nums, int target) {
         int start = 0;
-        int end = nums.length-1;
+        int end = nums.length - 1;
         int mid = 0;
         while (start < end) {
             mid = (start + end) / 2;
@@ -157,7 +158,7 @@ public class ArrayPractice {
                 return mid;
             }
         }
-        return nums[start] < target?start+1:start;
+        return nums[start] < target ? start + 1 : start;
     }
 
 
@@ -181,23 +182,23 @@ public class ArrayPractice {
         int[] dp = new int[len];
         dp[0] = nums[0];
         for (int i = 1; i < len; i++) {
-            if(dp[i-1] > 0) {
-                dp[i] = dp[i-1] + nums[i];
-            }else{
+            if (dp[i - 1] > 0) {
+                dp[i] = dp[i - 1] + nums[i];
+            } else {
                 dp[i] = nums[i];
             }
         }
         int res = dp[0];
         for (int i = 1; i < len; i++) {
-            res = Math.max(res,dp[i]);
+            res = Math.max(res, dp[i]);
         }
         return res;
     }
 
     @Test
-    public void testMaxSubArray1(){
+    public void testMaxSubArray1() {
 //        int[] nums = {-2,1,-3,4,-1,2,1,-5,4};
-        int[] nums = {-2,-3,-4,-1,-3};
+        int[] nums = {-2, -3, -4, -1, -3};
         int sum = maxSubArray1(nums);
         System.out.println("sum = " + sum);
     }
@@ -206,53 +207,54 @@ public class ArrayPractice {
      * 最大连续子序和   使用分治法
      * 思路：将数组分解成三份  第一份  start ->  mid    第二   mid-> end   第三份为 经过mid  mid+1的连续子序列
      * 依次分治，求出最大值
+     *
      * @param nums
      * @return
      */
     public int maxSubArray1(int[] nums) {
         int start = 0;
-        int end = nums.length-1;
-        return maxSubArraySum(nums,start,end);
+        int end = nums.length - 1;
+        return maxSubArraySum(nums, start, end);
     }
 
-    public int maxSubArraySum(int[] nums,int start,int end) {
-        if(start >= end) {
+    public int maxSubArraySum(int[] nums, int start, int end) {
+        if (start >= end) {
             return nums[start];
         }
-        int mid = (start+end) / 2;
-        return max(maxSubArraySum(nums,start,mid),
-                crossMaxSum(nums,start,mid,end),
-                maxSubArraySum(nums,mid+1,end));
+        int mid = (start + end) / 2;
+        return max(maxSubArraySum(nums, start, mid),
+                crossMaxSum(nums, start, mid, end),
+                maxSubArraySum(nums, mid + 1, end));
     }
 
-    public int crossMaxSum(int[] nums,int start, int mid, int end) {
+    public int crossMaxSum(int[] nums, int start, int mid, int end) {
         int sum = 0;
         int leftSum = Integer.MIN_VALUE;
         int rightSum = Integer.MIN_VALUE;
-        for (int i = mid; i >= start ; i--) {
-            sum+=nums[i];
-            if(sum > leftSum) {
+        for (int i = mid; i >= start; i--) {
+            sum += nums[i];
+            if (sum > leftSum) {
                 leftSum = sum;
             }
         }
         sum = 0;
-        for (int i = mid+1; i <= end ; i++) {
-            sum+=nums[i];
-            if(sum > rightSum) {
+        for (int i = mid + 1; i <= end; i++) {
+            sum += nums[i];
+            if (sum > rightSum) {
                 rightSum = sum;
             }
         }
-        return leftSum+rightSum;
+        return leftSum + rightSum;
     }
 
-    public int max(int num1,int num2,int num3) {
-        return Math.max(num1,Math.max(num2,num3));
+    public int max(int num1, int num2, int num3) {
+        return Math.max(num1, Math.max(num2, num3));
     }
 
 
     @Test
-    public void testMaxSubArray2(){
-        int[] nums = {-2,1,-3,4,-1,2,1,-5,4};
+    public void testMaxSubArray2() {
+        int[] nums = {-2, 1, -3, 4, -1, 2, 1, -5, 4};
 //        int[] nums = {-2,-3,-4,-1,-3};
         int sum = maxSubArray1(nums);
         System.out.println("sum = " + sum);
@@ -260,6 +262,7 @@ public class ArrayPractice {
 
     /**
      * 使用贪心算法
+     *
      * @param nums
      * @return
      */
@@ -267,9 +270,9 @@ public class ArrayPractice {
         int result = Integer.MIN_VALUE;
         int sum = 0;
         for (int i = 0; i < nums.length; i++) {
-            sum+=nums[i];
-            result = Math.max(result,sum);
-            if(sum < 0) {
+            sum += nums[i];
+            result = Math.max(result, sum);
+            if (sum < 0) {
                 // 表示需要重新计算连续子序列
                 sum = 0;
             }
@@ -279,6 +282,7 @@ public class ArrayPractice {
 
     /**
      * 删除有序数组中的重复项
+     *
      * @param nums
      * @return
      */
@@ -286,16 +290,128 @@ public class ArrayPractice {
         // ex: {1,1,2} ->  {1,2,_}     {0,0,1,1,1,2,2,3,3,4}  -> {[0,1,2,3,4}
         int slow = 0;
         int fast = 1;
-        while(fast < nums.length) {
-            if( nums[slow] == nums[fast]) {
+        while (fast < nums.length) {
+            if (nums[slow] == nums[fast]) {
                 fast++;
-            }else if(nums[slow] < nums[fast]) {
-                nums[slow+1] = nums[fast];
+            } else if (nums[slow] < nums[fast]) {
+                nums[slow + 1] = nums[fast];
                 fast++;
                 slow++;
             }
         }
-        return nums.length==0?slow:slow+1;
+        return nums.length == 0 ? slow : slow + 1;
+    }
+
+    /**
+     * 全排列 46
+     *
+     * @param nums
+     * @return
+     */
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> list = new ArrayList<>();
+        LinkedList<Integer> ans = new LinkedList<>();
+        permuteRecur(list, nums, ans);
+        return list;
+    }
+
+    private void permuteRecur(List<List<Integer>> list, int[] nums, LinkedList<Integer> ans) {
+        if (nums.length == ans.size()) {
+            List<Integer> tmp = new ArrayList<Integer>(ans);
+            list.add(tmp);
+            return;
+        }
+        for (int num : nums) {
+            if (!ans.contains(num)) {
+                ans.addLast(num);
+                permuteRecur(list, nums, ans);
+                ans.removeLast();
+            }
+        }
+    }
+
+    @Test
+    public void decryptTest() {
+        int[] arr = {5, 7, 1, 4};
+        int[] arr1 = {5, 7, 1, 4};
+        System.out.println(Arrays.toString(decrypt2(arr, 3)));
+        System.out.println(Arrays.toString(decrypt(arr1, 3)));
+    }
+
+    public int[] decrypt1(int[] code, int k) {
+        int len = code.length;
+        if (k == 0) {
+            return new int[len];
+        }
+        int[] back = Arrays.copyOf(code, len);
+        if (k > 0) {
+            for (int i = 0; i < code.length; i++) {
+                int tmp = 0;
+                int j = k;
+                int index = (i + 1) % len;
+                while (j-- > 0) {
+                    tmp += back[index];
+                    index = (index + 1) % len;
+                }
+                code[i] = tmp;
+            }
+        } else {
+            for (int i = 0; i < code.length; i++) {
+                int tmp = 0;
+                int j = k;
+                int index = (i + k) < 0 ? (i + k + len) % len : i + k;
+                while (j++ < 0) {
+                    tmp += back[index];
+                    index = (index + 1) % len;
+                }
+                code[i] = tmp;
+            }
+        }
+        return code;
+    }
+
+    public int[] decrypt(int[] code, int k) {
+        int len = code.length;
+        if (k == 0) {
+            return new int[len];
+        }
+//        {5,2,7,4}
+        int[] arr = new int[code.length * 2];
+        System.arraycopy(code, 0, arr, 0, len);
+        System.arraycopy(code, 0, arr, len, len);
+        int i = k > 0 ? 1: len+k;
+        int j = k > 0 ? k: len-1;
+        int num = 0;
+        for (int n = i; n <=j ; n++) {
+            num+=arr[n];
+        }
+        for (int n = 0; n < len; n++) {
+            code[n] = num;
+            num-=arr[i++];
+            num+=arr[++j];
+        }
+        return code;
+    }
+
+    public int[] decrypt2(int[] code, int k) {
+        // 使用前缀和求解
+        int len = code.length;
+        if (k == 0) {
+            return new int[len];
+        }
+        // {5,2,7,1}  {0,5,7,14,15,20,22,29,30}
+        int[] arr = new int[len*2+1];
+        for (int i = 1; i < arr.length; i++) {
+            arr[i] = arr[i-1] + code[(i-1)%len];
+        }
+        for (int i = 1; i <= len; i++) {
+            if (k > 0 ) {
+                code[i-1] = arr[i+k] - arr[i];
+            } else {
+                code[i-1] = arr[len+i-1] - arr[len+i+k-1];
+            }
+        }
+        return code;
     }
 
 }

@@ -3,8 +3,11 @@ package com.huawei.algorithm.leetcode.arrayPractice;
 import com.sun.prism.sw.SWPipeline;
 import org.junit.Test;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -346,6 +349,33 @@ public class ArrayPractice {
                 swap(nums, ++pre, i++);
             } else {
                 i++;
+            }
+        }
+    }
+
+    public List<List<Integer>> permute(int[] arr) {
+        List<List<Integer>> ans = new ArrayList<>();
+        permute(ans, new ArrayDeque<>(), arr);
+        return ans;
+    }
+
+    @Test
+    public void permuteTest() {
+        int[] arr = {1,2,3};
+        List<List<Integer>> lists = permute(arr);
+        System.out.println(lists);
+    }
+
+    public void permute(List<List<Integer>> ans, Deque<Integer> list, int[] arr) {
+        if (list.size() == arr.length) {
+            List<Integer> tmp = new ArrayList<>(list);
+            ans.add(tmp);
+        }
+        for (int num : arr) {
+            if (!list.contains(num)){
+                list.addLast(num);
+                permute(ans, list, arr);
+                list.removeLast();
             }
         }
     }
