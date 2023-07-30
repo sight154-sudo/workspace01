@@ -17,7 +17,7 @@ import java.util.Stack;
  * @date 2023/6/7-0:15
  * @Desc
  */
-public class NodeUtils {
+public class NodeUtils<T> {
 
     /**
      * 打印链表
@@ -58,7 +58,7 @@ public class NodeUtils {
         return head.next;
     }
 
-    public static void preOrderBinaryTreeNode(BinaryTreeNode<T> head) {
+    public static <T> void preOrderBinaryTreeNode(BinaryTreeNode<T> head) {
         if (head == null) {
             return;
         }
@@ -67,7 +67,7 @@ public class NodeUtils {
         preOrderBinaryTreeNode(head.right);
     }
 
-    public static void preOrderNoRecursion(BinaryTreeNode<T> head) {
+    public static <T> void preOrderNoRecursion(BinaryTreeNode<T> head) {
         if (head == null) {
             return;
         }
@@ -87,7 +87,7 @@ public class NodeUtils {
         System.out.println(list);
     }
 
-    public static void preOrderNoRecursion1(BinaryTreeNode<T> head) {
+    public static <T> void preOrderNoRecursion1(BinaryTreeNode<T> head) {
         if (head == null) {
             return;
         }
@@ -107,7 +107,7 @@ public class NodeUtils {
         System.out.println(list);
     }
 
-    public static void midOrderBinaryTreeNode(BinaryTreeNode<T> head) {
+    public static <T> void midOrderBinaryTreeNode(BinaryTreeNode<T> head) {
         if (head == null) {
             return;
         }
@@ -116,7 +116,7 @@ public class NodeUtils {
         preOrderBinaryTreeNode(head.right);
     }
 
-    public static void midOrderPrint(BinaryTreeNode<T> head) {
+    public static <T> void midOrderPrint(BinaryTreeNode<T> head) {
         if (head == null) {
             return;
         }
@@ -136,7 +136,7 @@ public class NodeUtils {
         System.out.println(list);
     }
 
-    public static void postOrderBinaryTreeNode(BinaryTreeNode<T> head) {
+    public static <T> void postOrderBinaryTreeNode(BinaryTreeNode<T> head) {
         if (head == null) {
             return;
         }
@@ -145,7 +145,7 @@ public class NodeUtils {
         System.out.print(head.val + "->");
     }
 
-    public static void postOrderBinaryTreeNodeByRecursion(BinaryTreeNode<T> head) {
+    public static <T> void postOrderBinaryTreeNodeByRecursion(BinaryTreeNode<T> head) {
         if (head == null) {
             return;
         }
@@ -170,7 +170,7 @@ public class NodeUtils {
         System.out.println(list);
     }
 
-    public static void postOrderBinaryTreeNodeByRecursion1(BinaryTreeNode<T> head) {
+    public static <T> void postOrderBinaryTreeNodeByRecursion1(BinaryTreeNode<T> head) {
         if (head == null) {
             return;
         }
@@ -194,7 +194,7 @@ public class NodeUtils {
         System.out.println(list);
     }
 
-    public static void levelPrint(BinaryTreeNode<T> head) {
+    public static <T> void levelPrint(BinaryTreeNode<T> head) {
         if (head == null) {
             return;
         }
@@ -221,6 +221,45 @@ public class NodeUtils {
         return constructBinaryTreeNode(arr, 1);
     }
 
+    public static <T> BinaryTreeNode<T> constructBinaryTreeNode(String str) {
+        char[] chs = str.toCharArray();
+        // {3{4,{7{,9}}
+        Stack<BinaryTreeNode> stack = new Stack<>();
+        BinaryTreeNode head = null;
+        BinaryTreeNode node = null;
+        // 当遇到{,
+        int i = 0;
+        int k = 1;
+        while (i < chs.length) {
+            switch (chs[i]){
+                case '{':
+                    k = 1;
+                    stack.push(node);
+                    break;
+                case ',' :
+                    k = 2;
+                    break;
+                case '}':
+                    stack.pop();
+                    break;
+                default:
+                    node = new BinaryTreeNode(chs[i]);
+                    if (head == null) {
+                        head = node;
+                    } else {
+                        BinaryTreeNode peek = stack.peek();
+                        if (k == 1) {
+                            peek.left = node;
+                        } else {
+                            peek.right = node;
+                        }
+                    }
+            }
+            i++;
+        }
+        return head;
+    }
+
     private static BinaryTreeNode constructBinaryTreeNode(int[] arr, int index) {
         if (index >= arr.length || arr[index] == -1) {
             return null;
@@ -242,6 +281,11 @@ public class NodeUtils {
         BinaryTreeNode root1 = NodeUtils.generateRandomBinaryTree(3, 100, new HashSet<Integer>());
         Queue queue1 = NodeUtils.levelNodeSerialize(root1);
         System.out.println(queue1);
+
+        String str ="{3{4{6,5},7{,9}}";
+        BinaryTreeNode<Integer> head2
+                = NodeUtils.constructBinaryTreeNode(str);
+        NodeUtils.levelPrint(head2);
     }
 
     public static Queue<String> levelNodeSerialize(BinaryTreeNode<Integer> root) {
