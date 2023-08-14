@@ -4,8 +4,13 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Set;
 import java.util.Stack;
 
 /**
@@ -1042,6 +1047,7 @@ public class RecursionPractice {
 
     /**
      * 给定一个货币数组，值都为正数，再给一个aim， 即使货币的值是相同的，也认为每一张是不同的， 求返回组成aim的种数
+     * arr: {1,1,1}    aimi = 2    ==>  {1,1}第0与第1个 {1,1}第0与第2 {1,1} 第1与第2个
      *
      * @param arr
      * @return
@@ -1053,8 +1059,33 @@ public class RecursionPractice {
     @Test
     public void coinTest() {
 //        int[] arr = {1, 1, 1};
-        int[] arr = {1, 1, 1, 2};
+        int[] arr = {1, 1, 1, 1, 2};
         System.out.println(coin(arr, 2));
+        System.out.println(coin1(arr, 2));
+        System.out.println(coin2(arr, 2));
+        validCoinTest(10, 10, 100);
+    }
+
+    public void validCoinTest(int n, int maxVal, int count) {
+        boolean flag = true;
+        for (int j = 0; j < count; j++) {
+            int[] arr1 = new int[n];
+            int[] arr2 = new int[n];
+            for (int i = 0; i < n; i++) {
+                int num = (int) (Math.random() * maxVal) + 1;
+                arr1[i] = num;
+                arr2[i] = num;
+            }
+            int aim = (int) (Math.random() * maxVal) + maxVal * n;
+            int[] arr = Arrays.copyOf(arr1, n);
+            if (coin1(arr1, aim) != coin2(arr, aim)) {
+                flag = false;
+                System.out.println("Fuck Code");
+            }
+        }
+        if (flag) {
+            System.out.println("Nice Code");
+        }
     }
 
     public int coinBackTrack(int[] arr, int start, int aim) {
@@ -1065,6 +1096,662 @@ public class RecursionPractice {
             return aim == 0 ? 1 : 0;
         }
         return coinBackTrack(arr, start + 1, aim) + coinBackTrack(arr, start + 1, aim - arr[start]);
+    }
+
+    public int coin1(int[] arr, int aim) {
+        int n = arr.length;
+        int[][] dp = new int[n + 1][aim + 1];
+        dp[n][0] = 1;
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = aim; j >= 0; j--) {
+                if (j - arr[i] >= 0) {
+                    dp[i][j] = dp[i + 1][j] + dp[i + 1][j - arr[i]];
+                } else {
+                    dp[i][j] = dp[i + 1][j];
+                }
+            }
+        }
+        return dp[0][aim];
+    }
+
+    public int coin2(int[] arr, int aim) {
+        int n = arr.length;
+        int[] dp = new int[aim + 1];
+        dp[0] = 1;
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = aim; j >= 0; j--) {
+                if (j - arr[i] >= 0) {
+                    dp[j] = dp[j] + dp[j - arr[i]];
+                }
+            }
+        }
+        return dp[aim];
+    }
+
+    /**
+     * arr是面值数组， 其中的值都是正数且没有重复，钱的张数是无限的, 求返回组成aim的方法数
+     * arr: {1,2}   aim = 5  => {1,1,1,1} {1,1,2} {2,2}
+     *
+     * @param arr
+     * @param aim
+     * @return
+     */
+    public int coinPlus(int[] arr, int aim) {
+        return coinPlusBack(arr, 0, aim);
+    }
+
+    @Test
+    public void coinPlusTest() {
+        int[] arr = {1, 2, 3};
+        System.out.println(coinPlusDp(arr, 10));
+        System.out.println(coinPlusBack11(arr, 0, 10));
+        validCoinPlus(5, 10, 10);
+    }
+
+    public int coinPlusBack(int[] arr, int index, int aim) {
+        if (aim < 0 || index == arr.length) {
+            return 0;
+        }
+        if (aim == 0) {
+            return 1;
+        }
+        return coinPlusBack(arr, index, aim - arr[index]) + coinPlusBack(arr, index + 1, aim);
+    }
+
+    public void validCoinPlus(int n, int maxVal, int count) {
+        boolean flag = true;
+        for (int j = 0; j < count; j++) {
+            int[] arr = new int[n];
+            Set<Integer> set = new HashSet<>();
+            for (int i = 0; i < n; i++) {
+                int num = (int) (Math.random() * maxVal) + 1;
+                while (set.contains(num)) {
+                    num = (int) (Math.random() * maxVal) + 1;
+                }
+                set.add(num);
+                arr[i] = num;
+            }
+            int aim = (int) (Math.random() * maxVal) + 5;
+            if (coinPlusDp(arr, aim) != coinPlus1(arr, aim)) {
+                System.out.println(Arrays.toString(arr));
+                flag = false;
+                System.out.println("Fuck Code");
+            }
+        }
+        if (flag) {
+            System.out.println("Nice Code");
+        }
+    }
+
+    public int coinPlusBack11(int[] arr, int index, int aim) {
+        if (index == arr.length) {
+            return aim == 0 ? 1 : 0;
+        }
+        int ways = 0;
+        for (int zhang = 0; zhang * arr[index] <= aim; zhang++) {
+            ways += coinPlusBack11(arr, index + 1, aim - (zhang * arr[index]));
+        }
+        return ways;
+    }
+
+    public int coinPlusDp(int[] arr, int aim) {
+        int n = arr.length;
+        int[][] dp = new int[n + 1][aim + 1];
+        dp[n][0] = 1;
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = 0; j <= aim; j++) {
+                /*int ways = 0;
+                for (int zhang = 0; zhang * arr[i] <= j; zhang++) {
+                    ways += dp[i + 1][j - (zhang * arr[i])];
+                }
+                dp[i][j] = ways;*/
+                dp[i][j] = dp[i + 1][j];
+                if (j - arr[i] >= 0) {
+                    dp[i][j] += dp[i][j - arr[i]];
+                }
+            }
+        }
+        return dp[0][aim];
+    }
+
+    public int coinPlus1(int[] arr, int aim) {
+        int n = arr.length;
+        int[][] dp = new int[n + 1][aim + 1];
+        for (int i = 0; i <= n; i++) {
+            dp[i][0] = 1;
+        }
+
+        return coinPlusBack1(arr, 0, aim);
+    }
+
+    public int coinPlusBack1(int[] arr, int index, int aim) {
+        if (aim < 0 || index == arr.length) {
+            return 0;
+        }
+        if (aim == 0) {
+            return 1;
+        }
+        return coinPlusBack(arr, index, aim - arr[index]) + coinPlusBack(arr, index + 1, aim);
+    }
+
+
+    public int coinChange(int[] coins, int amount) {
+        int ans = coinChangeProcess(coins, 0, amount, 0);
+        return ans == Integer.MAX_VALUE ? -1 : ans;
+    }
+
+    @Test
+    public void coinChangeTest() {
+        int[] arr = {1, 2, 5};
+        System.out.println(coinChange(arr, 11));
+        System.out.println(coinChange1(arr, 11));
+    }
+
+    public int coinChangeProcess(int[] arr, int index, int amount, int num) {
+        if (amount < 0 || index == arr.length) {
+            return Integer.MAX_VALUE;
+        }
+        if (amount == 0) {
+            return num;
+        }
+        return Math.min(coinChangeProcess(arr, index, amount - arr[index], num + 1), coinChangeProcess(arr, index + 1, amount, num));
+//        return p1 == Integer.MAX_VALUE? -1: p1;
+    }
+
+    public int coinChange2(int[] coins, int amount) {
+        int n = coins.length;
+        int[][] dp = new int[n][amount + 1];
+
+        return 0;
+    }
+
+    public int coinChange1(int[] coins, int amount) {
+        int n = coins.length;
+        int[][] dp = new int[n][amount + 1];
+        int ans = coinChangeProcess1(coins, 0, amount, 0, dp);
+        return ans == Integer.MAX_VALUE ? -1 : ans;
+    }
+
+    public int coinChangeProcess1(int[] arr, int index, int amount, int num, int[][] dp) {
+        if (amount < 0 || index == arr.length) {
+            return Integer.MAX_VALUE;
+        }
+        if (amount == 0) {
+            return num;
+        }
+        if (dp[index][amount] != -1) {
+            return dp[index][amount];
+        }
+        int ans = Math.min(coinChangeProcess1(arr, index, amount - arr[index], num + 1, dp),
+                coinChangeProcess1(arr, index + 1, amount, num, dp));
+        dp[index][amount] = ans;
+        return ans;
+    }
+
+    public int coinPlus2(int[] arr, int amount) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < arr.length; i++) {
+            if (map.containsKey(arr[i])) {
+                map.put(arr[i], map.get(arr[i]) + 1);
+            } else {
+                map.put(arr[i], 1);
+            }
+        }
+        int[] coins = new int[map.size()];
+        int[] nums = new int[map.size()];
+        Iterator<Map.Entry<Integer, Integer>> iterator =
+                map.entrySet().iterator();
+        int index = 0;
+        while (iterator.hasNext()) {
+            Map.Entry<Integer, Integer> next = iterator.next();
+            coins[index] = next.getKey();
+            nums[index++] = next.getValue();
+        }
+        return coinPlus2Back(coins, nums, 0, amount);
+    }
+
+    public int coinPlus2Back(int[] coins, int[] nums, int index, int amount) {
+        if (index == coins.length) {
+            return amount == 0 ? 1 : 0;
+        }
+        int way = 0;
+        for (int zhang = 0; zhang <= nums[index] && zhang * coins[index] - amount >= 0; zhang++) {
+            way += coinPlus2Back(coins, nums, index + 1, amount - zhang * coins[index]);
+        }
+        return way;
+    }
+
+    public int coinPlus3(int[] arr, int amount) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < arr.length; i++) {
+            if (map.containsKey(arr[i])) {
+                map.put(arr[i], map.get(arr[i]) + 1);
+            } else {
+                map.put(arr[i], 1);
+            }
+        }
+        int[] coins = new int[map.size()];
+        int[] nums = new int[map.size()];
+        Iterator<Map.Entry<Integer, Integer>> iterator =
+                map.entrySet().iterator();
+        int idx = 0;
+        while (iterator.hasNext()) {
+            Map.Entry<Integer, Integer> next = iterator.next();
+            coins[idx] = next.getKey();
+            nums[idx++] = next.getValue();
+        }
+        int n = coins.length;
+        int[][] dp = new int[n + 1][amount + 1];
+        dp[n][amount] = 1;
+        for (int index = n - 1; index >= 0; index--) {
+            for (int j = 0; j <= amount; j++) {
+                int way = 0;
+                for (int zhang = 0; zhang <= nums[index] && zhang * coins[index] - j >= 0; zhang++) {
+                    way += dp[index + 1][j - zhang * coins[index]];
+                }
+                dp[index][j] = way;
+
+                dp[index][j] = dp[index + 1][j];
+                if (j - coins[index] >= 0) {
+                    dp[index][j] += dp[index][j - coins[index]];
+                }
+                if (j - coins[index] * (nums[index] + 1) > 0) {
+                    dp[index][j] -= dp[index + 1][j - (nums[index] + 1) * coins[index]];
+                }
+            }
+        }
+        return dp[0][amount];
+    }
+
+    /**
+     * 给定一个棋盘，bob从(x,y)开始出发，可以从上下左右四个方向走，若走出棋盘边界，则会死亡，求bob走k步后的存活机率
+     *
+     * @param arr
+     * @param x
+     * @param y
+     * @param k
+     * @return
+     */
+    public double bobWalk(int x, int y, int a, int b, int k) {
+        return (double) (bobWalkBack(x, y, a, b, k) / Math.pow(4, k));
+    }
+
+    @Test
+    public void bobWalkTest() {
+        System.out.println(bobWalk(9, 10, 3, 4, 15));
+    }
+
+    public int bobWalkBack(int x, int y, int a, int b, int k) {
+        if (a < 0 || a > x || b < 0 || b > y) {
+            return 0;
+        }
+        if (k == 0) {
+            return 1;
+        }
+        int p1 = bobWalkBack(x, y, a + 1, b, k - 1);
+        p1 += bobWalkBack(x, y, a - 1, b, k - 1);
+        p1 += bobWalkBack(x, y, a, b + 1, k - 1);
+        p1 += bobWalkBack(x, y, a, b - 1, k - 1);
+        return p1;
+    }
+
+    /**
+     * 给定三个参数n,m,k, 怪兽有n滴血，等着英雄来打自己，英雄每打击一次，都会让怪兽流失[0-m]滴血，求k次打击后，英雄把怪兽砍死的概率
+     *
+     * @param n
+     * @param m
+     * @param k
+     * @return
+     */
+    public double killMonster(int n, int m, int k) {
+        return (double) (killMonsterBack(n, m, k) / Math.pow(m + 1, k));
+    }
+
+    @Test
+    public void killMonsterTest() {
+        System.out.println(killMonster2(50, 12, 5));
+        System.out.println(killMonster1(50, 12, 5));
+        validKillMonster(5, 50, 10);
+    }
+
+    public int killMonsterBack(int n, int m, int k) {
+        /*if (n <= 0) {
+            return 1;
+        }*/
+        if (k == 0) {
+            return n <= 0 ? 1 : 0;
+        }
+        int way = 0;
+        for (int i = 0; i <= m; i++) {
+            way += killMonsterBack(n - i, m, k - 1);
+        }
+        return way;
+    }
+
+    public void validKillMonster(int n, int maxVal, int count) {
+        boolean flag = true;
+        for (int j = 0; j < count; j++) {
+            int N = (int) (Math.random() * maxVal) + 1;
+            int M = ((int) (Math.random() * maxVal) + 1) / 2;
+            int K = (int) (Math.random() * n) + 1;
+            if (killMonster2(N, M, K) != killMonster1(N, M, K)) {
+                System.out.println(String.format("N : %d  M : %d  K: %d", N, M, K));
+                flag = false;
+                System.out.println("Fuck Code!!!");
+            }
+        }
+        if (flag) {
+            System.out.println("Nice Code!!!");
+        }
+    }
+
+    public double killMonster1(int n, int m, int k) {
+        int[][] dp = new int[n + 1][k + 1];
+        dp[0][0] = 1;
+        for (int i = 1; i <= k; i++) {
+            dp[0][i] = (int) Math.pow(m + 1, i);
+        }
+        for (int hp = 1; hp <= n; hp++) {
+            for (int times = 1; times <= k; times++) {
+                int way = 0;
+                for (int t = 0; t <= m; t++) {
+                    if (hp - t >= 0) {
+                        way += dp[hp - t][times - 1];
+                    } else {
+                        way += Math.pow(m + 1, times - 1);
+                    }
+                }
+                dp[hp][times] = way;
+            }
+        }
+        return dp[n][k] / Math.pow(m + 1, k);
+    }
+
+    public double killMonster2(int n, int m, int k) {
+        int[][] dp = new int[n + 1][k + 1];
+        dp[0][0] = 1;
+        for (int i = 1; i <= k; i++) {
+            dp[0][i] = (int) Math.pow(m + 1, i);
+        }
+        for (int hp = 1; hp <= n; hp++) {
+            for (int times = 1; times <= k; times++) {
+                /*int way = 0;
+                for (int t = 0; t <= m; t++) {
+                    if (hp - t >= 0) {
+                        way += dp[hp - t][times - 1];
+                    } else {
+                        way += Math.pow(m + 1, times - 1);
+                    }
+                }
+                dp[hp][times] = way;*/
+                dp[hp][times] = dp[hp][times - 1] + dp[hp - 1][times];
+                if (hp - m - 1 >= 0) {
+                    dp[hp][times] -= dp[hp - m - 1][times - 1];
+                } else {
+                    dp[hp][times] -= Math.pow(m + 1, times - 1);
+                }
+            }
+        }
+        return dp[n][k] / Math.pow(m + 1, k);
+    }
+
+    public int coinChangePlus(int[] coins, int amount) {
+        int ans = coinChangePlusBackTrack(coins, 0, amount);
+        return ans == Integer.MAX_VALUE ? -1 : ans;
+    }
+
+    @Test
+    public void coinChangePlusTest() {
+        int[] coins = {1, 2, 5};
+        System.out.println(coinChangePlus(coins, 11));
+    }
+
+    public int coinChangePlusBackTrack(int[] coins, int index, int amount) {
+        if (index == coins.length) {
+            return amount == 0 ? 0 : Integer.MAX_VALUE;
+        }
+        int min = Integer.MAX_VALUE;
+        for (int zhang = 0; amount - zhang * coins[index] >= 0; zhang++) {
+            int count = coinChangePlusBackTrack(coins, index + 1, amount - zhang * coins[index]);
+            if (count != Integer.MAX_VALUE) {
+                min = Math.min(min, count + zhang);
+            }
+        }
+        return min;
+    }
+
+    public int coinChangeDp(int[] coins, int amount) {
+        int n = coins.length;
+        int[][] dp = new int[n + 1][amount + 1];
+        dp[n][0] = 0;
+        for (int i = 1; i <= amount; i++) {
+            dp[n][i] = Integer.MAX_VALUE;
+        }
+        for (int index = n - 1; index >= 0; index--) {
+            for (int rest = 0; rest <= amount; rest++) {
+                int min = Integer.MAX_VALUE;
+                for (int zhang = 0; rest - zhang * coins[index] >= 0; zhang++) {
+                    int count = dp[index + 1][rest - zhang * coins[index]];
+                    if (count != Integer.MAX_VALUE) {
+                        min = Math.min(min, count + zhang);
+                    }
+                }
+                dp[index][rest] = min;
+            }
+        }
+        return dp[0][amount] == Integer.MAX_VALUE ? -1 : dp[0][amount];
+    }
+
+    public int coinChangeDpPlus(int[] coins, int amount) {
+        int n = coins.length;
+        int[][] dp = new int[n + 1][amount + 1];
+        dp[n][0] = 0;
+        for (int i = 1; i <= amount; i++) {
+            dp[n][i] = Integer.MAX_VALUE;
+        }
+        for (int index = n - 1; index >= 0; index--) {
+            for (int rest = 0; rest <= amount; rest++) {
+                dp[index][rest] = dp[index + 1][rest];
+                if (rest - coins[index] >= 0 && dp[index][rest - coins[index]] != Integer.MAX_VALUE) {
+                    dp[index][rest] = Math.min(dp[index][rest], dp[index][rest - coins[index]] + 1);
+                }
+                /*int min = Integer.MAX_VALUE;
+                for (int zhang = 0; rest - zhang * coins[index] >= 0; zhang++) {
+                    int count = dp[index + 1][rest - zhang * coins[index]];
+                    if (count != Integer.MAX_VALUE) {
+                        min = Math.min(min, count + zhang);
+                    }
+                }*/
+            }
+        }
+        return dp[0][amount];
+    }
+
+    @Test
+    public void splitNumTest() {
+        System.out.println(splitNum(13, 1));
+        System.out.println(splitNumDp(13));
+    }
+
+    public int splitNum(int n, int index) {
+        if (n == 0) {
+            return 1;
+        }
+        int way = 0;
+        for (int i = index; i <= n; i++) {
+            if (n - i >= 0) {
+                way += splitNum(n - i, i);
+            } else {
+                break;
+            }
+        }
+        return way;
+    }
+
+    public int splitNumDp(int n) {
+        if (n == 0) {
+            return 0;
+        }
+        int[][] dp = new int[n + 1][n + 1];
+        for (int i = 0; i <= n; i++) {
+            dp[0][i] = 1;
+        }
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= i; j++) {
+                int way = 0;
+                for (int k = j; k <= i; k++) {
+                    if (i - k >= 0) {
+                        way += dp[i - k][k];
+                    }
+                }
+                dp[i][j] = way;
+            }
+        }
+        return dp[n][1];
+    }
+
+    public int minSum(int[] arr) {
+        int sum = 0;
+        for (int i = 0; i < arr.length; i++) {
+            sum += arr[i];
+        }
+        int target = sum / 2;
+        int ans = minSumBackTrack(arr, target, 0);
+        return ans;
+    }
+
+    @Test
+    public void minSumTest() {
+        int[] arr = {2, 4, 5, 100};
+        System.out.println(minSum(arr));
+    }
+
+    public int minSumBackTrack(int[] arr, int target, int index) {
+        if (index == arr.length) {
+            return 0;
+        }
+        int p1 = minSumBackTrack(arr, target, index + 1);
+        int p2 = 0;
+        if (target - arr[index] >= 0) {
+            p2 = arr[index] + minSumBackTrack(arr, target - arr[index], index + 1);
+        }
+        return Math.max(p1, p2);
+    }
+
+    /**
+     * 给定一个数组arr, 将数组拆分为两个子集，若数组长度为偶数个， 则子集的长度要相等， 若数组长度为奇数个， 则子集的长度相差不超过1
+     * 两个子集拆分后子集和尽量相等，求小的子集和
+     * @param arr
+     * @return
+     */
+    public int splitArr(int[] arr) {
+        int sum = 0;
+        for (int i = 0; i < arr.length; i++) {
+            sum += arr[i];
+        }
+        if (arr.length % 2 == 0) {
+            return splitArrBack(arr, 0, sum / 2, arr.length / 2);
+        } else {
+            return Math.min(splitArrBack(arr, 0, sum / 2, arr.length / 2), splitArrBack(arr, 0, (sum / 2)+1, arr.length / 2));
+        }
+    }
+
+    public int splitArr1(int[] arr) {
+        int sum = 0;
+        for (int i = 0; i < arr.length; i++) {
+            sum += arr[i];
+        }
+        if (arr.length % 2 == 0) {
+            return splitArrBack(arr, 0, sum / 2, arr.length / 2);
+        } else {
+            return Math.min(splitArrBack(arr, 0, sum / 2, arr.length / 2), splitArrBack(arr, 0, (sum / 2) + 1, arr.length / 2));
+        }
+    }
+
+    public void validSplitArr(int n, int maxVal, int count) {
+        boolean flag = true;
+        for (int j = 0; j < count; j++) {
+            int len = (int)(Math.random()*n) + 1;
+            int[] arr = new int[len];
+            for (int i = 0; i < len; i++) {
+                arr[i] = (int)(Math.random()*maxVal) + 1;
+            }
+            if (splitArr(arr) != splitArrDp(arr) || splitArr1(arr) != splitArr(arr)) {
+                System.out.println(Arrays.toString(arr));
+                flag = false;
+                System.out.println("Fuck Code!!!");
+            }
+        }
+        if (flag) {
+            System.out.println("Nice Code!!!");
+        }
+    }
+
+    @Test
+    public void splitArrTest() {
+        int[] arr = {357, 593, 667, 153, 484, 298, 821, 369, 558};
+        System.out.println(splitArr(arr));
+        System.out.println(splitArr1(arr));
+        System.out.println(splitArrDp(arr));
+        validSplitArr(20, 1000, 500);
+    }
+
+
+    public int splitArrBack(int[] arr, int index, int target, int count) {
+        if (index == arr.length) {
+            return 0;
+        }
+        int p1 = splitArrBack(arr, index + 1, target, count);
+        int p2 = 0;
+        if (target - arr[index] >= 0 && count >= 1) {
+            p2 = arr[index] + splitArrBack(arr, index + 1, target - arr[index], count - 1);
+        }
+        return Math.max(p1, p2);
+    }
+
+    public int splitArrBack1(int[] arr, int index, int target, int count) {
+        if (index == arr.length) {
+            return count == 0 ? 0 : -1;
+        }
+        int p1 = splitArrBack1(arr, index + 1, target, count);
+        int p2 = -1;
+        int next = -1;
+        if (target - arr[index] >= 0) {
+            next = splitArrBack1(arr, index + 1, target - arr[index], count - 1);
+        }
+        if (next != -1) {
+            p2 = arr[index] + next;
+        }
+        return Math.max(p1, p2);
+    }
+
+    public int splitArrDp(int[] arr) {
+        int sum = 0;
+        for (int i = 0; i < arr.length; i++) {
+            sum += arr[i];
+        }
+        int n = arr.length;
+        int target = sum/2;
+        int m = (n+1)/2;
+        int[][][] dp = new int[n+1][target+1][m+1];
+        for (int index = n-1; index >= 0; index--) {
+            for (int rest = 0; rest <= target ; rest++) {
+                for (int count = 0; count <= m ; count++) {
+                    int p1 = dp[index + 1][rest][count];
+                    int p2 = 0;
+                    if (rest - arr[index] >= 0 && count-1 >= 0) {
+                        p2 = arr[index] + dp[index + 1][rest - arr[index]][count - 1];
+                    }
+                    dp[index][rest][count] = Math.max(p1, p2);
+                }
+            }
+        }
+        if (n%2 == 0) {
+            return dp[0][target][m];
+        } else {
+            return Math.min(dp[0][target][m], dp[0][target][m-1]);
+        }
+
     }
 
 }

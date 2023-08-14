@@ -2,6 +2,7 @@ package com.huawei.controller;
 
 import cn.hutool.http.HttpStatus;
 import cn.hutool.json.JSONObject;
+import com.huawei.annotation.RateLimit;
 import com.huawei.config.ContextUtils;
 import com.huawei.po.ApiEntity;
 import com.huawei.service.ApiService;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
@@ -33,7 +35,10 @@ public class ApiController {
     }
 
     @GetMapping("/query")
-    public BaseResponse<JSONObject> queryApi(@RequestBody ApiEntity apiEntity) {
+    @RateLimit()
+    public BaseResponse<JSONObject> queryApi(@RequestParam("apiName") String name) {
+        ApiEntity apiEntity = new ApiEntity();
+        apiEntity.setApiName(name);
         return apiService.queryApi(apiEntity);
     }
 

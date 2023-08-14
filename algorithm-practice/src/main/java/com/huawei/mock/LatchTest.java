@@ -18,6 +18,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -46,17 +47,19 @@ public class LatchTest {
 //            }
 //        };
 
-        String url = "http://localhost:8080/exec?param=aaa";
+        String url = "http://localhost:8080/query";
 //        String url = "http://localhost:8080/testApi";
+        Map<String, String> map = new HashMap<>();
+        map.put("apiName", "jjsldjlb");
         List<Runnable> list = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            RunnableTask taskTemp = new RunnableTask(url,null, Collections.emptyMap());
+        for (int i = 0; i < 100; i++) {
+            RunnableTask taskTemp = new RunnableTask(url,null, map);
             list.add(taskTemp);
         }
 
 
         LatchTest latchTest = new LatchTest();
-        latchTest.startTaskAllInOnce(10, list);
+        latchTest.startTaskAllInOnce(100, list);
     }
 
     public long startTaskAllInOnce(int threadNums, List<Runnable> task) throws InterruptedException {
