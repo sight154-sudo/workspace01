@@ -1,8 +1,10 @@
 package com.huawei.algorithm;
 
+import com.sun.deploy.panel.ITreeNode;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class ArrayPractice {
@@ -759,8 +761,10 @@ public class ArrayPractice {
 
     @Test
     public void canCompleteCircuitTest() {
-        int[] gas = {1, 2, 3, 4, 5};
-        int[] cost = {3, 4, 5, 1, 2};
+//        int[] gas = {1, 2, 3, 4, 5};
+        int[] gas = {4};
+//        int[] cost = {3, 4, 5, 1, 2};
+        int[] cost = {5};
         System.out.println(canCompleteCircuit(gas, cost));
         System.out.println(canCompleteCircuitForce(gas, cost));
         System.out.println(canCompleteCircuitPlus(gas, cost));
@@ -837,8 +841,8 @@ public class ArrayPractice {
             arr[i] = gas[i] - cost[i];
         }
         int[] preSum = new int[n * 2 + 1];
-        for (int i = 1; i < n * 2; i++) {
-            preSum[i] = preSum[i - 1] + arr[(i-1)%n];
+        for (int i = 1; i <= n * 2; i++) {
+            preSum[i] = preSum[i - 1] + arr[(i - 1) % n];
         }
         Deque<Integer> qMin = new LinkedList<>();
         List<Integer> list = new ArrayList<>();
@@ -847,13 +851,13 @@ public class ArrayPractice {
             while (!qMin.isEmpty() && preSum[qMin.peekLast()] >= preSum[i]) {
                 qMin.pollLast();
             }
-            qMin.addFirst(i);
+            qMin.addLast(i);
             if (qMin.peekFirst() == i - w) {
                 qMin.pollFirst();
             }
             if (i >= w) {
-                if (preSum[qMin.peekFirst()] - preSum[i - 1] >= 0) {
-                    list.add(i);
+                if (preSum[qMin.peekFirst()] - preSum[i - w] >= 0) {
+                    list.add(i - w);
                 }
             }
         }
@@ -863,6 +867,1059 @@ public class ArrayPractice {
     public int getMinCoins(int[] coins, int aim) {
 
         return 0;
+    }
+
+    /**
+     * 给你一个整数数组 nums，有一个大小为 k 的滑动窗口从数组的最左侧移动到数组的最右侧。你只可以看到在滑动窗口内的 k 个数字。滑动窗口每次只向右移动一位。
+     * leetCode 239
+     * 返回 滑动窗口中的最大值
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        if (nums == null || k <= 0) {
+            return null;
+        }
+        int n = nums.length;
+        int[] ans = new int[n - k + 1];
+        int index = 0;
+        Deque<Integer> qMax = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            while (!qMax.isEmpty() && nums[qMax.peekLast()] <= nums[i]) {
+                qMax.pollLast();
+            }
+            qMax.addLast(i);
+            // 修改窗口过期的范围
+            if (qMax.peekFirst() == i - k) {
+                qMax.pollFirst();
+            }
+            if (i + 1 >= k) {
+                ans[index++] = nums[qMax.peekFirst()];
+            }
+        }
+        return ans;
+    }
+
+    public int[][] getNearLess(int[] arr) {
+        int n = arr.length;
+        int[][] ans = new int[n][2];
+        Stack<Integer> stack = new Stack<>();
+        for (int i = 0; i < arr.length; i++) {
+            while (!stack.isEmpty() && arr[stack.peek()] > arr[i]) {
+                Integer pop = stack.pop();
+                ans[pop][0] = stack.isEmpty() ? -1 : stack.peek();
+                ans[pop][1] = i;
+            }
+            stack.push(i);
+        }
+        while (!stack.isEmpty()) {
+            Integer pop = stack.pop();
+            ans[pop][0] = stack.isEmpty() ? -1 : stack.peek();
+            ans[pop][1] = -1;
+        }
+        return ans;
+    }
+
+    public int[][] getNearLessForce(int[] arr) {
+        int n = arr.length;
+        int[][] ans = new int[n][2];
+        for (int i = 0; i < n; i++) {
+            int left = -1;
+            int right = -1;
+            for (int l = i - 1; l >= 0; l--) {
+                if (arr[l] < arr[i]) {
+                    left = l;
+                    break;
+                }
+            }
+            for (int r = i + 1; r < n; r++) {
+                if (arr[r] < arr[i]) {
+                    right = r;
+                    break;
+                }
+            }
+            ans[i][0] = left;
+            ans[i][1] = right;
+        }
+        return ans;
+    }
+
+    @Test
+    public void getNearLessTest() {
+        int[] arr = {3, 1, 4, 5, 4, 2};
+//        int[][] ans = getNearLess(arr);
+        int[][] ans = getNearLessHasRepeat(arr);
+        int[][] ans1 = getNearLessForce(arr);
+
+        for (int i = 0; i < ans.length; i++) {
+            System.out.println(Arrays.toString(ans[i]));
+        }
+        for (int i = 0; i < ans1.length; i++) {
+            System.out.println(Arrays.toString(ans1[i]));
+        }
+    }
+
+    public int[][] getNearLessHasRepeat(int[] arr) {
+        int n = arr.length;
+        int[][] ans = new int[n][2];
+        Stack<List<Integer>> stack = new Stack<>();
+        for (int i = 0; i < arr.length; i++) {
+            while (!stack.isEmpty() && arr[stack.peek().get(0)] > arr[i]) {
+                List<Integer> pop = stack.pop();
+                int left = stack.isEmpty() ? -1 : stack.peek().get(stack.peek().size() - 1);
+                for (Integer l : pop) {
+                    ans[l][0] = left;
+                    ans[l][1] = i;
+                }
+            }
+            if (!stack.isEmpty() && arr[stack.peek().get(0)] == arr[i]) {
+                stack.peek().add(i);
+            } else {
+                List<Integer> list = new ArrayList<>();
+                list.add(i);
+                stack.push(list);
+            }
+        }
+        while (!stack.isEmpty()) {
+            List<Integer> pop = stack.pop();
+            int left = stack.isEmpty() ? -1 : stack.peek().get(pop.size() - 1);
+            for (Integer l : pop) {
+                ans[l][0] = left;
+                ans[l][1] = -1;
+            }
+        }
+        return ans;
+    }
+
+    /**
+     * 给定一个数组arr, 求所有子数组中，子数组和与子数组中最小值的乘积的最大值
+     *
+     * @param arr
+     * @return
+     */
+    public int getSubArrMax(int[] arr) {
+        // 依次求以i位置为最小值的子数组和为最大值的数组，最终求最大值
+        int n = arr.length;
+        int[] pre = new int[n + 1];
+        for (int i = 1; i < n + 1; i++) {
+            pre[i] = pre[i - 1] + arr[i - 1];
+        }
+        int max = Integer.MIN_VALUE;
+        Stack<Integer> stack = new Stack<>();
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && arr[stack.peek()] >= arr[i]) {
+                int x = stack.pop();
+                int left = stack.isEmpty() ? 0 : stack.peek() + 1;
+                int sum = getSum(pre, left, i - 1);
+                max = Math.max(max, sum * arr[x]);
+            }
+            stack.push(i);
+        }
+        while (!stack.isEmpty()) {
+            int x = stack.pop();
+            int left = stack.isEmpty() ? 0 : stack.peek() + 1;
+            int sum = getSum(pre, left, n - 1);
+            max = Math.max(max, sum * arr[x]);
+        }
+        return max;
+    }
+
+    /**
+     * 给定一个数组，数组中的元素为每个矩形的高度，求构成矩形的最大面积为多少
+     *
+     * @param arr
+     * @return
+     */
+    public int getMaxArea(int[] arr) {
+        int n = arr.length;
+        Stack<Integer> stack = new Stack<>();
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && arr[stack.peek()] >= arr[i]) {
+                Integer pop = stack.pop();
+                int left = stack.isEmpty() ? -1 : stack.peek();
+                int right = i;
+                max = Math.max(max, (right - left - 1) * arr[pop]);
+            }
+            stack.push(i);
+        }
+        while (!stack.isEmpty()) {
+            Integer pop = stack.pop();
+            int left = stack.isEmpty() ? -1 : stack.peek();
+            int right = n;
+            max = Math.max(max, (right - left - 1) * arr[pop]);
+        }
+        return max;
+    }
+
+    @Test
+    public void getMaxAreaTest() {
+        int[] arr = {5, 2, 4, 3, 2, 3};
+        System.out.println(getMaxArea(arr));
+    }
+
+    @Test
+    public void getSubArrMaxTest() {
+        int[] arr = {16, 24};
+        System.out.println(getSubArrMaxForce(arr));
+        System.out.println(getSubArrMax(arr));
+        validGetSugArrMax(100, 1000, 10000);
+    }
+
+    public void validGetSugArrMax(int n, int maxVal, int count) {
+        boolean flag = true;
+        for (int j = 0; j < count; j++) {
+            int len = (int) (Math.random() * n) + 1;
+            int[] arr = new int[len];
+            for (int i = 0; i < arr.length; i++) {
+                arr[i] = (int) (Math.random() * maxVal) + 1;
+            }
+            if (getSubArrMax(arr) != getSubArrMaxForce(arr)) {
+                System.out.println(Arrays.toString(arr));
+                flag = false;
+                System.out.println("Fuck Code!!!");
+            }
+        }
+        if (flag) {
+            System.out.println("Nice Code!!!");
+        }
+    }
+
+    public int getSubArrMaxForce(int[] arr) {
+        int n = arr.length;
+        int[] pre = new int[n + 1];
+        for (int i = 1; i < n + 1; i++) {
+            pre[i] = pre[i - 1] + arr[i - 1];
+        }
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < n; i++) {
+            for (int j = i; j < n; j++) {
+                int min = getMin(arr, i, j);
+                int sum = pre[j + 1] - pre[i];
+                max = Math.max(max, sum * min);
+            }
+        }
+        return max;
+    }
+
+    private int getSum(int[] pre, int left, int i) {
+        return pre[i + 1] - pre[left];
+    }
+
+    /**
+     * 给你一个字符串数组 tokens ，表示一个根据 逆波兰表示法 表示的算术表达式。
+     * <p>
+     * 请你计算该表达式。返回一个表示表达式值的整数。
+     * leetcode 150
+     *
+     * @param tokens
+     * @return
+     */
+    public int evalRPN(String[] tokens) {
+        Stack<Integer> stack = new Stack<>();
+        for (int i = 0; i < tokens.length; i++) {
+            String s = tokens[i];
+            if (s.length() > 1) {
+                stack.push(Integer.valueOf(s));
+            } else {
+                char c = s.toCharArray()[0];
+                if (c >= '0' && c <= '9') {
+                    stack.push(c - 48);
+                } else {
+                    int a = stack.pop();
+                    int b = stack.pop();
+                    switch (c) {
+                        case '*':
+                            stack.push(a * b);
+                            break;
+                        case '/':
+                            stack.push(b / a);
+                            break;
+                        case '+':
+                            stack.push(b + a);
+                            break;
+                        case '-':
+                            stack.push(b - a);
+                            break;
+                    }
+                }
+            }
+        }
+        return stack.pop();
+    }
+
+    @Test
+    public void evalRPNTest() {
+        String[] tokens = {"4", "13", "5", "/", "+"};
+        System.out.println(evalRPN(tokens));
+    }
+
+    /**
+     * 给定一个由 0 和 1 组成的矩阵 matrix ，找出只包含 1 的最大矩形，并返回其面积。
+     * leetCode 85
+     *
+     * @param matrix
+     * @return
+     */
+    public int maximalRectangle(char[][] matrix) {
+        int max = Integer.MIN_VALUE;
+        int[] height = new int[matrix[0].length];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                height[j] = matrix[i][j] == '0' ? 0 : height[j] + 1;
+            }
+            max = getZeroMax(height, max);
+        }
+        return max;
+    }
+
+    public int getZeroMax(int[] height, int max) {
+        Stack<Integer> stack = new Stack<>();
+        for (int i = 0; i < height.length; i++) {
+            while (!stack.isEmpty() && height[stack.peek()] >= height[i]) {
+                Integer pop = stack.pop();
+                int l = stack.isEmpty() ? -1 : stack.peek();
+                int r = i;
+                max = Math.max(max, (r - l - 1) * height[pop]);
+            }
+            stack.push(i);
+        }
+        while (!stack.isEmpty()) {
+            Integer pop = stack.pop();
+            int l = stack.isEmpty() ? -1 : stack.peek();
+            int r = height.length;
+            max = Math.max(max, (r - l - 1) * height[pop]);
+        }
+        return max;
+    }
+
+    @Test
+    public void numSubMatTest() {
+        int[][] mat = {{0, 1, 1, 0}, {0, 1, 1, 1}, {1, 1, 1, 0}};
+        System.out.println(numSubmat(mat));
+    }
+
+    /**
+     * 给你一个 m x n 的二进制矩阵 mat ，请你返回有多少个 子矩形 的元素全部都是 1 。
+     * leetCode 1504
+     *
+     * @param mat
+     * @return
+     */
+    public int numSubmat(int[][] mat) {
+        int n = mat[0].length;
+        int[] height = new int[n];
+
+        int count = 0;
+        for (int i = 0; i < mat.length; i++) {
+            int index = 0;
+            for (int j = 0; j < n; j++) {
+                height[index++] = mat[i][j] == 0 ? 0 : height[j] + 1;
+            }
+            // 计算以当前行为底的子矩形的都为1的矩形
+            count += getSubMat(height);
+        }
+        return count;
+    }
+
+    private int getSubMat(int[] height) {
+        int n = height.length;
+        Stack<Integer> stack = new Stack<>();
+        int count = 0;
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && height[stack.peek()] >= height[i]) {
+                Integer pop = stack.pop();
+                if (height[pop] > height[i]) {
+                    int l = stack.isEmpty() ? -1 : stack.peek();
+                    int r = i;
+                    int len = r - l - 1;
+                    count += (height[pop] - (l == -1 ? height[r] : Math.max(height[l], height[r]))) * (len * (len + 1) / 2);
+                }
+            }
+            stack.push(i);
+        }
+        while (!stack.isEmpty()) {
+            Integer pop = stack.pop();
+            int l = stack.isEmpty() ? -1 : stack.peek();
+            int r = n;
+            int len = r - l - 1;
+            int down = l == -1 ? 0 : height[l];
+            count += (height[pop] - down) * (len * (len + 1) / 2);
+        }
+        return count;
+    }
+
+    /**
+     * 给定 n 个非负整数，用来表示柱状图中各个柱子的高度。每个柱子彼此相邻，且宽度为 1 。
+     * leetCode 84
+     *
+     * @param heights
+     * @return
+     */
+    public int largestRectangleArea(int[] heights) {
+        int n = heights.length;
+        int[] stack = new int[n];
+        int cur = -1;
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < n; i++) {
+            while (cur != -1 && heights[stack[cur]] >= heights[i]) {
+                int pop = stack[cur--];
+                int l = cur == -1 ? -1 : stack[cur];
+                int r = i;
+                max = Math.max(max, (r - l - 1) * heights[pop]);
+            }
+            stack[++cur] = i;
+        }
+        while (cur != -1) {
+            int pop = stack[cur--];
+            int l = cur == -1 ? -1 : stack[cur];
+            int r = n;
+            max = Math.max(max, (r - l - 1) * heights[pop]);
+        }
+        return max;
+    }
+
+    @Test
+    public void largestRectangleAreaTest() {
+        int[] heights = {2, 1, 5, 6, 2, 3};
+        System.out.println(largestRectangleArea(heights));
+    }
+
+    /**
+     * 给你一个整数数组 nums ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+     *
+     * @param nums
+     * @return
+     */
+    public int maxSubArray11(int[] nums) {
+        int max = Integer.MIN_VALUE;
+        int n = nums.length;
+        int[] pre = new int[n];
+        pre[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            pre[i] = pre[i - 1] + nums[i];
+        }
+        for (int i = 0; i < n; i++) {
+            if (nums[i] > max) {
+                max = nums[i];
+            }
+            max = Math.max(max, getMaxSub(pre, 0, i));
+        }
+
+        return max;
+    }
+
+    @Test
+    public void maxSubArray11Test() {
+        int[] nums = {-2, 1, -3, 4, -1, 2, 1, -5, 4};
+        System.out.println(maxSubArray11(nums));
+    }
+
+    private int getMaxSub(int[] pre, int l, int r) {
+        int max = Integer.MIN_VALUE;
+        for (int i = l; i <= r; i++) {
+            max = Math.max(max, i == 0 ? pre[r] : pre[r] - pre[i - 1]);
+        }
+        return max;
+    }
+
+    public int findKthLastestNum(int[] num, int k) {
+
+        return findKthLastestNumRecur(num, 0, num.length - 1, k);
+    }
+
+    public int findKthLastestNumRecur(int[] num, int i, int j, int k) {
+        if (i >= j) {
+            return num[i];
+        }
+        int index = partition(num, 0, num.length - 1);
+        if (index + 1 == k) {
+            return num[index];
+        } else if (index + 1 > k) {
+            return findKthLastestNumRecur(num, i, index - 1, k);
+        } else {
+            return findKthLastestNumRecur(num, index + 1, j, k);
+        }
+    }
+
+    public int partition(int[] num, int l, int r) {
+        int base = num[r];
+        int p = l;
+        for (; l <= r; l++) {
+            if (num[l] < base) {
+                swap(num, l, p++);
+            }
+        }
+        swap(num, p, r);
+        return p;
+    }
+
+    /**
+     * 给定一个整数数组 arr，找到 min(b) 的总和，其中 b 的范围为 arr 的每个（连续）子数组。
+     * leetCode 907
+     *
+     * @param arr
+     * @return
+     */
+    public int sumSubarrayMins(int[] arr) {
+        int n = arr.length;
+        int[] left = getLeftMinSub(arr);
+        int[] right = getRightMinSub(arr);
+        long sum = 0;
+        for (int i = 0; i < n; i++) {
+            int start = i - left[i];
+            int end = right[i] - i;
+            sum += (start * end * arr[i]) % 1000000007;
+        }
+        return (int) sum % 1000000007;
+    }
+
+    @Test
+    public void sumSubArrayMinsTest() {
+        int[] arr = {71, 55, 82, 55};
+        System.out.println(sumSubarrayMins(arr));
+    }
+
+    private int[] getLeftMinSub(int[] arr) {
+        int[] left = new int[arr.length];
+        for (int i = 0; i < arr.length; i++) {
+            int index = -1;
+            for (int j = i - 1; j >= 0; j--) {
+                if (arr[i] > arr[j]) {
+                    index = j;
+                    break;
+                }
+            }
+            left[i] = index;
+        }
+        return left;
+    }
+
+    private int[] getRightMinSub(int[] arr) {
+        int n = arr.length;
+        int[] right = new int[n];
+        for (int i = 0; i < n; i++) {
+            int index = n;
+            for (int j = i + 1; j < n; j++) {
+                if (arr[i] >= arr[j]) {
+                    index = j;
+                    break;
+                }
+            }
+            right[i] = index;
+        }
+        return right;
+    }
+
+    public int quickCounting(int base, int p) {
+
+        String s = "";
+        s.contains("");
+        return 0;
+    }
+
+    @Test
+    public void printSanJiaoTest() {
+        printSanJiao(9);
+    }
+
+    public void printSanJiao(int n) {
+        int[][] arr = new int[n][n];
+        int i = 0, j = 0;
+        int num = 1;
+        int m = 0; // m == 0时表示从左往右打印  m == 1 从右上打印到左下  m == 2从左下到左上
+        int max = (n * n - n) / 2 + n;
+        while (num <= max) {
+            arr[i][j] = num++;
+            if (m == 0) {
+                j++;
+                if (j == n || arr[i][j] != 0) {
+                    m = 1;
+                    i++;
+                    j -= 2;
+                }
+            } else if (m == 1) {
+                i++;
+                j--;
+                if (j < 0 || arr[i][j] != 0) {
+                    m = 2;
+                    i -= 2;
+                    j++;
+                }
+            } else {
+                i--;
+                if (arr[i][j] != 0) {
+                    m = 0;
+                    i++;
+                    j++;
+                }
+            }
+        }
+        for (int k = 0; k < n; k++) {
+            System.out.println(Arrays.toString(arr[k]));
+        }
+    }
+
+    @Test
+    public void manacherTest() {
+        String s = "wefvaewfw123332bbc";
+        System.out.println(manacher(s));
+    }
+
+    public int manacher(String s) {
+        if (s == null || s.length() == 0) {
+            return 0;
+        }
+        char[] ch = convertStr(s);
+        int[] ptr = new int[ch.length];
+        // 当前字符的回文半径
+        int C = -1;
+        // 当前字符的最右回文边界
+        int R = -1;
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < ch.length; i++) {
+            ptr[i] = R > i ? Math.min(ptr[2 * C - i], R - i) : 1;
+            while (i + ptr[i] < ch.length && i - ptr[i] > -1) {
+                if (ch[i + ptr[i]] == ch[i - ptr[i]]) {
+                    ptr[i]++;
+                } else {
+                    break;
+                }
+            }
+            if (i + ptr[i] > R) {
+                R = i + ptr[i];
+                C = i;
+            }
+            max = Math.max(max, ptr[i]);
+        }
+        return max - 1;
+    }
+
+    private char[] convertStr(String s) {
+        char[] ch = s.toCharArray();
+        char[] ans = new char[s.length() * 2 + 1];
+        for (int i = 0; i < ch.length; i++) {
+            ans[2 * i] = '#';
+            ans[i * 2 + 1] = ch[i];
+        }
+        ans[s.length() * 2] = '#';
+        return ans;
+    }
+
+
+    /**
+     * 给你一个整数数组 nums ，找到其中最长严格递增子序列的长度
+     * leetCode  300
+     *
+     * @param nums
+     * @return
+     */
+    public int lengthOfLIS(int[] nums) {
+        //  {10,9,2,5,3,7,101,18}   => {2,3,7,101}
+        int n = nums.length;
+        // dp[i]  表示 以i为结尾的最长递增子序列  求dp[i+1] = max(dp[i], dp[i-1], ... dp[1]) + 1;
+        int[] dp = new int[n];
+        dp[0] = 1;
+        int ans = 1;
+        for (int i = 1; i < n; i++) {
+            dp[i] = 1;
+            for (int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+            ans = Math.max(dp[i], ans);
+        }
+        return ans;
+    }
+
+    @Test
+    public void lengthOfLisTest() {
+        int[] arr = {0, 1, 0, 3, 2, 3};
+//        int[] arr = {10,9,2,5,3,7,101,18};
+//        int[] arr = {7,7,7,7,7,7,7};
+        System.out.println(lengthOfLISForce(arr, 1, arr[0]));
+    }
+
+    public int lengthOfLISForce(int[] nums, int index, int pre) {
+        if (index == nums.length) {
+            return 0;
+        }
+        int max = Integer.MIN_VALUE;
+        if (nums[index] > pre) {
+            int p1 = lengthOfLISForce(nums, index + 1, pre);
+            int p2 = lengthOfLISForce(nums, index + 1, nums[index]) + 1;
+            max = Math.max(max, Math.max(p1, p2));
+        } else {
+            int p = lengthOfLISForce(nums, index + 1, pre);
+            max = Math.max(max, p);
+        }
+        return max;
+    }
+
+    /**
+     * 给定一个未经排序的整数数组，找到最长且 连续递增的子序列，并返回该序列的长度
+     * 连续递增的子序列 可以由两个下标 l 和 r（l < r）确定，如果对于每个 l <= i < r，
+     * 都有 nums[i] < nums[i + 1] ，那么子序列 [nums[l], nums[l + 1], ..., nums[r - 1], nums[r]] 就是连续递增子序列。
+     * leetCode 674
+     *
+     * @param nums
+     * @return
+     */
+    public int findLengthOfLCIS(int[] nums) {
+        int n = nums.length;
+        int pre = 1;
+        int max = 1;
+        for (int i = 1; i < n; i++) {
+            int cur = 1;
+            if (nums[i - 1] < nums[i]) {
+                cur = pre + 1;
+            }
+            pre = cur;
+            max = Math.max(cur, max);
+        }
+        return max;
+    }
+
+    /**
+     * 给定一个未排序的整数数组 nums ， 返回最长递增子序列的个数 。
+     * <p>
+     * 注意 这个数列必须是 严格 递增的。
+     * leetCode 673
+     *
+     * @param nums
+     * @return
+     */
+    public int findNumberOfLIS(int[] nums) {
+        int n = nums.length;
+        int[] dp = new int[n];
+        int[] cnt = new int[n];
+        int maxLen = 0;
+        // {1,3,5,4,7}
+        // {1,2,3,3,4}
+        int max = 1;
+        for (int i = 0; i < n; i++) {
+            dp[i] = 1;
+            cnt[i] = 1;
+            for (int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) {
+                    if (dp[i] < dp[j] + 1) {
+                        dp[i] = dp[j] + 1;
+                        cnt[i] = cnt[j];
+                    } else if (dp[i] == dp[j] + 1) {
+                        cnt[i] += cnt[j];
+                    }
+                }
+            }
+            max = Math.max(max, dp[i]);
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (dp[i] == max) {
+                ans += cnt[i];
+            }
+        }
+        return ans;
+        // 有n种糖果, 每种糖果的甜度都不同，且每种糖果都有无限个，求n种糖果中选取一些不能组成甜度的最大值是多少
+    }
+
+    @Test
+    public void findNumberOfLISTest() {
+        int[] arr = {1, 1, 1, 2, 2, 2};
+        System.out.println(findNumberOfLIS(arr));
+    }
+
+    /**
+     * 给你一个整数数组 nums ，请你找出数组中乘积最大的非空连续子数组（该子数组中至少包含一个数字），并返回该子数组所对应的乘积。
+     * leetCode 152
+     *
+     * @param nums
+     * @return
+     */
+    public int maxProduct(int[] nums) {
+        int n = nums.length;
+        int[] max = new int[n];
+        int[] min = new int[n];
+        max[0] = nums[0];
+        min[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            max[i] = Math.max(nums[i], Math.max(nums[i] * max[i - 1], nums[i] * min[i - 1]));
+            min[i] = Math.min(nums[i], Math.min(nums[i] * max[i - 1], nums[i] * min[i - 1]));
+        }
+        int ans = Integer.MIN_VALUE;
+        for (int i = 0; i < n; i++) {
+            ans = Math.max(ans, max[i]);
+        }
+        return ans;
+    }
+
+    @Test
+    public void canJumpTest() {
+//        int[] arr = {3,2,1,0,4};
+        int[] arr = {3, 0, 8, 2, 0, 0, 1};
+        System.out.println(canJump(arr));
+    }
+
+    /**
+     * 给你一个非负整数数组 nums ，你最初位于数组的 第一个下标 。数组中的每个元素代表你在该位置可以跳跃的最大长度。
+     * leetCode 55
+     *
+     * @param nums
+     * @return
+     */
+    public boolean canJump(int[] nums) {
+        int n = nums.length;
+        // dp[i] 表示i位置可以跳跃的最远距离
+        int maxDis = nums[0];
+        for (int i = 0; i < n; i++) {
+            if (maxDis >= i) {
+                maxDis = Math.max(maxDis, i + nums[i]);
+            } else {
+                return false;
+            }
+            if (maxDis >= n - 1) {
+                return true;
+            }
+        }
+        return maxDis >= n - 1;
+    }
+
+    /**
+     * 给定一个长度为 n 的 0 索引整数数组 nums。初始位置为 nums[0]。
+     * <p>
+     * 每个元素 nums[i] 表示从索引 i 向前跳转的最大长度。换句话说，如果你在 nums[i] 处，你可以跳转到任意 nums[i + j] 处:
+     * 返回到达 nums[n - 1] 的最小跳跃次数。生成的测试用例可以到达 nums[n - 1]
+     *
+     * @param nums
+     * @return
+     */
+    public int jump(int[] nums) {
+        if (nums.length == 1) {
+            return 0;
+        }
+        int step = 0;
+        int maxDis = -1;
+        int n = nums.length;
+        int cur = 0;
+        // 2 3 1 1 4
+        for (int i = 0; i < n - 1; i++) {
+            if (maxDis < i + nums[i]) {
+                maxDis = i + nums[i];
+            }
+            if (i == cur) {
+                step++;
+                cur = maxDis;
+            }
+        }
+        return step;
+    }
+
+    @Test
+    public void jumpTest() {
+//        int[] nums= {2,1,1,1,4};
+//        int[] nums= {1,4};
+        int[] nums = {7, 0, 9, 6, 9, 6, 1, 7, 9, 0, 1, 2, 9, 0, 3};
+        System.out.println(jump(nums));
+    }
+
+    /**
+     * 这里有一个非负整数数组 arr，你最开始位于该数组的起始下标 start 处。当你位于下标 i 处时，
+     * 你可以跳到 i + arr[i] 或者 i - arr[i]。
+     * 请你判断自己是否能够跳到对应元素值为 0 的 任一 下标处。
+     * leetCode 1306
+     *
+     * @param arr
+     * @param start
+     * @return
+     */
+    public boolean canReach(int[] arr, int start) {
+        if (arr[start] == 0) {
+            return true;
+        }
+        boolean[] bool = new boolean[arr.length];
+        return canReachForce(arr, start, bool);
+    }
+
+    @Test
+    public void canReachTest() {
+        int[] arr = {4, 2, 3, 0, 3, 1, 2};
+        System.out.println(canReach(arr, 5));
+    }
+
+    public boolean canReachForce(int[] arr, int start, boolean[] bool) {
+        if (start < 0 || start >= arr.length) {
+            return false;
+        }
+        if (arr[start] == 0) {
+            return true;
+        }
+        bool[start] = true;
+        boolean flag = true;
+        for (int i = 0; i < bool.length; i++) {
+            if (arr[i] != 0) {
+                flag &= bool[i];
+            }
+        }
+        if (flag) {
+            return false;
+        }
+        return canReachForce(arr, start + arr[start], bool) || canReachForce(arr, start - arr[start], bool);
+    }
+
+    /**
+     * 给你一个整数数组 arr ，你一开始在数组的第一个元素处（下标为 0）。
+     * 每一步，你可以从下标 i 跳到下标 i + 1 、i - 1 或者 j ：
+     * i + 1 需满足：i + 1 < arr.length
+     * i - 1 需满足：i - 1 >= 0
+     * j 需满足：arr[i] == arr[j] 且 i != j
+     * 请你返回到达数组最后一个元素的下标处所需的 最少操作次数 。
+     * leetCode 1345
+     *
+     * @param arr
+     * @return
+     */
+    public int minJumps(int[] arr) {
+        // 100,-23,-23,404,100,23,23,23,3,404
+        List<List<Integer>> list = new ArrayList<>();
+        for (int i = 0; i < arr.length; i++) {
+            List<Integer> tmp = new ArrayList<>();
+            for (int j = i + 1; j < arr.length; j++) {
+                if (arr[i] == arr[j]) {
+                    tmp.add(j);
+                }
+            }
+            list.add(tmp);
+        }
+        boolean[] bool = new boolean[arr.length];
+        return minJumpsForce(arr, 0, list, bool);
+    }
+
+    @Test
+    public void minJumpsTest() {
+//        int[] arr = {100, -23, -23, 404, 100, 23, 23, 23, 3, 404};
+        int[] arr = {7, 7, 2, 1, 7, 7, 7, 3, 4, 1};
+        System.out.println(minJumps(arr));
+    }
+
+    public int minJumpsForce(int[] arr, int index, List<List<Integer>> list, boolean[] bool) {
+        if (index >= arr.length || index < 0) {
+            return Integer.MAX_VALUE;
+        }
+        if (index == arr.length - 1) {
+            return 0;
+        }
+        int p3 = Integer.MAX_VALUE;
+        List<Integer> tmp = list.get(index);
+        for (Integer j : tmp) {
+            bool[j] = true;
+            p3 = minJumpsForce(arr, j, list, bool);
+            if (p3 != Integer.MAX_VALUE) {
+                p3 = p3 + 1;
+            }
+        }
+        int p1 = Integer.MAX_VALUE;
+        if (index + 1 < arr.length && !bool[index + 1]) {
+            bool[index + 1] = true;
+            p1 = minJumpsForce(arr, index + 1, list, bool);
+        }
+        if (p1 != Integer.MAX_VALUE) {
+            p1 = p1 + 1;
+        }
+        int p2 = Integer.MAX_VALUE;
+        if (index - 1 >= 0 && !bool[index - 1]) {
+            bool[index - 1] = true;
+            p2 = minJumpsForce(arr, index - 1, list, bool);
+        }
+        if (p2 != Integer.MAX_VALUE) {
+            p2 = p2 + 1;
+        }
+        return Math.min(p1, Math.min(p2, p3));
+    }
+
+    /**
+     * 给你一个下标从 0 开始的整数数组 nums 和一个整数 k 。
+     * 一开始你在下标 0 处。每一步，你最多可以往前跳 k 步，但你不能跳出数组的边界。也就是说，
+     * 你可以从下标 i 跳到 [i + 1， min(n - 1, i + k)] 包含 两个端点的任意位置。
+     * <p>
+     * 你的目标是到达数组最后一个位置（下标为 n - 1 ），你的 得分 为经过的所有数字之和。
+     * 请你返回你能得到的 最大得分 。
+     * leetCode 1696
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int maxResult(int[] nums, int k) {
+//        return maxResultForce(nums, 0, k);
+        int[] dp = new int[nums.length];
+        for (int i = 0; i < nums.length; i++) {
+            dp[i] = Integer.MIN_VALUE;
+        }
+        return maxResultCache(nums, 0, dp, k);
+    }
+
+    @Test
+    public void maxResultTest() {
+//        int[] arr = {1, -5, -20, 4};
+        int[] arr = {10,-5,-2,4,0,3};
+//        int[] arr = {1,-1,-2,4,-7,3};
+        int k = 3;
+        System.out.println(maxResultDp(arr, k));
+    }
+
+    public int maxResultDp(int[] nums, int k) {
+        int n = nums.length;
+        int[] dp = new int[n];
+        for (int i = 0; i < n-1; i++) {
+            dp[i] = Integer.MIN_VALUE;
+        }
+        dp[n-1] = nums[n-1];
+        Deque<Integer> deque = new LinkedList<>();
+        deque.addLast(n-1);
+        for (int i = n - 2; i >= 0; i--) {
+            dp[i] = dp[deque.peekFirst()] + nums[i];
+            while (!deque.isEmpty() && dp[deque.peekLast()] <= dp[i] ) {
+                deque.pollLast();
+            }
+            deque.addLast(i);
+            if (deque.peekFirst() > i+k-1) {
+                deque.pollFirst();
+            }
+            /*for (int j = 1; j <= k && j+i < n; j++) {
+                dp[i] = Math.max(dp[i], dp[j+i] + nums[i]);
+            }*/
+        }
+        return dp[0];
+    }
+
+    public int maxResultForce(int[] nums, int index, int k) {
+        if (index == nums.length) {
+            return 0;
+        }
+        int ans = Integer.MIN_VALUE;
+        for (int i = 1; i + index <= nums.length && i <= k; i++) {
+            int p = maxResultForce(nums, index + i, k) + nums[index];
+            ans = Math.max(ans, p);
+        }
+        return ans;
+    }
+
+    public int maxResultCache(int[] nums, int index, int[] dp, int k) {
+        if (index == nums.length) {
+            return 0;
+        }
+        if (dp[index] != Integer.MIN_VALUE) {
+            return dp[index];
+        }
+        int ans = Integer.MIN_VALUE;
+        for (int i = 1; i + index <= nums.length && i <= k; i++) {
+            int p = maxResultCache(nums, index + i, dp, k) + nums[index];
+            ans = Math.max(ans, p);
+        }
+        dp[index] = ans;
+        return ans;
     }
 
 }

@@ -1641,6 +1641,7 @@ public class RecursionPractice {
     /**
      * 给定一个数组arr, 将数组拆分为两个子集，若数组长度为偶数个， 则子集的长度要相等， 若数组长度为奇数个， 则子集的长度相差不超过1
      * 两个子集拆分后子集和尽量相等，求小的子集和
+     *
      * @param arr
      * @return
      */
@@ -1652,7 +1653,7 @@ public class RecursionPractice {
         if (arr.length % 2 == 0) {
             return splitArrBack(arr, 0, sum / 2, arr.length / 2);
         } else {
-            return Math.min(splitArrBack(arr, 0, sum / 2, arr.length / 2), splitArrBack(arr, 0, (sum / 2)+1, arr.length / 2));
+            return Math.min(splitArrBack(arr, 0, sum / 2, arr.length / 2), splitArrBack(arr, 0, (sum / 2) + 1, arr.length / 2));
         }
     }
 
@@ -1671,10 +1672,10 @@ public class RecursionPractice {
     public void validSplitArr(int n, int maxVal, int count) {
         boolean flag = true;
         for (int j = 0; j < count; j++) {
-            int len = (int)(Math.random()*n) + 1;
+            int len = (int) (Math.random() * n) + 1;
             int[] arr = new int[len];
             for (int i = 0; i < len; i++) {
-                arr[i] = (int)(Math.random()*maxVal) + 1;
+                arr[i] = (int) (Math.random() * maxVal) + 1;
             }
             if (splitArr(arr) != splitArrDp(arr) || splitArr1(arr) != splitArr(arr)) {
                 System.out.println(Arrays.toString(arr));
@@ -1731,27 +1732,201 @@ public class RecursionPractice {
             sum += arr[i];
         }
         int n = arr.length;
-        int target = sum/2;
-        int m = (n+1)/2;
-        int[][][] dp = new int[n+1][target+1][m+1];
-        for (int index = n-1; index >= 0; index--) {
-            for (int rest = 0; rest <= target ; rest++) {
-                for (int count = 0; count <= m ; count++) {
+        int target = sum / 2;
+        int m = (n + 1) / 2;
+        int[][][] dp = new int[n + 1][target + 1][m + 1];
+        for (int index = n - 1; index >= 0; index--) {
+            for (int rest = 0; rest <= target; rest++) {
+                for (int count = 0; count <= m; count++) {
                     int p1 = dp[index + 1][rest][count];
                     int p2 = 0;
-                    if (rest - arr[index] >= 0 && count-1 >= 0) {
+                    if (rest - arr[index] >= 0 && count - 1 >= 0) {
                         p2 = arr[index] + dp[index + 1][rest - arr[index]][count - 1];
                     }
                     dp[index][rest][count] = Math.max(p1, p2);
                 }
             }
         }
-        if (n%2 == 0) {
+        if (n % 2 == 0) {
             return dp[0][target][m];
         } else {
-            return Math.min(dp[0][target][m], dp[0][target][m-1]);
+            return Math.min(dp[0][target][m], dp[0][target][m - 1]);
         }
 
+    }
+
+    public String longestPalindromeSubStr(String s) {
+       /* int n = s.length();
+        int maxLen = 0;
+        String ans = "";
+        boolean[][] dp = new boolean[n][n];
+        //
+        for (int len = 1; len <= n; len++) {
+            for (int start = 0; start < n; start++) {
+                int end = start + len -1;
+                if (end >= n) {
+                    break;
+                }
+                dp[start][end] = (len == 1 || len == 2 || dp[start+1][end-1]) && s.charAt(start) == s.charAt(end);
+                if (dp[start][end] && len > maxLen) {
+                    maxLen = len;
+                    ans = s.substring(start, end+1);
+                }
+            }
+        }
+        return ans;*/
+        String ans = "";
+        int n = s.length();
+        boolean[][] dp = new boolean[n + 1][n + 1];
+        for (int len = 1; len <= n; len++) {
+            for (int i = 0; i < n; i++) {
+                // 子串长度从一开始
+                int r = i + len - 1;
+                if (r >= n) {
+                    continue;
+                }
+                dp[i][r] = (len == 1 || len == 2 || dp[i + 1][r - 1]) && s.charAt(i) == s.charAt(r);
+                if (dp[i][r] && len > ans.length()) {
+                    ans = s.substring(i, r + 1);
+                }
+            }
+        }
+
+        return ans;
+    }
+
+    @Test
+    public void longestPalindromeSubStrTest() {
+        String s = "babad";
+        System.out.println(longestPalindromeSubStr(s));
+    }
+
+    public int getMaxVal(int[] power, int[] cost, int rest) {
+
+        return getMaxValForce(power, cost, 0, rest);
+    }
+
+    public int getMaxValForce(int[] power, int[] cost, int index, int rest) {
+        if (index == cost.length) {
+            return 0;
+        }
+        int p1 = getMaxValForce(power, cost, index + 1, rest);
+        int p2 = 0;
+        if (rest - cost[index] >= 0) {
+            p2 = getMaxValForce(power, cost, index, rest - cost[index]) + power[index];
+        }
+        return Math.max(p1, p2);
+    }
+
+    public int getMaxVal1(int[] power, int[] cost, int t) {
+        return getMaxVal1Force(power, cost, 0, t);
+    }
+
+    public int getMaxVal1Cache(int[] power, int[] cost, int t) {
+        int n = power.length;
+        int[][] dp = new int[n+1][t+1];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        return getMaxVal1ForceCache(power, cost, 0, t, dp);
+    }
+
+    public int getMaxVal1Force(int[] power, int[] cost, int index, int t) {
+        if (index == cost.length) {
+            return 0;
+        }
+        int max = Integer.MIN_VALUE;
+        for (int num = 0; t - num * cost[index] >= 0; num++) {
+            int p = getMaxVal1Force(power, cost, index + 1, t - num * cost[index]);
+            if (p != Integer.MIN_VALUE) {
+                max = Math.max(max, p + num * power[index]);
+            }
+        }
+        return max;
+    }
+
+    public int getMaxVal1ForceCache(int[] power, int[] cost, int index, int t, int[][] dp) {
+        if (index == cost.length) {
+            return 0;
+        }
+        if (dp[index][t] != -1) {
+            return dp[index][t];
+        }
+        int max = Integer.MIN_VALUE;
+        for (int num = 0; t - num * cost[index] >= 0; num++) {
+            int p = getMaxVal1ForceCache(power, cost, index + 1, t - num * cost[index], dp);
+            if (p != Integer.MIN_VALUE) {
+                max = Math.max(max, p + num * power[index]);
+            }
+        }
+        dp[index][t] = max;
+        return max;
+    }
+
+    @Test
+    public void validGetMaxValTest() {
+        int[] power = {3, 2, 1};
+        int[] cost = {2, 1, 3};
+        int rest = 10;
+        System.out.println(getMaxVal(power, cost, rest));
+        System.out.println(getMaxValDp(power, cost, rest));
+        validGetMaxVal(5000, 1000, 500);
+    }
+
+    public void validGetMaxVal(int n, int maxVal, int count) {
+        boolean flag = true;
+        for (int j = 0; j < count; j++) {
+            int len = (int) (Math.random() * n) + 1;
+            int[] power = new int[len];
+            int[] cost = new int[len];
+            for (int i = 0; i < len; i++) {
+                power[i] = (int) (Math.random() * maxVal) + 1;
+                cost[i] = (int) (Math.random() * maxVal) + 1;
+            }
+            int rest = (int) (Math.random() * maxVal) + 1;
+            if (getMaxVal1Cache(power, cost, rest) != getMaxValDp1(power, cost, rest)) {
+                System.out.println(rest);
+                System.out.println(Arrays.toString(power));
+                System.out.println(Arrays.toString(cost));
+                flag = false;
+                System.out.println("Fuck Code!!!");
+            }
+        }
+        if (flag) {
+            System.out.println("Nice Code");
+        }
+    }
+
+    public int getMaxValDp(int[] power, int[] cost, int t) {
+        int n = power.length;
+        int[][] dp = new int[n + 1][t + 1];
+        for (int index = n - 1; index >= 0; index--) {
+            for (int rest = 0; rest <= t; rest++) {
+                int p1 = dp[index + 1][rest];
+                int p2 = 0;
+                if (rest - cost[index] >= 0) {
+                    p2 = dp[index][rest - cost[index]] + power[index];
+                }
+                dp[index][rest] = Math.max(p1, p2);
+            }
+        }
+        return dp[0][t];
+    }
+
+    public int getMaxValDp1(int[] power, int[] cost, int t) {
+        int n = power.length;
+        int[] dp = new int[t+1];
+        for (int index = n-1; index >= 0 ; index--) {
+            for (int rest = 0; rest <= t; rest++) {
+                int p1 = dp[rest];
+                int p2 = 0;
+                if (rest - cost[index] >= 0) {
+                    p2 = dp[rest-cost[index]] + power[index];
+                }
+                dp[rest] = Math.max(p1, p2);
+            }
+        }
+        return dp[t];
     }
 
 }

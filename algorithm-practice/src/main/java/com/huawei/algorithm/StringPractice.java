@@ -113,13 +113,13 @@ public class StringPractice {
         for (int i = 0; i < s.length(); i++) {
             if (i != 0) {
                 // 表示有重复字符
-                set.remove(s.charAt(i-1));
+                set.remove(s.charAt(i - 1));
             }
-            while (idx+1 < s.length() && !set.contains(s.charAt(idx+1))) {
-               set.add(s.charAt(idx+1));
-               idx++;
+            while (idx + 1 < s.length() && !set.contains(s.charAt(idx + 1))) {
+                set.add(s.charAt(idx + 1));
+                idx++;
             }
-            maxLen = Math.max(maxLen, idx-i+1);
+            maxLen = Math.max(maxLen, idx - i + 1);
         }
         return maxLen;
 
@@ -139,12 +139,12 @@ public class StringPractice {
             if (map.containsKey(s.charAt(i))) {
                 // 如果当前字符在出现了重复，则根据子串的左索引与当前字符的位置比较出新子串的左索引，判断是否需要更新子串的索引
                 // 例如:abba时，要当遍历到第二个a时，不需要更新左索引的位置
-                idx = Math.max(idx, map.get(s.charAt(i))+1);
+                idx = Math.max(idx, map.get(s.charAt(i)) + 1);
             }
             // 每一次遍历都需要更新当前字符在map中的位置
             map.put(s.charAt(i), i);
             // 比较当前子串长度是否最大   子串的长度为i-idx+1
-            maxLen = Math.max(maxLen, i-idx+1);
+            maxLen = Math.max(maxLen, i - idx + 1);
         }
         return maxLen;
 
@@ -153,7 +153,63 @@ public class StringPractice {
     @Test
     public void fun123() {
         String s = "aefaw";
-        System.out.println(s.substring(-1,3));
+        System.out.println(s.substring(-1, 3));
     }
 
+
+    public int kmp(String s1, String s2) {
+        if (s1 == null || s2 == null) {
+            return -1;
+        }
+        if (s1.length() < s2.length()) {
+            return -1;
+        }
+        char[] ch1 = s1.toCharArray();
+        char[] ch2 = s2.toCharArray();
+        int[] next = getNext(ch2);
+        // 表示s1查找的位置
+        int x = 0;
+        // 表示s2查找的位置
+        int y = 0;
+        while (x < ch1.length && y < ch2.length) {
+            if (ch1[x] == ch2[y]) {
+                x++;
+                y++;
+            } else if (next[y] == -1) {
+                x++;
+            } else {
+                y = next[y];
+            }
+        }
+        return y == ch2.length ? x - y : -1;
+    }
+
+    @Test
+    public void kmpTest() {
+        String s = "wefwgwewqewfewtgywerfwio";
+        String s2 = "wewqew";
+        System.out.println(kmp(s, s2));
+    }
+
+    private int[] getNext(char[] ch2) {
+        if (ch2.length == 1) {
+            return new int[]{-1};
+        }
+        int n = ch2.length;
+        int[] next = new int[n];
+        next[0] = -1;
+        next[1] = 0;
+        int i = 2;
+        int cn = 0;
+        while (i < ch2.length) {
+            if (ch2[cn] == ch2[i - 1]) {
+                next[i++] = ++cn;
+            } else if (next[cn] > 0) {
+                cn = next[cn];
+            } else {
+                next[i++] = 0;
+            }
+        }
+        return next;
+    }
 }

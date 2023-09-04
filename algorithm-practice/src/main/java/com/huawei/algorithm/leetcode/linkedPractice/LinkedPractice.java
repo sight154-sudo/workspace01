@@ -552,6 +552,7 @@ public class LinkedPractice {
 
     /**
      * 拷贝链表
+     *
      * @param head
      * @return
      */
@@ -714,7 +715,7 @@ public class LinkedPractice {
 
     @Test
     public void getIntersectionNodeTest() {
-        ListNode head1 = NodeUtils.constructNode(new int[]{1,2,3,4,5});
+        ListNode head1 = NodeUtils.constructNode(new int[]{1, 2, 3, 4, 5});
         ListNode m2 = new ListNode(10);
         ListNode m3 = new ListNode(11);
         ListNode m4 = new ListNode(12);
@@ -743,6 +744,37 @@ public class LinkedPractice {
             return getBothLoopNode(head1, loop1, head2, loop2);
         }
         return null;
+    }
+
+    public BinaryTreeNode constructBinaryTreeNodeBypreMid(String pre, String mid) {
+        char[] pres = pre.toCharArray();
+        char[] mids = mid.toCharArray();
+        int n = pres.length;
+        Map<Character, Integer> map = new HashMap<>();
+        for (int i = 0; i < mids.length; i++) {
+            map.put(mids[i], i);
+        }
+        return constructBinary(pres, mids, 0, n-1, 0, n-1, map);
+    }
+
+    @Test
+    public void constructBinaryNode() {
+        NodeUtils.constructBinaryTreeNode(new int[]{-1, 5, 4, 6, 3 - 1, 2, 9, -1, -1, -1, -1, 7, 8});
+        String pre = "54362789";
+        String mid = "34572869";
+        BinaryTreeNode binaryTreeNode = constructBinaryTreeNodeBypreMid(pre, mid);
+        NodeUtils.preOrderBinaryTreeNode(binaryTreeNode);
+    }
+
+    private BinaryTreeNode constructBinary(char[] pres, char[] mids, int preLeft, int preRight, int inLeft, int inRight, Map<Character, Integer> map) {
+        if (preLeft > preRight || inLeft > inRight || preLeft >= pres.length || preRight < 0 || inLeft >= pres.length || inRight < 0 ) {
+            return null;
+        }
+        int pindex = map.get(pres[preLeft]);
+        BinaryTreeNode root = new BinaryTreeNode(mids[pindex]);
+        root.left = constructBinary(pres, mids, preLeft + 1, pindex - inLeft + preLeft, inLeft, pindex - 1, map);
+        root.right = constructBinary(pres, mids, pindex - inLeft + preLeft + 1, preRight, pindex + 1, inRight, map);
+        return root;
     }
 
 }

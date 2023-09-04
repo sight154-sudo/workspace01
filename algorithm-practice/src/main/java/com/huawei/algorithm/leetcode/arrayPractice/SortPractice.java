@@ -712,15 +712,15 @@ public class SortPractice {
 
     @Test
     public void partitionTest() {
-        int[] arr = {4, 2, 6, 8, 1, 3, 1};
-        int index = partition(arr, 1, 4, 2);
+        int[] arr = {5,6,2,3,5,7};
+        int index = partition(arr, 0, arr.length-1, 5);
         System.out.println("index = " + index);
     }
 
     /**
      * 给定一个数组arr，和一个数num，请把小于等于num的数放在数组的左边，大于num的数放在数组的右边。
      * 要求额外空间复杂度O(1）,时间复杂度 O(N）
-     *
+     * 荷兰国旗问题
      * @param arr
      * @return
      */
@@ -742,7 +742,7 @@ public class SortPractice {
     @Test
     public void partitionThirdTest() {
         int[] arr = {4, 2, 6, 8, 1, 2, 1};
-        System.out.println(Arrays.toString(partitionThird(arr, 0, 4, 2)));
+        System.out.println(Arrays.toString(partitionThird(arr, 0, arr.length-1, 2)));
     }
 
     /**
