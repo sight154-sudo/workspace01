@@ -777,4 +777,70 @@ public class LinkedPractice {
         return root;
     }
 
+    /**
+     * 给定一个链表，返回链表开始入环的第一个节点。 从链表的头节点开始沿着 next 指针进入环的第一个节点为环的入口节点。如果链表无环，则返回 null。
+     * leetCode 142  判断链表是否有环， 若有环，返回入环节点
+     * 为了表示给定链表中的环，我们使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）。
+     * 如果 pos 是 -1，则在该链表中没有环。注意，pos 仅仅是用于标识环的情况，并不会作为参数传递到函数中。
+     * @param head
+     * @return
+     */
+    public ListNode detectCycle(ListNode head) {
+        if (head == null) {
+            return head;
+        }
+        ListNode fast = head;
+        ListNode slow = head;
+        boolean flag = false;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+            if (slow == fast) {
+                fast = head;
+                flag = true;
+                break;
+            }
+        }
+        if (!flag) {
+            return null;
+        }
+        while (slow != fast) {
+            slow = slow.next;
+            fast = fast.next;
+        }
+        return slow;
+    }
+
+    static class MyLinkedList{
+        int val;
+        MyLinkedList prev;
+        MyLinkedList next;
+        MyLinkedList tail;
+        int size;
+        public MyLinkedList() {
+
+        }
+
+        public int get(int index) {
+
+            return 0;
+        }
+
+        public void addAtHead(int val) {
+
+        }
+
+        public void addAtTail(int val) {
+
+        }
+
+        public void addAtIndex(int index, int val) {
+
+        }
+
+        public void deleteAtIndex(int index) {
+
+        }
+    }
+
 }

@@ -1,5 +1,7 @@
 package com.huawei.algorithm.leetcode.recursionPractice;
 
+import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.date.DateUtil;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -1824,7 +1826,7 @@ public class RecursionPractice {
 
     public int getMaxVal1Cache(int[] power, int[] cost, int t) {
         int n = power.length;
-        int[][] dp = new int[n+1][t+1];
+        int[][] dp = new int[n + 1][t + 1];
         for (int i = 0; i < n; i++) {
             Arrays.fill(dp[i], -1);
         }
@@ -1915,18 +1917,365 @@ public class RecursionPractice {
 
     public int getMaxValDp1(int[] power, int[] cost, int t) {
         int n = power.length;
-        int[] dp = new int[t+1];
-        for (int index = n-1; index >= 0 ; index--) {
+        int[] dp = new int[t + 1];
+        for (int index = n - 1; index >= 0; index--) {
             for (int rest = 0; rest <= t; rest++) {
                 int p1 = dp[rest];
                 int p2 = 0;
                 if (rest - cost[index] >= 0) {
-                    p2 = dp[rest-cost[index]] + power[index];
+                    p2 = dp[rest - cost[index]] + power[index];
                 }
                 dp[rest] = Math.max(p1, p2);
             }
         }
         return dp[t];
     }
+
+    @Test
+    public void solveSudokuTest() {
+        char[][] board = {{'5', '3', '.', '.', '7', '.', '.', '.', '.'},
+                {'6', '.', '.', '1', '9', '5', '.', '.', '.'},
+                {'.', '9', '8', '.', '.', '.', '.', '6', '.'},
+                {'8', '.', '.', '.', '6', '.', '.', '.', '3'},
+                {'4', '.', '.', '8', '.', '3', '.', '.', '1'},
+                {'7', '.', '.', '.', '2', '.', '.', '.', '6'},
+                {'.', '6', '.', '.', '.', '.', '2', '8', '.'},
+                {'.', '.', '.', '4', '1', '9', '.', '.', '5'},
+                {'.', '.', '.', '.', '8', '.', '.', '7', '9'}};
+//        solveSudoku(board);
+        int[][] arr = new int[4][4];
+        solveSudokuForce(arr, 0, 0);
+    }
+
+    public void solveSudoku(char[][] board) {
+        solveSudokuForce(board);
+        for (int i = 0; i < board.length; i++) {
+            System.out.println(board[i]);
+        }
+    }
+
+    public boolean solveSudokuForce(char[][] board) {
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if (board[i][j] != '.') {
+                    continue;
+                }
+                for (int k = 1; k <= 9; k++) {
+                    if (canFill(board, i, j, k + 48)) {
+                        board[i][j] = (char) (k + 48);
+                        if (solveSudokuForce(board)) {
+                            return true;
+                        }
+                        board[i][j] = '.';
+                    }
+                }
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean canFill(char[][] board, int i, int j, int val) {
+        for (int k = 0; k < board.length; k++) {
+            if (board[i][k] == val) {
+                return false;
+            }
+        }
+        for (int k = 0; k < board[i].length; k++) {
+            if (board[k][j] == val) {
+                return false;
+            }
+        }
+        int row = i / 3;
+        int col = j / 3;
+        for (int r = row * 3; r < (row + 1) * 3; r++) {
+            for (int c = col * 3; c < (col + 1) * 3; c++) {
+                if (board[r][c] == val) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public boolean isOk(int[][] board) {
+        int[] line = new int[board.length];
+        int[] column = new int[board.length];
+        int left = 0;
+        int right = 0;
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                line[i] += board[i][j];
+                column[j] += board[i][j];
+                if (i == j) {
+                    left += board[i][j];
+                }
+                if (i + j == board.length - 1) {
+                    right += board[i][j];
+                }
+                if (i == board.length - 1 && j > 0) {
+                    if (column[j] != column[j - 1]) {
+                        return false;
+                    }
+                }
+            }
+            if (i > 0) {
+                if (line[i] != line[i - 1]) {
+                    return false;
+                }
+            }
+        }
+        if (left == right && left == line[0]) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean canFill(int[][] board, int row, int col, int val) {
+        int max = (int) Math.pow(board.length, 2);
+        int target = (1 + max) * max / 2 / (board.length);
+        int sum = 0;
+        for (int i = 0; i < board.length; i++) {
+            if (board[row][i] == val) {
+                return false;
+            }
+            sum += board[row][i];
+        }
+        sum += val;
+        if (sum > target || (col == board.length - 1 && sum != target)) {
+            return false;
+        }
+        sum = 0;
+        for (int i = 0; i < board.length; i++) {
+            if (board[i][col] == val) {
+                return false;
+            }
+            sum += board[i][col];
+        }
+        sum += val;
+        if (sum > target || (row == board.length - 1 && sum != target)) {
+            return false;
+        }
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+                if (board[i][j] == val) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public boolean solveSudokuForce(int[][] board, int row, int col) {
+        if (row == board.length - 1 && col == board.length) {
+            if (isOk(board)) {
+                for (int i = 0; i < board.length; i++) {
+                    System.out.println(Arrays.toString(board[i]));
+                }
+                System.out.println();
+            }
+            return false;
+        }
+        if (col == board.length) {
+            row++;
+            col = 0;
+        }
+        for (int i = 1; i <= Math.pow(board.length, 2); i++) {
+            if (canFill(board, row, col, i)) {
+                board[row][col] = i;
+                if (solveSudokuForce(board, row, col + 1)) {
+                    return true;
+                }
+                board[row][col] = 0;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 求C(m,n)
+     *
+     * @param m
+     * @param n
+     * @return
+     */
+    public long C(int m, int n) {
+        int k = 1;
+        long ans = 1;
+        while (k <= n) {
+            ans = ans * (m - k + 1) / k;
+            k++;
+        }
+        return ans;
+    }
+
+    @Test
+    public void CTest() {
+        System.out.println(C(100, 50));
+    }
+
+    /**
+     * 你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，
+     * 如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。
+     * leetCode 198  打家劫舍
+     *
+     * @param nums
+     * @return
+     */
+    public int rob(int[] nums) {
+        return robForce(nums, 0);
+    }
+
+    public int robForce(int[] nums, int index) {
+        if (index >= nums.length) {
+            return 0;
+        }
+        int p1 = robForce(nums, index + 2) + nums[index];
+        int p2 = robForce(nums, index + 1);
+        return Math.max(p1, p2);
+    }
+
+    @Test
+    public void robTest() {
+        int[] nums = {1, 2, 3, 1};
+        System.out.println(robDp3(nums));
+    }
+
+    public int robDp(int[] nums) {
+        int len = nums.length;
+        int[] dp = new int[len + 2];
+        for (int i = len - 1; i >= 0; i++) {
+            int p1 = dp[i + 2] + nums[i];
+            int p2 = dp[i + 1];
+            dp[i] = Math.max(p1, p2);
+        }
+        return dp[0];
+    }
+
+    public int robDp3(int[] nums) {
+        // 使用动态规化，
+        if (nums.length == 1) {
+            return nums[0];
+        }
+        int[] dp = new int[nums.length];
+        dp[0] = nums[0];
+        dp[1] = Math.max(dp[0], nums[1]);
+        for (int i = 2; i < nums.length; i++) {
+            // 选中当前房子时， 之前第2间房子的最大金额+nums[i]， 与不选中当前房子时 之前第1间房子的最大金额
+            dp[i] = Math.max(dp[i - 1], dp[i - 2] + nums[i]);
+        }
+        return dp[nums.length - 1];
+    }
+
+    /**
+     * 你是一个专业的小偷，计划偷窃沿街的房屋，每间房内都藏有一定的现金。这个地方所有的房屋都 围成一圈 ，这意味着第一个房屋和最后一个房屋是紧挨着的。
+     * 同时，相邻的房屋装有相互连通的防盗系统，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警 。
+     *
+     * @param nums
+     * @return
+     */
+    public int rob2(int[] nums) {
+        boolean[] used = new boolean[nums.length];
+        int[] dp = new int[nums.length];
+        Arrays.fill(dp, -1);
+        int ans = robForce2Cache(nums, 0, used, dp);
+        return ans;
+    }
+
+    @Test
+    public void rob2Test() {
+        int[] nums = {1, 2, 3, 1};
+        System.out.println(rob2(nums));
+    }
+
+    public int robForce2(int[] nums, int index, boolean[] used) {
+        if (index >= nums.length) {
+            return 0;
+        }
+        int p1 = Integer.MIN_VALUE;
+        int pre = index - 1 < 0 ? ((index - 1 + nums.length) % nums.length) : (index - 1) % nums.length;
+        int post = (index + 1) % nums.length;
+        if (!used[post] && !used[pre]) {
+            used[index] = true;
+            p1 = robForce2(nums, index + 2, used) + nums[index];
+            used[index] = false;
+        }
+        int p2 = robForce2(nums, index + 1, used);
+        return Math.max(p1, p2);
+    }
+
+    public int robForce2Cache(int[] nums, int index, boolean[] used, int[] dp) {
+        if (index >= nums.length) {
+            return 0;
+        }
+        if (dp[index] != -1) {
+            return dp[index];
+        }
+        int p1 = Integer.MIN_VALUE;
+        int pre = index - 1 < 0 ? ((index - 1 + nums.length) % nums.length) : (index - 1) % nums.length;
+        int post = (index + 1) % nums.length;
+        /*if (!used[index]) {
+
+        }*/
+        int p2 = robForce2Cache(nums, index + 1, used, dp);
+        used[index] = false;
+        if (!used[post] && !used[pre]) {
+            used[index] = true;
+            p1 = robForce2Cache(nums, index + 2, used, dp) + nums[index];
+        }
+        dp[index] = Math.max(p1, p2);
+        return dp[index];
+    }
+
+    @Test
+    public void rob4Test() {
+        int[] nums = {2,3,2};
+        System.out.println(robDp4(nums));
+    }
+
+    public int robDp4(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        if (nums.length == 1) {
+            return nums[0];
+        }
+        if (nums.length == 2) {
+            return Math.max(nums[0], nums[1]);
+        }
+        // 分两种情况， 取第1家的，就不可能取最后一家    或者不取第一家的，可以取最后一家
+        return Math.max(robDpTmp(nums, 0, nums.length-2), robDpTmp(nums, 1, nums.length-1));
+    }
+
+    public int robDpTmp(int[] arr, int start, int end) {
+        int[] dp = new int[arr.length];
+        dp[start] = arr[start];
+        dp[start+1] = Math.max(dp[start], arr[start+1]);
+        for (int i = start+2; i <= end; i++) {
+            dp[i] = Math.max(dp[i-1], dp[i-2]+arr[i]);
+        }
+        return dp[end];
+    }
+
+    /*public int robDp2(int[] nums) {
+        int len = nums.length;
+        boolean[] used = new boolean[len];
+        int[] dp = new int[len + 2];
+        for (int index = len - 1; index >= 0; index--) {
+            int p1 = Integer.MIN_VALUE;
+            int pre = index - 1 < 0 ? ((index - 1 + len) % len) : (index - 1) % len;
+            int post = (index + 1) % nums.length;
+            if (!used[post] && !used[pre]) {
+                used[index] = true;
+                p1 = dp[index + 2] + nums[index];
+                used[index] = false;
+            }
+            int p2 = dp[index + 1];
+            dp[index] = Math.max(p1, p2);
+        }
+        return dp[0];
+    }*/
+
+
 
 }

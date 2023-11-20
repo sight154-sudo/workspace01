@@ -135,7 +135,6 @@ public class NodeUtils<T> {
         }
         System.out.println(list);
     }
-
     public static <T> void postOrderBinaryTreeNode(BinaryTreeNode<T> head) {
         if (head == null) {
             return;
