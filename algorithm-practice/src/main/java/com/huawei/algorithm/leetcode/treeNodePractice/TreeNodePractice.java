@@ -1,18 +1,18 @@
 package com.huawei.algorithm.leetcode.treeNodePractice;
 
-import com.huawei.algorithm.leetcode.linkedPractice.BinaryTreeNode;
-import com.huawei.algorithm.leetcode.linkedPractice.NodeUtils;
-import org.antlr.v4.runtime.tree.Tree;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
+import java.util.TreeMap;
 
 /**
  * @author king
@@ -1329,19 +1329,21 @@ public class TreeNodePractice {
      * 递归地在最大值 左边 的 子数组前缀上 构建左子树。
      * 递归地在最大值 右边 的 子数组后缀上 构建右子树。
      * 返回 nums 构建的 最大二叉树 。
+     *
      * @param nums
      * @return
      */
     public TreeNode constructMaximumBinaryTree(int[] nums) {
+        // TODO 单调栈解法
         if (nums == null) {
             return null;
         }
-        return constructMaximumBinaryTree(nums, 0, nums.length-1);
+        return constructMaximumBinaryTree(nums, 0, nums.length - 1);
     }
 
     @Test
     public void constructMaximumBinaryTree() {
-        int[] nums = {3,2,1,6,0,5};
+        int[] nums = {3, 2, 1, 6, 0, 5};
         TreeNode root = constructMaximumBinaryTree(nums);
         TreeNode.levelPrintTreeNode(root);
     }
@@ -1352,8 +1354,8 @@ public class TreeNodePractice {
         }
         int idx = getMaxIndex(nums, left, right);
         TreeNode node = new TreeNode(nums[idx]);
-        node.left = constructMaximumBinaryTree(nums, left, idx-1);
-        node.right = constructMaximumBinaryTree(nums, idx+1, right);
+        node.left = constructMaximumBinaryTree(nums, left, idx - 1);
+        node.right = constructMaximumBinaryTree(nums, idx + 1, right);
         return node;
     }
 
@@ -1362,11 +1364,385 @@ public class TreeNodePractice {
             return left;
         }
         int idx = left;
-        for (int i = left+1; i <= right; i++) {
+        for (int i = left + 1; i <= right; i++) {
             if (nums[idx] < nums[i]) {
                 idx = i;
             }
         }
         return idx;
+    }
+
+    public TreeNode mergeTrees(TreeNode root1, TreeNode root2) {
+        if (root1 == null && root2 == null) {
+            return null;
+        }
+        if (root1 == null && root2 != null) {
+            return root2;
+        }
+        if (root1 != null && root2 == null) {
+            return root1;
+        }
+        return mergeTreesRecursion1(root1, root2);
+    }
+
+    private TreeNode mergeTreesRecursion1(TreeNode root1, TreeNode root2) {
+        if (root1 == null) {
+            return root2;
+        }
+        if (root2 == null) {
+            return root1;
+        }
+        TreeNode root = new TreeNode(root1.val + root2.val);
+        root.left = mergeTreesRecursion1(root1.left, root2.left);
+        root.right = mergeTreesRecursion1(root1.right, root2.right);
+        return root;
+    }
+
+    public TreeNode mergeTrees2(TreeNode root1, TreeNode root2) {
+        if (root1 == null) {
+            return root2;
+        }
+        if (root2 == null) {
+            return root1;
+        }
+        Stack<TreeNode> stack1 = new Stack<>();
+        stack1.push(root2);
+        stack1.push(root1);
+        while (!stack1.isEmpty()) {
+            TreeNode node1 = stack1.pop();
+            TreeNode node2 = stack1.pop();
+            node1.val += node2.val;
+            if (node1.left != null && node2.left != null) {
+                stack1.push(node2.left);
+                stack1.push(node1.left);
+            }
+            if (node1.right != null && node2.right != null) {
+                stack1.push(node2.right);
+                stack1.push(node1.right);
+            }
+            if (node1.left == null && node2.left != null) {
+                node1.left = node2.left;
+            }
+            if (node1.right == null && node2.right != null) {
+                node1.right = node2.right;
+            }
+        }
+        return root1;
+    }
+
+    @Test
+    public void mergeTreesTest() {
+        TreeNode root1 = TreeNode.constructTreeNode(new int[]{-1, 1, 3, 2, 5}, 1);
+        TreeNode root2 = TreeNode.constructTreeNode(new int[]{-1, 2, 1, 3, -1, 4, -1, 7}, 1);
+        TreeNode root = mergeTrees(root1, root2);
+        TreeNode.levelPrintTreeNode(root);
+    }
+
+    public TreeNode mergeTreesRecursion(TreeNode node1, TreeNode node2) {
+        if (node1 == null && node2 == null) {
+            return null;
+        }
+        TreeNode root = new TreeNode((node1 != null ? node1.val : 0) + (node2 != null ? node2.val : 0));
+        root.left = mergeTreesRecursion(node1 != null ? node1.left : null, node2 != null ? node2.left : null);
+        root.right = mergeTreesRecursion(node1 != null ? node1.right : null, node2 != null ? node2.right : null);
+        return root;
+    }
+
+    /**
+     * 给定二叉搜索树（BST）的根节点 root 和一个整数值 val。
+     * leetCode 700
+     * 你需要在 BST 中找到节点值等于 val 的节点。 返回以该节点为根的子树。 如果节点不存在，则返回 null 。
+     *
+     * @param root
+     * @param val
+     * @return
+     */
+    public TreeNode searchBST(TreeNode root, int val) {
+        if (root == null || root.val == val) {
+            return root;
+        }
+        TreeNode node;
+        if (root.val > val) {
+            node = searchBST(root.left, val);
+        } else {
+            node = searchBST(root.right, val);
+        }
+        return node;
+    }
+
+    public TreeNode searchBST1(TreeNode root, int val) {
+        if (root == null) {
+            return root;
+        }
+        Stack<TreeNode> stack = new Stack<>();
+        stack.push(root);
+        while (!stack.isEmpty()) {
+            TreeNode node = stack.pop();
+            if (node.val == val) {
+                return node;
+            }
+            if (node.right != null) {
+                stack.push(node.right);
+            }
+            if (node.left != null) {
+                stack.push(node.left);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 98. 验证二叉搜索树
+     *
+     * @param root
+     * @return
+     */
+    public boolean isValidBST(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
+        boolean isBST = true;
+        if (root.left != null) {
+            isBST &= root.val > getNodeMax(root.left);
+        }
+        if (root.right != null) {
+            isBST &= root.val < getNodeMin(root.right);
+        }
+        return isBST & isValidBST(root.left) & isValidBST(root.right);
+    }
+
+    static class BstInfo {
+        int max;
+        int min;
+        boolean isBst;
+
+        public BstInfo() {
+        }
+
+        public BstInfo(int leftMax, int rightMin, boolean isBst) {
+            this.max = leftMax;
+            this.min = rightMin;
+            this.isBst = isBst;
+        }
+    }
+
+    public boolean isValidBST1(TreeNode root) {
+        return processBST(root).isBst;
+    }
+
+    public BstInfo processBST(TreeNode root) {
+        if (root == null) {
+            return null;
+        }
+
+        BstInfo left = processBST(root.left);
+        BstInfo right = processBST(root.right);
+        int max = root.val;
+        int min = root.val;
+        boolean isBsf = true;
+        if (left != null) {
+            max = Math.max(max, left.max);
+            min = Math.min(min, left.min);
+        }
+        if (right != null) {
+            max = Math.max(max, right.max);
+            min = Math.min(min, right.min);
+        }
+        if (left != null && !left.isBst) {
+            isBsf = false;
+        }
+        if (right != null && !right.isBst) {
+            isBsf = false;
+        }
+        if (left != null && root.val <= left.max) {
+            isBsf = false;
+        }
+        if (right != null && root.val >= right.min) {
+            isBsf = false;
+        }
+        BstInfo bstInfo = new BstInfo(max, min, isBsf);
+        return bstInfo;
+    }
+
+    @Test
+    public void isValidBSTTest() {
+        TreeNode root = TreeNode.constructTreeNode(new int[]{-1, 2, 1, 3}, 1);
+//        TreeNode root = TreeNode.constructTreeNode(new int[]{-1, 5,4,6,-1,-1,3,7}, 1);
+        System.out.println(isValidBST2(root));
+    }
+
+    public boolean isValidBST2(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
+        List<Integer> list = new ArrayList<>();
+        midOrder(root, list);
+        for (int i = 1; i < list.size(); i++) {
+            if (list.get(i - 1) >= list.get(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isValidBST3(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
+        Stack<TreeNode> stack = new Stack<>();
+        long pre = Long.MIN_VALUE;
+        while (root != null || !stack.isEmpty()) {
+            while (root != null) {
+                stack.push(root);
+                root = root.left;
+            }
+            if (!stack.isEmpty()) {
+                TreeNode node = stack.pop();
+                if (node.val <= pre) {
+                    return false;
+                }
+                pre = node.val;
+                root = node.right;
+            }
+        }
+        return true;
+    }
+
+    public boolean isValidBST4(TreeNode root) {
+        return isValidBstRecursion(root, Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+
+    public boolean isValidBstRecursion(TreeNode node, long max, long min) {
+        if (node == null) {
+            return true;
+        }
+        boolean b1 = isValidBstRecursion(node.left, max, Math.min(min, node.val));
+        boolean b2 = isValidBstRecursion(node.right, Math.max(max, node.val), min);
+        if (node.val <= max || node.val >= min) {
+            return false;
+        }
+        return b1 && b2;
+    }
+
+    public void midOrder(TreeNode node, List<Integer> list) {
+        if (node == null) {
+            return;
+        }
+        midOrder(node.left, list);
+        list.add(node.val);
+        midOrder(node.right, list);
+    }
+
+
+    public int getNodeMax(TreeNode node) {
+        if (node == null) {
+            return Integer.MIN_VALUE;
+        }
+        int max = node.val;
+        return Math.max(max, Math.max(getNodeMax(node.left), getNodeMax(node.right)));
+    }
+
+    public int getNodeMin(TreeNode node) {
+        if (node == null) {
+            return Integer.MAX_VALUE;
+        }
+        int min = node.val;
+        return Math.min(min, Math.min(getNodeMin(node.left), getNodeMin(node.right)));
+    }
+
+    @Test
+    public void getMinimumDifferenceTest() {
+//        TreeNode root = TreeNode.constructTreeNode(new int[]{-1, 4, 2, 6, 1, 3}, 1);
+//        TreeNode root = TreeNode.constructTreeNode(new int[]{-1, 1, 0, 48, -1, -1, 12, 49}, 1);
+//        TreeNode root = TreeNode.constructTreeNode(new int[]{-1, 5, 4, 7}, 1);
+        TreeNode root = TreeNode.constructTreeNode(new int[]{-1, 236, 104, 701, -1, 227, -1, 911}, 1);
+        System.out.println(getMinimumDifference2(root));
+    }
+
+    public int getMinimumDifference(TreeNode root) {
+        if (root == null) {
+            return Integer.MAX_VALUE;
+        }
+        int res = Integer.MAX_VALUE;
+        if (root.left != null) {
+            res = Math.min(res, Math.abs(root.val - getNodeMax(root.left)));
+        }
+        if (root.right != null) {
+            res = Math.min(res, Math.abs(root.val - getNodeMin(root.right)));
+        }
+        return Math.min(res, Math.min(getMinimumDifference(root.left), getMinimumDifference(root.right)));
+    }
+
+    public int getMinimumDifference2(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        getMinimumDifferenceRecursion(root);
+        pre = null;
+        return val;
+    }
+
+    int val = Integer.MAX_VALUE;
+    TreeNode pre;
+
+    private void getMinimumDifferenceRecursion(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        getMinimumDifferenceRecursion(root.left);
+        if (pre != null) {
+            val = Math.min(val, Math.abs(pre.val - root.val));
+        }
+        pre = root;
+        getMinimumDifferenceRecursion(root.right);
+    }
+
+    @Test
+    public void findModeTest() {
+        TreeNode root = TreeNode.constructTreeNode(new int[]{-1, 6,2,8,0,4,7,9,-1,-1,2,6}, 1);
+        System.out.println(Arrays.toString(findMode(root)));
+    }
+
+    /**
+     * 501. 二叉搜索树中的众数
+     *
+     * @param root
+     * @return
+     */
+    public int[] findMode(TreeNode root) {
+        if (root == null) {
+            return new int[0];
+        }
+        Stack<TreeNode> stack = new Stack<>();
+        int maxCount = 0;
+        List<Integer> list = new ArrayList<>();
+        Map<Integer, Integer> treeMap = new HashMap<>();
+        while (!stack.isEmpty() || root != null) {
+            if (root != null) {
+                stack.push(root);
+                root = root.left;
+            } else {
+                TreeNode node = stack.pop();
+                treeMap.put(node.val, treeMap.getOrDefault(node.val, 0) + 1);
+                root = node.right;
+            }
+        }
+        Set<Map.Entry<Integer, Integer>> entries =
+                treeMap.entrySet();
+        for (Map.Entry<Integer, Integer> entry : entries) {
+            Integer key = entry.getKey();
+            Integer value = entry.getValue();
+            if (maxCount == 0) {
+                maxCount = value;
+                list.add(key);
+            }else if (value > maxCount) {
+                list.clear();
+                list.add(key);
+                maxCount = value;
+            } else if (value == maxCount) {
+                list.add(key);
+            }
+        }
+        return list.stream().mapToInt(v -> v).toArray();
     }
 }
