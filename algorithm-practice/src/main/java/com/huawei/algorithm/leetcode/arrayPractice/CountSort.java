@@ -11,6 +11,11 @@ import java.util.Arrays;
  */
 public class CountSort {
 
+    public static void main(String[] args) {
+        long t = (int)3.9;
+        t %=2;
+        System.out.println(t);
+    }
 
     @Test
     public void countSortTest() {

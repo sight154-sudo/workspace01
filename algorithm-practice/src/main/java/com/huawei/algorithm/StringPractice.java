@@ -4,12 +4,13 @@ package com.huawei.algorithm;/**
  * @Desc
  */
 
+import lombok.ToString;
 import org.junit.Test;
 
-import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Stack;
 
 /**
  * @program: springboot-demo
@@ -212,4 +213,321 @@ public class StringPractice {
         }
         return next;
     }
+
+    public String removeStr(String num, int start, int end) {
+        if (start == end) {
+            return num;
+        }
+        return num.substring(0, start) + num.substring(end);
+    }
+
+    public String removeKdigits(String num, int k) {
+        if (k == num.length()) {
+            return "0";
+        }
+        Stack<Integer> stack = new Stack<>();
+        int w = 0;
+        f1:
+        while (w < num.length()) {
+            int c = num.charAt(w) - 48;
+            if (!stack.isEmpty()) {
+                while (!stack.isEmpty() && c < stack.peek()) {
+                    k--;
+                    stack.pop();
+                    if (k == 0) {
+                        while (w < num.length()) {
+                            stack.add(num.charAt(w) - 48);
+                            w++;
+                        }
+                        break f1;
+                    }
+                }
+            }
+            stack.add(c);
+            w++;
+        }
+        while (k > 0) {
+            stack.pop();
+            k--;
+        }
+        StringBuffer sb = new StringBuffer();
+        while (!stack.isEmpty()) {
+            sb.append(stack.pop());
+        }
+        String s = sb.reverse().toString();
+        int start = 0;
+        while (start < s.length() && s.charAt(start) == '0') {
+            start++;
+        }
+        return start >= s.length() ? "0" : s.substring(start);
+    }
+
+    @Test
+    public void removeKdigitsTest() {
+        String str = "1432219";
+//        String str = "112";
+//        String str = "112";
+        int k = 3;
+        System.out.println(removeKdigits(str, k));
+    }
+
+    public String getNewString(String str, int k) {
+        /*int min = 10;
+        int w = 0;
+        int index = 0;
+        while (w <= k && w < str.length()) {
+            int c = str.charAt(w) - 48;
+            if (c < min) {
+                min = c;
+                index = c;
+            }
+            if (min == 0) {
+                break;
+            }
+            w++;
+        }*/
+        return null;
+    }
+
+    @Test
+    public void getSubPosTest() {
+        String s = "";
+        String b = "abc";
+        System.out.println(getSubPos(s, b));
+        randomGetSubPos(10000, 100000);
+    }
+
+    public void randomGetSubPos(int count, int len) {
+        for (int c = 0; c < count; c++) {
+            StringBuffer sb1 = new StringBuffer();
+            StringBuilder sb2 = new StringBuilder();
+            int n1 = (int) (Math.random() * len);
+            int n2 = (int) (Math.random() * len);
+            for (int i = 0; i < n1; i++) {
+                sb1.append((char) (int) (Math.random() * 26 + 97));
+            }
+            for (int i = 0; i < n2; i++) {
+                sb2.append((char) (int) (Math.random() * 26 + 97));
+            }
+            String s = sb1.toString();
+            String l = sb2.toString();
+            if (getSubPos(s, l) != getSubPos1(s, l)) {
+                System.out.println("Fuck Code");
+            }
+        }
+    }
+
+    public int getSubPos(String S, String L) {
+        if (S.length() > L.length() || S.length() == 0) {
+            return -1;
+        }
+        int i = 0;
+        int j = 0;
+        while (j < L.length()) {
+            if (i == S.length() - 1 && S.charAt(i) == L.charAt(j)) {
+                return j;
+            }
+            if (S.charAt(i) == L.charAt(j)) {
+                i++;
+            }
+            j++;
+        }
+        return -1;
+    }
+
+    public int getSubPos1(String S, String L) {
+        int n1 = S.length();
+        int n2 = L.length();
+        if (n1 > n2 || n1 == 0) {
+            return -1;
+        }
+        int i = 0;
+        int ans = -1;
+        for (int j = 0; j < n2; j++) {
+            if (S.charAt(i) == L.charAt(j)) {
+                i++;
+                if (i == n1) {
+                    ans = j;
+                    break;
+                }
+            }
+        }
+        return ans;
+    }
+
+    @Test
+    public void computeExprTest() {
+//        String s = "1+2+3";
+//        String s = "1 + 5 * 7 / 8";
+//        String s = "1 / (0 - 5)";
+//        String s = "1+(4+(2*7))";
+//        String s = "15350-1034000/(40023400-40240024/(2232435*73324234))";
+        String s = "6*((1-2)/1)";
+        computeExpr(s);
+    }
+
+    public String computeExpr(String s) {
+        // 1+2*(3/(4-2)+4)
+        s = s.replaceAll("\\s+", "");
+        Stack<FuShu> stack = new Stack<>();
+        Stack<Character> symbol = new Stack<>();
+        try {
+            for (int i = 0; i < s.length(); i++) {
+                char c = s.charAt(i);
+                if (Character.isDigit(c)) {
+                    int num = c - 48;
+                    while (Character.isDigit(s.charAt(++i))) {
+                        num *= 10 + (s.charAt(i) - 48);
+                    }
+                    stack.add(new FuShu(num, 1));
+                    i -= 1;
+                } else if (c == '(') {
+                    symbol.add(c);
+                } else if (c == ')') {
+                    while (!symbol.isEmpty() ) {
+                        Character f = symbol.pop();
+                        if (f == '(') {
+                            break;
+                        }
+                        FuShu fuShu2 = stack.pop();
+                        FuShu fuShu1 = stack.pop();
+                        stack.add(calc(fuShu1, fuShu2, f));
+                    }
+                } else {
+                    if (!symbol.isEmpty()) {
+                        while (!symbol.isEmpty() && exprWeight(symbol.peek()) > exprWeight(c)) {
+                            FuShu fuShu2 = stack.pop();
+                            FuShu fuShu1 = stack.pop();
+                            stack.add(calc(fuShu1, fuShu2, symbol.pop()));
+                        }
+                    }
+                    symbol.add(c);
+                }
+            }
+            while (!symbol.isEmpty()) {
+                FuShu fuShu2 = stack.pop();
+                FuShu fuShu1 = stack.pop();
+                stack.add(calc(fuShu1, fuShu2, symbol.pop()));
+            }
+        } catch (RuntimeException exp) {
+            System.out.println("ERROR");
+            return s;
+        }
+        System.out.println(stack.pop());
+        return s;
+    }
+
+    public int exprWeight(char c) {
+        switch (c) {
+            case '+':
+            case '-':
+                return 1;
+            case '*':
+            case '/':
+                return 2;
+        }
+        return 0;
+    }
+
+    public FuShu calc(FuShu f1, FuShu f2, char c) throws RuntimeException {
+        switch (c) {
+            case '+':
+                return f1.add(f2);
+            case '-':
+                return f1.sub(f2);
+            case '*':
+                return f1.mul(f2);
+            default:
+                return f1.div(f2);
+        }
+    }
+
+    @Test
+    public void FuShuTest() {
+        FuShu fuShu1 = new FuShu(7, 8);
+        FuShu fuShu2 = new FuShu(-8, 9);
+//        FuShu fuShu = fuShu1.add(fuShu2);
+        FuShu fuShu = fuShu1.div(fuShu2);
+        FuShu fuShu3 = new FuShu(0, 10);
+        System.out.println(fuShu3.mul(fuShu1));
+        System.out.println(fuShu);
+    }
+
+    class FuShu {
+        public int fz;
+        public int fm;
+
+        public FuShu(int fz, int fm) {
+            this.fz = fz;
+            this.fm = fm;
+        }
+
+        public FuShu add(FuShu other) {
+            int fz = this.fz * other.fm + other.fz * this.fm;
+            int fm = this.fm * other.fm;
+            return new FuShu(fz, fm).simply();
+        }
+
+        public FuShu sub(FuShu other) {
+            int fz = this.fz * other.fm - this.fm * other.fz;
+            int fm = this.fm * other.fm;
+            return new FuShu(fz, fm).simply();
+        }
+
+        public FuShu mul(FuShu other) {
+            return new FuShu(this.fz * other.fz, this.fm * other.fm).simply();
+        }
+
+        public FuShu div(FuShu other) {
+            int fz = this.fz * other.fm;
+            int fm = this.fm * other.fz;
+            if (fm == 0) {
+                throw new ArithmeticException();
+            }
+            return new FuShu(fz, fm).simply();
+        }
+
+        @Override
+        public String toString() {
+            if (this.fm == 1) {
+                return this.fz + "";
+            }
+            int fz = Math.abs(this.fz);
+            int fm = Math.abs(this.fm);
+            if (this.fz * this.fm < 0) {
+                return String.format("-%d/%d", fz, fm);
+            }
+            return String.format("%d/%d", fz, fm);
+        }
+
+        public FuShu simply() {
+            int gcd = gcd(Math.abs(this.fz), Math.abs(this.fm));
+            this.fz /= gcd;
+            this.fm /= gcd;
+            return this;
+        }
+
+    }
+
+    public int gcd(int a, int b) {
+        if (a < b) {
+            int tmp = a;
+            a = b;
+            b = tmp;
+        }
+        while (b > 0) {
+            int p = b;
+            b = a % b;
+            a = p;
+        }
+        return a;
+    }
+
+    @Test
+    public void gcdTest() {
+        int a = 126;
+        int b = 9;
+        System.out.println(gcd(a, b));
+    }
+
 }

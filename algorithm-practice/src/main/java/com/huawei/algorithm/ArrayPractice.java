@@ -1,11 +1,14 @@
 package com.huawei.algorithm;
 
+import cn.hutool.crypto.SecureUtil;
 import com.sun.deploy.panel.ITreeNode;
+import org.checkerframework.checker.units.qual.C;
 import org.junit.Test;
 
 import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class ArrayPractice {
 
@@ -719,6 +722,103 @@ public class ArrayPractice {
         if (flag) {
             System.out.println("Nice Code!!!");
         }
+    }
+
+    public int getMaxMinSubLetterNumForce(int[] arr, int num) {
+        int count = 0;
+        for (int i = 0; i < arr.length; i++) {
+            for (int j = i; j < arr.length; j++) {
+                int min = arr[i];
+                int max = arr[i];
+                for (int k = i; k <= j; k++) {
+                    min = Math.min(arr[k], min);
+                    max = Math.max(arr[k], max);
+                }
+                if (max - min <= num) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    @Test
+    public void test111() {
+        randTestGetMaxMinSub(10, 100, 10);
+//        int[] nums = {6,5,4,3};
+//        int num = 2;
+//        System.out.println(getMaxMinSubLetterNum(nums, num));
+    }
+
+    public void randTestGetMaxMinSub(int count, int maxVal, int len) {
+        for (int c = 0; c < count; c++) {
+            int[] arr1 = new int[len];
+            int[] arr2 = new int[len];
+            for (int i = 0; i < arr1.length; i++) {
+                int num = (int) (Math.random() * maxVal);
+                arr1[i] = num;
+                arr2[i] = num;
+            }
+            int num = arr1[(int) Math.random() * len];
+            int res1 = getMaxMinSubLetterNumForce(arr1, num);
+            int res2 = getMaxMinSubLetterNum(arr1, num);
+            if (res1 == res2) {
+                System.out.println("Nice Code!!");
+            } else {
+                System.out.println("Fk Code!!!");
+            }
+        }
+
+    }
+
+    public int getMaxMinSubLetterNum(int[] arr, int num) {
+        if (num < 0) {
+            return 0;
+        }
+        int count = 0;
+        Deque<Integer> maxDeque = new ArrayDeque<>();
+        Deque<Integer> minDeque = new ArrayDeque<>();
+        int len = arr.length;
+        int R = 0;
+        for (int L = 0; L < len; L++) {
+            while (R < len) {
+                while (!maxDeque.isEmpty() && arr[maxDeque.peekLast()] <= arr[R]) {
+                    maxDeque.pollLast();
+                }
+                maxDeque.addLast(R);
+                while (!minDeque.isEmpty() && arr[minDeque.peekLast()] >= arr[R]) {
+                    minDeque.pollLast();
+                }
+                minDeque.addLast(R);
+                int sub = arr[maxDeque.peekFirst()] - arr[minDeque.peekFirst()];
+                if (sub <= num) {
+                    R++;
+                } else {
+                    break;
+                }
+            }
+            count += R - L;
+            if (maxDeque.peekFirst() == L) {
+                maxDeque.pollFirst();
+            }
+            if (minDeque.peekFirst() == L) {
+                minDeque.pollFirst();
+            }
+        }
+        return count;
+    }
+
+    @Test
+    public void testabaew() {
+        int[] arr = {7258, 6579, 2602, 6716, 3050, 3564, 5396, 1773};
+        int sum = arr[0];
+        int xOr = arr[0];
+        for (int i = 1; i < arr.length; i++) {
+            xOr ^= arr[i];
+            sum += arr[i];
+        }
+        System.out.println(sum);
+        System.out.println(xOr);
     }
 
     public int getWindowSubSum(int[] arr, int sum) {
@@ -1863,7 +1963,7 @@ public class ArrayPractice {
     @Test
     public void maxResultTest() {
 //        int[] arr = {1, -5, -20, 4};
-        int[] arr = {10,-5,-2,4,0,3};
+        int[] arr = {10, -5, -2, 4, 0, 3};
 //        int[] arr = {1,-1,-2,4,-7,3};
         int k = 3;
         System.out.println(maxResultDp(arr, k));
@@ -1872,19 +1972,19 @@ public class ArrayPractice {
     public int maxResultDp(int[] nums, int k) {
         int n = nums.length;
         int[] dp = new int[n];
-        for (int i = 0; i < n-1; i++) {
+        for (int i = 0; i < n - 1; i++) {
             dp[i] = Integer.MIN_VALUE;
         }
-        dp[n-1] = nums[n-1];
+        dp[n - 1] = nums[n - 1];
         Deque<Integer> deque = new LinkedList<>();
-        deque.addLast(n-1);
+        deque.addLast(n - 1);
         for (int i = n - 2; i >= 0; i--) {
             dp[i] = dp[deque.peekFirst()] + nums[i];
-            while (!deque.isEmpty() && dp[deque.peekLast()] <= dp[i] ) {
+            while (!deque.isEmpty() && dp[deque.peekLast()] <= dp[i]) {
                 deque.pollLast();
             }
             deque.addLast(i);
-            if (deque.peekFirst() > i+k-1) {
+            if (deque.peekFirst() > i + k - 1) {
                 deque.pollFirst();
             }
             /*for (int j = 1; j <= k && j+i < n; j++) {
@@ -1920,6 +2020,244 @@ public class ArrayPractice {
         }
         dp[index] = ans;
         return ans;
+    }
+
+    /**
+     * 739. 每日温度
+     *
+     * @param temperatures
+     * @return
+     */
+    public int[] dailyTemperatures(int[] temperatures) {
+        if (temperatures == null || temperatures.length == 0) {
+            return new int[0];
+        }
+        int len = temperatures.length;
+        int[] res = new int[len];
+        /*Stack<Integer> stack = new Stack<>();
+        for (int i = 0; i < len; i++) {
+            while (!stack.isEmpty() && temperatures[stack.peek()] < temperatures[i]) {
+                int j = stack.pop();
+                res[j] = i - j;
+            }
+            stack.push(i);
+        }
+        while (!stack.isEmpty()) {
+            int j = stack.pop();
+            res[j] = 0;
+        }*/
+        int[] stack = new int[len];
+        int index = -1;
+        for (int i = 0; i < len; i++) {
+            while (index >= 0 && temperatures[i] > temperatures[stack[index]]) {
+                int j = stack[index--];
+                res[j] = i - j;
+            }
+            stack[++index] = i;
+        }
+        while (index >= 0) {
+            int j = stack[index--];
+            res[j] = 0;
+        }
+        return res;
+    }
+
+    @Test
+    public void dailyTemperaturesTest() {
+        int[] tmp = {73, 74, 75, 71, 69, 72, 76, 73};
+//        int[] tmp = {30, 40, 50, 60};
+        System.out.println(Arrays.toString(dailyTemperatures(tmp)));
+    }
+
+    @Test
+    public void nextGreaterElementTest() {
+//        int[] nums1 = {4,1,2};
+        int[] nums1 = {2, 4};
+//        int[] nums2 = {1,3,4,2};
+        int[] nums2 = {1, 2, 3, 4};
+        System.out.println(Arrays.toString(nextGreaterElement(nums1, nums2)));
+    }
+
+    public int[] nextGreaterElement(int[] nums1, int[] nums2) {
+        int[] map = new int[10001];
+        int len2 = nums2.length;
+        int[] stack = new int[len2];
+        int index = -1;
+        for (int i = 0; i < len2; i++) {
+            while (index >= 0 && nums2[i] > nums2[stack[index]]) {
+                int j = stack[index--];
+                map[nums2[j]] = nums2[i];
+            }
+            stack[++index] = i;
+        }
+        while (index >= 0) {
+            int j = stack[index--];
+            map[nums2[j]] = -1;
+        }
+        int[] res = new int[nums1.length];
+        for (int i = 0; i < nums1.length; i++) {
+            res[i] = map[nums1[i]];
+        }
+        return res;
+    }
+
+    @Test
+    public void finalPricesTest() {
+        int[] prices = {10, 1, 1, 6};
+        System.out.println(Arrays.toString(finalPrices(prices)));
+    }
+
+    public int[] finalPrices(int[] prices) {
+        int len = prices.length;
+        int[] stack = new int[len];
+        int[] res = new int[len];
+        int index = -1;
+        for (int i = 0; i < len; i++) {
+            while (index >= 0 && prices[i] <= prices[stack[index]]) {
+                int idx = stack[index--];
+                res[idx] = prices[idx] - prices[i];
+            }
+            stack[++index] = i;
+        }
+        while (index >= 0) {
+            int idx = stack[index--];
+            res[idx] = prices[idx];
+        }
+        return res;
+    }
+
+    public int[][] getLeftRightLess(int[] arr) {
+        int[][] res = new int[arr.length][2];
+        Stack<List<Integer>> stack = new Stack<>();
+        for (int i = 0; i < arr.length; i++) {
+            while (!stack.isEmpty() && arr[i] < arr[stack.peek().get(stack.peek().size() - 1)]) {
+                List<Integer> list = stack.pop();
+                for (Integer num : list) {
+                    int[] nums = new int[2];
+                    nums[0] = stack.isEmpty() ? -1 : arr[stack.peek().get(stack.peek().size() - 1)];
+                    nums[1] = arr[i];
+                    res[num] = nums;
+                }
+            }
+            if (!stack.isEmpty() && arr[i] == arr[stack.peek().get(0)]) {
+                List<Integer> list = stack.peek();
+                list.add(i);
+            } else {
+                List<Integer> list = new ArrayList<>();
+                list.add(i);
+                stack.add(list);
+            }
+        }
+        while (!stack.isEmpty()) {
+            List<Integer> list = stack.pop();
+            for (Integer num : list) {
+                int[] nums = new int[2];
+                nums[0] = stack.isEmpty() ? -1 : arr[stack.peek().get(stack.peek().size() - 1)];
+                nums[1] = -1;
+                res[num] = nums;
+            }
+        }
+        return res;
+    }
+
+    public int[][] getLeftRightLessForce(int[] arr) {
+        int[][] res = new int[arr.length][2];
+        for (int i = 0; i < arr.length; i++) {
+            int left = i - 1;
+            int right = i + 1;
+            while (left >= 0) {
+                if (arr[left] < arr[i]) {
+                    break;
+                }
+                left--;
+            }
+            while (right < arr.length) {
+                if (arr[right] < arr[i]) {
+                    break;
+                }
+                right++;
+            }
+            int[] nums = new int[2];
+            nums[0] = left == -1 ? -1 : arr[left];
+            nums[1] = right == arr.length ? -1 : arr[right];
+            res[i] = nums;
+        }
+        return res;
+    }
+
+    public void randomGetLeftRightLess(int count, int maxVal, int len) {
+        for (int c = 0; c < count; c++) {
+            int[] arr1 = new int[len];
+            for (int i = 0; i < len; i++) {
+                int num = (int) (Math.random() * maxVal);
+                arr1[i] = num;
+            }
+            int[] arr2 = Arrays.copyOf(arr1, len);
+            int[][] res1 = getLeftRightLess(arr1);
+            int[][] res2 = getLeftRightLessForce(arr2);
+            boolean flag = false;
+            for (int i = 0; i < res1.length; i++) {
+                if (!Arrays.equals(res1[i], res2[i])) {
+                    flag = true;
+                    break;
+                }
+            }
+            if (flag) {
+                System.out.printf("Fuck Code!!!");
+            } else {
+                System.out.println("Nice Code");
+            }
+        }
+    }
+
+
+    @Test
+    public void getLeftRightLessTest() {
+        int[] arr = {1, 9, 6, 7, 6, 5, 2};
+//        int[][] res = getLeftRightLess(arr);
+        /*randomGetLeftRightLess(10000, 10000, 1000);
+        int[][] res = getLeftRightLessForce(arr);
+        for (int[] re : res) {
+            System.out.println(Arrays.toString(re));
+        }*/
+        System.out.println((int) 'C');
+    }
+
+    public int leastInterval(char[] tasks, int n) {
+        if (tasks == null || tasks.length == 0) {
+            return 0;
+        }
+        if (n == 0) {
+            return tasks.length;
+        }
+        int[] arr = new int[26];
+        for (int i = 0; i < tasks.length; i++) {
+            arr[tasks[i] - 65]++;
+        }
+        Arrays.sort(arr);
+        int count = 0;
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == arr[25]) {
+                count++;
+            }
+        }
+        return Math.max(tasks.length, (n + 1) * (arr[25] - 1) + count);
+    }
+
+    @Test
+    public void sumOfTheDigitsOfHarshadNumberTest() {
+        int x = 23;
+        System.out.println(sumOfTheDigitsOfHarshadNumber(x));
+    }
+
+    public int sumOfTheDigitsOfHarshadNumber(int x) {
+        int k = x;
+        int res = 0;
+        while (x > 0) {
+            res += x % 10;
+            x /= 10;
+        }
+        return k % res == 0 ? res : -1;
     }
 
 }

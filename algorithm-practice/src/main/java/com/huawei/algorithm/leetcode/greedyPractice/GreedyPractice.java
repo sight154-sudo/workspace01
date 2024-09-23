@@ -410,10 +410,10 @@ public class GreedyPractice {
                 index++;
             } else {
                 ans++;
-                if (index+1 < chs.length && chs[index+1] == 'X') {
-                    index = index+2;
+                if (index + 1 < chs.length && chs[index + 1] == 'X') {
+                    index = index + 2;
                 } else {
-                    index = index+3;
+                    index = index + 3;
                 }
             }
         }
@@ -426,4 +426,125 @@ public class GreedyPractice {
         System.out.println(getMinLight(s));
     }
 
+    /**
+     * 455. 分发饼干
+     * 假设你是一位很棒的家长，想要给你的孩子们一些小饼干。但是，每个孩子最多只能给一块饼干。
+     * 对每个孩子 i，都有一个胃口值 g[i]，这是能让孩子们满足胃口的饼干的最小尺寸；并且每块饼干 j，都有一个尺寸 s[j] 。
+     * 如果 s[j] >= g[i]，我们可以将这个饼干 j 分配给孩子 i ，这个孩子会得到满足。
+     * 你的目标是尽可能满足越多数量的孩子，并输出这个最大数值。
+     *
+     * @param g
+     * @param s
+     * @return
+     */
+    public int findContentChildren(int[] g, int[] s) {
+        Arrays.sort(g);
+        Arrays.sort(s);
+        int index = 0;
+        int count = 0;
+        /*for (int i = 0; i < g.length; i++) {
+            while (index < s.length) {
+                if (s[index++] >= g[i]) {
+                    count++;
+                    break;
+                }
+            }
+            if (index >= s.length) {
+                break;
+            }
+        }*/
+        int l = g.length;
+        // 遍历饼干， 从小到大，找出依次找出符合胃口的小孩数量
+        /*for (int i = 0; i < s.length; i++) {
+            if (index < l && s[i] >= g[index]) {
+                index++;
+                count++;
+            }
+        }*/
+        index = s.length - 1;
+        // 遍历小孩的胃口，从大到小， 找出徐伟胃口的饼干数量
+        for (int i = g.length - 1; i >= 0; i--) {
+            if (index >= 0 && s[index] >= g[i]) {
+                index--;
+                count++;
+            }
+        }
+        return count;
+    }
+
+    @Test
+    public void findContentTest() {
+        int[] g = {1, 2, 3};
+        int[] s = {1, 1, 1};
+        System.out.println(findContentChildren(g, s));
+    }
+
+    /**
+     * 376. 摆动序列
+     * 如果连续数字之间的差严格地在正数和负数之间交替，则数字序列称为 摆动序列 。第一个差（如果存在的话）可能是正数或负数。
+     * 仅有一个元素或者含两个不等元素的序列也视作摆动序列。
+     * [1, 7, 4, 9, 2, 5] 是一个 摆动序列 ，因为差值 (6, -3, 5, -7, 3) 是正负交替出现的。
+     * [1, 4, 7, 2, 5] 和 [1, 7, 4, 5, 5] 不是摆动序列，第一个序列是因为它的前两个差值都是正数，第二个序列是因为它的最后一个差值为零。
+     * 子序列 可以通过从原始序列中删除一些（也可以不删除）元素来获得，剩下的元素保持其原始顺序。
+     * 给你一个整数数组 nums ，返回 nums 中作为 摆动序列 的 最长子序列的长度 。
+     *
+     * @param nums
+     * @return
+     */
+    public int wiggleMaxLength(int[] nums) {
+        if (nums.length == 1) {
+            return 1;
+        }
+        int before = nums[1] - nums[0];
+        int result = wiggleMaxLengthForce(nums, 2, before);
+
+        return result-1;
+    }
+
+    @Test
+    public void wiggleMaxLengthTest() {
+//        int[] nums = {5,4,2,4,1};
+        int[] nums = {1,7,4,9,2,5};
+        System.out.println(wiggleMaxLength01(nums));
+    }
+
+    public int wiggleMaxLengthForce(int[] nums, int index, int before) {
+        if (index >= nums.length) {
+            return 0;
+        }
+        int p1 = wiggleMaxLengthForce(nums, index + 1, before);
+        int diff = nums[index] - nums[index-1];
+        if (diff == 0 || diff * before > 0) {
+            return 0;
+        }
+        int p2 = wiggleMaxLengthForce(nums, index + 1, diff) + 1;
+        return Math.max(p1, p2);
+    }
+
+    public int wiggleMaxLength01(int[] nums) {
+        if (nums == null) {
+            return 0;
+        }
+        if (nums.length == 1) {
+            return 1;
+        }
+        int len = nums.length;
+        int[] down = new int[len];
+        int[] up = new int[len];
+        down[0] = 1;
+        up[0] = 1;
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] > nums[i-1]) {
+                up[i] = Math.max(up[i-1], down[i-1]);
+                down[i] = down[i-1];
+            } else if (nums[i] < nums[i-1]) {
+                down[i] = Math.max(up[i-1], down[i-1])+1;
+                up[i] = up[i-1];
+            } else {
+                down[i] = down[i-1];
+                up[i] = up[i-1];
+            }
+        }
+        return Math.max(down[len-1], up[len-1]);
+    }
 }

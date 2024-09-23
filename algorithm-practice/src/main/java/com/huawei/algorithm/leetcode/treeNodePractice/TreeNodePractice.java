@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * @author king
@@ -1699,8 +1700,9 @@ public class TreeNodePractice {
 
     @Test
     public void findModeTest() {
-        TreeNode root = TreeNode.constructTreeNode(new int[]{-1, 6,2,8,0,4,7,9,-1,-1,2,6}, 1);
-        System.out.println(Arrays.toString(findMode(root)));
+        TreeNode root = TreeNode.constructTreeNode(new int[]{-1, 6, 2, 8, 0, 4, 7, 9, -1, -1, 2, 6}, 1);
+//        TreeNode root = TreeNode.constructTreeNode(new int[]{-1, 1, 2, 3}, 1);
+        System.out.println(Arrays.toString(findMode3(root)));
     }
 
     /**
@@ -1735,7 +1737,7 @@ public class TreeNodePractice {
             if (maxCount == 0) {
                 maxCount = value;
                 list.add(key);
-            }else if (value > maxCount) {
+            } else if (value > maxCount) {
                 list.clear();
                 list.add(key);
                 maxCount = value;
@@ -1744,5 +1746,544 @@ public class TreeNodePractice {
             }
         }
         return list.stream().mapToInt(v -> v).toArray();
+    }
+
+    int count = 0;
+    int maxCount = 0;
+
+    public int[] findMode2(TreeNode root) {
+        List<Integer> list = new ArrayList<>();
+        searchBst(root, list);
+        return list.stream().mapToInt(a -> a).toArray();
+    }
+
+    public int[] findMode3(TreeNode root) {
+        if (root == null) {
+            return new int[0];
+        }
+        Stack<TreeNode> stack = new Stack<>();
+        TreeNode pre = null;
+        int count = 0;
+        int maxCount = 0;
+        List<Integer> list = new ArrayList<>();
+        while (!stack.isEmpty() || root != null) {
+            if (root != null) {
+                stack.push(root);
+                root = root.left;
+            } else {
+                TreeNode node = stack.pop();
+                if (pre == null) {
+                    count = 1;
+                } else if (pre.val == node.val) {
+                    count++;
+                } else {
+                    count = 1;
+                }
+                pre = node;
+                if (count == maxCount) {
+                    list.add(node.val);
+                } else if (count > maxCount) {
+                    maxCount = count;
+                    list.clear();
+                    list.add(node.val);
+                }
+
+                root = node.right;
+            }
+        }
+        return list.stream().mapToInt(a -> a).toArray();
+    }
+
+
+    private void searchBst(TreeNode root, List<Integer> list) {
+        if (root == null) {
+            return;
+        }
+        searchBst(root.left, list);
+        if (pre == null) {
+            count = 1;
+        } else if (pre.val == root.val) {
+            count++;
+        } else {
+            count = 1;
+        }
+        pre = root;
+        if (count == maxCount) {
+            list.add(root.val);
+        } else if (count > maxCount) {
+            maxCount = count;
+            list.clear();
+            list.add(root.val);
+        }
+        searchBst(root.right, list);
+    }
+
+    @Test
+    public void mapSort() {
+        Map<String, Integer> map = new HashMap<>();
+        map.put("aa", 10);
+        map.put("ab", 12);
+        map.put("ac", 18);
+        map.put("ad", 9);
+        List<Map.Entry<String, Integer>> entries = map.entrySet().stream().sorted((a, b) -> b.getValue() - a.getValue()).collect(Collectors.toList());
+
+    }
+
+    static class CommonNode {
+        boolean findA;
+        boolean findB;
+        TreeNode node;
+
+        public CommonNode(boolean findA, boolean findB, TreeNode node) {
+            this.findA = findA;
+            this.findB = findB;
+            this.node = node;
+        }
+    }
+
+    /**
+     * 236. 二叉树的最近公共祖先
+     *
+     * @param root
+     * @param p
+     * @param q
+     * @return
+     */
+    public TreeNode lowestCommonAncestor2(TreeNode root, TreeNode p, TreeNode q) {
+        return lowestCommonAncestorRecursion(root, p, q).node;
+    }
+
+    @Test
+    public void lowestCommonAncestorTest() {
+        TreeNode root = TreeNode.constructTreeNode(new int[]{-1, 3, 5, 1, 6, 2, 0, 8, -1, -1, 7, 4}, 1);
+        TreeNode p = new TreeNode(5);
+        TreeNode q = new TreeNode(0);
+        System.out.println(lowestCommonAncestor(root, p, q).val);
+    }
+
+    public CommonNode lowestCommonAncestorRecursion(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null) {
+            return new CommonNode(false, false, null);
+        }
+        CommonNode left = lowestCommonAncestorRecursion(root.left, p, q);
+        CommonNode right = lowestCommonAncestorRecursion(root.right, p, q);
+        boolean findA = root.val == p.val || left.findA || right.findA;
+        boolean findB = root.val == q.val || left.findB || right.findB;
+        TreeNode node;
+        if (left.node != null) {
+            node = left.node;
+        } else if (right.node != null) {
+            node = right.node;
+        } else if (findA && findB) {
+            node = root;
+        } else {
+            node = null;
+        }
+        return new CommonNode(findA, findB, node);
+    }
+
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null || root.val == p.val || root.val == q.val) {
+            // 如果没找到，或者找到了p或q， 则直接返回，不用在向子树上找
+            return root;
+        }
+        TreeNode left = lowestCommonAncestor(root.left, p, q);
+        TreeNode right = lowestCommonAncestor(root.right, p, q);
+        if (left != null && right != null) {
+            // 两个节点为的最近公共节点已经找到
+            return left;
+        } else if (left != null && right == null) {
+            // 左边已经找到了一个节点
+            return left;
+        } else if (left == null && right != null) {
+            // 右边已经找到了一个节点
+            return right;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * 235. 二叉搜索树的最近公共祖先
+     *
+     * @param root
+     * @param p
+     * @param q
+     * @return
+     */
+    public TreeNode lowestCommonAncestor1(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null || root.val == p.val || root.val == q.val) {
+            return root;
+        }
+        TreeNode left = null;
+        TreeNode right = null;
+        if ((root.val > p.val && root.val < q.val) || (root.val < p.val && root.val > q.val)) {
+            left = lowestCommonAncestor1(root.left, p, q);
+            right = lowestCommonAncestor1(root.right, p, q);
+        } else if (root.val > p.val && root.val > q.val) {
+            left = lowestCommonAncestor1(root.left, p, q);
+        } else {
+            right = lowestCommonAncestor1(root.right, p, q);
+        }
+        if (left != null && right != null) {
+            return root;
+        } else if (left == null && right != null) {
+            return right;
+        } else if (left != null && right == null) {
+            return left;
+        }
+        return null;
+    }
+
+    public TreeNode lowestCommonAncestor3(TreeNode root, TreeNode p, TreeNode q) {
+        TreeNode node = root;
+        while (true) {
+            if (node.val > p.val && node.val > q.val) {
+                node = node.left;
+            } else if (node.val < p.val && node.val < q.val) {
+                node = node.right;
+            } else {
+                break;
+            }
+        }
+        return node;
+    }
+
+    @Test
+    public void lowestCommonAncestor1Test() {
+        TreeNode root = TreeNode.constructTreeNode(new int[]{-1, 6, 2, 8, 0, 4, 7, 9, -1, -1, 3, 5}, 1);
+        TreeNode p = new TreeNode(2);
+        TreeNode q = new TreeNode(4);
+        TreeNode node = lowestCommonAncestor1(root, p, q);
+        System.out.println(node.val);
+    }
+
+    /**
+     * 701. 二叉搜索树中的插入操作
+     *
+     * @param root
+     * @param val
+     * @return
+     */
+    public TreeNode insertIntoBST(TreeNode root, int val) {
+        // 此题并不需要添加节点后二叉树平衡， 直接找到空节点后，添加元素
+        if (root == null) {
+            return new TreeNode(val);
+        }
+        TreeNode node = root;
+        while (true) {
+            // 往左找
+            if (node.val > val) {
+                if (node.left == null) {
+                    node.left = new TreeNode(val);
+                    break;
+                }
+                node = node.left;
+            } else {
+                // 往右找
+                if (node.right == null) {
+                    node.right = new TreeNode(val);
+                    break;
+                }
+                node = node.right;
+            }
+        }
+        return root;
+    }
+
+    public TreeNode insertIntoBST1(TreeNode root, int val) {
+        if (root == null) {
+            return new TreeNode(val);
+        }
+        insertInfoBSTRecursion(root, val);
+        return root;
+    }
+
+    private void insertInfoBSTRecursion(TreeNode root, int val) {
+        if (root == null) {
+            TreeNode node = new TreeNode(val);
+            if (pre.val > val) {
+                pre.left = node;
+            } else {
+                pre.right = node;
+            }
+            return;
+        }
+        pre = root;
+        if (root.val > val) {
+            insertInfoBSTRecursion(root.left, val);
+        } else {
+            insertInfoBSTRecursion(root.right, val);
+        }
+    }
+
+    /**
+     * 450. 删除二叉搜索树中的节点
+     *
+     * @param root
+     * @param key
+     * @return
+     */
+    public TreeNode deleteNode1(TreeNode root, int key) {
+        if (root == null) {
+            return root;
+        }
+        TreeNode node = root;
+        TreeNode pre = null;
+        while (node != null) {
+            if (node.val == key) {
+                break;
+            }
+            pre = node;
+            if (node.val > key) {
+                node = node.left;
+            } else {
+                node = node.right;
+            }
+        }
+        // 第一种情况
+        // 未找到节点
+        if (node == null) {
+            return root;
+        }
+
+        // 找到节点
+        /**
+         * 第二种情况：左右孩子都为空（叶子节点），直接删除节点， 返回NULL为根节点
+         * 第三种情况：删除节点的左孩子为空，右孩子不为空，删除节点，右孩子补位，返回右孩子为根节点
+         * 第四种情况：删除节点的右孩子为空，左孩子不为空，删除节点，左孩子补位，返回左孩子为根节点
+         * 第五种情况：左右孩子节点都不为空，则将删除节点的左子树头结点（左孩子）放到删除节点的右子树的最左面节点的左孩子上，返回删除节点右孩子为新的根节点。
+         */
+        if (pre == null) {
+            return deleteOne(node);
+        } else if (pre.left != null && pre.left.val == key) {
+            pre.left = deleteOne(node);
+        } else {
+            pre.right = deleteOne(node);
+        }
+        return root;
+    }
+
+    public TreeNode deleteOne(TreeNode node) {
+        if (node == null) {
+            return node;
+        }
+        if (node.left == null) {
+            return node.right;
+        }
+        if (node.right == null) {
+            return node.left;
+        }
+        TreeNode cur = node.right;
+        while (cur.left != null) {
+            cur = cur.left;
+        }
+        cur.left = node.left;
+        return node.right;
+    }
+
+    public TreeNode deleteNode(TreeNode root, int key) {
+        if (root == null) {
+            return root;
+        }
+        if (root.val == key) {
+            if (root.left == null && root.right == null) {
+                root = null;
+                return root;
+            } else if (root.left == null && root.right != null) {
+                TreeNode tmp = root.right;
+                return tmp;
+            } else if (root.left != null && root.right == null) {
+                TreeNode tmp = root.left;
+                return tmp;
+            } else {
+                TreeNode left = root.left;
+                TreeNode node = root.right;
+                while (node.left != null) {
+                    node = node.left;
+                }
+                node.left = left;
+                TreeNode tmp = root.right;
+                return tmp;
+            }
+        }
+        if (root.val > key) root.left = deleteNode(root.left, key);
+        if (root.val < key) root.right = deleteNode(root.right, key);
+        return root;
+    }
+
+    @Test
+    public void deleteNodeTest() {
+        TreeNode root = TreeNode.constructTreeNode(new int[]{-1, 5, 3, 6, 2, 4, -1, 7}, 1);
+        root = deleteNode(root, 2);
+        TreeNode.levelPrintTreeNode(root);
+    }
+
+    /**
+     * 669. 修剪二叉搜索树
+     */
+    public TreeNode trimBST(TreeNode root, int low, int high) {
+        /*if (root.val >= low && root.val <= high) {
+            return trimBSTRecursion(root, low, high);
+        } else if (root.val < low) {
+            TreeNode tmp = root.right;
+            root = null;
+            return trimBSTRecursion(tmp, low, high);
+        } else {
+            TreeNode tmp = root.left;
+            root = null;
+            return trimBSTRecursion(tmp, low, high);
+        }*/
+
+        return trimBSTRecursion(root, low, high);
+    }
+
+    public TreeNode trimBST1(TreeNode root, int low, int high) {
+        if (root == null) {
+            return null;
+        }
+        // 找到头节点
+        while (root != null) {
+            if (root.val >= low && root.val <= high) {
+                break;
+            }
+            if (root.val < low) {
+                root = root.right;
+            } else {
+                root = root.left;
+            }
+        }
+        TreeNode cur = root;
+        while (cur != null) {
+            while (cur.left != null && cur.left.val < low) {
+                cur.left = cur.left.right;
+            }
+            cur = cur.left;
+        }
+        cur = root;
+        while (cur != null) {
+            while (cur.right != null && cur.right.val > high) {
+                cur.right = cur.right.left;
+            }
+            cur = cur.right;
+        }
+        return root;
+    }
+
+    @Test
+    public void trimBSTTest() {
+//        TreeNode root = TreeNode.constructTreeNode(new int[]{-1, 1, 0, 2}, 1);
+        TreeNode root = TreeNode.constructTreeNode(new int[]{-1, 3, 0, 4, -1, 2, -1, -1, -1, -1, 1}, 1);
+        TreeNode node = trimBST(root, 1, 3);
+        TreeNode.levelPrintTreeNode(node);
+    }
+
+    public TreeNode trimBSTRecursion(TreeNode root, int low, int high) {
+        if (root == null) {
+            return root;
+        }
+        if (root.val < low) {
+            return trimBSTRecursion(root.right, low, high);
+        }
+        if (root.val > high) {
+            return trimBSTRecursion(root.left, low, high);
+        }
+        root.left = trimBSTRecursion(root.left, low, high);
+        root.right = trimBSTRecursion(root.right, low, high);
+        return root;
+    }
+
+
+    /**
+     * 108. 将有序数组转换为二叉搜索树
+     *
+     * @param nums
+     * @return
+     */
+    public TreeNode sortedArrayToBST(int[] nums) {
+
+        return sortedArrayToBST(nums, 0, nums.length - 1);
+    }
+
+    @Test
+    public void sortedArrayToBSTTest() {
+        int[] nums = {-10, -3, 0, 5, 9};
+        TreeNode root = sortedArrayToBST(nums);
+        TreeNode.levelPrintTreeNode(root);
+    }
+
+    public TreeNode sortedArrayToBST(int[] nums, int start, int end) {
+        if (end < start) {
+            return null;
+        }
+        int mid = start + (end - start) / 2;
+        TreeNode root = new TreeNode(nums[mid]);
+        root.left = sortedArrayToBST(nums, start, mid - 1);
+        root.right = sortedArrayToBST(nums, mid + 1, end);
+        return root;
+    }
+
+    /**
+     * 538. 把二叉搜索树转换为累加树
+     *
+     * @param root
+     * @return
+     */
+    public TreeNode convertBST1(TreeNode root) {
+        if (root == null) {
+            return null;
+        }
+        TreeNode cur = root;
+        Stack<TreeNode> stack = new Stack<>();
+        TreeNode pre = null;
+        while (!stack.isEmpty() || cur != null) {
+            if (cur != null) {
+                stack.add(cur);
+                cur = cur.right;
+            } else {
+                TreeNode node = stack.pop();
+                if (pre != null) {
+                    node.val += pre.val;
+                }
+                pre = node;
+                cur = node.left;
+            }
+        }
+        return root;
+    }
+
+    public TreeNode convertBST(TreeNode root) {
+        convertBSTRecursion(root);
+        return root;
+    }
+
+    private void convertBSTRecursion(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        convertBSTRecursion(root.right);
+        if (pre != null) {
+            root.val +=pre.val;
+        }
+        pre = root;
+        convertBSTRecursion(root.left);
+
+    }
+
+    public void rightRootLeft(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        rightRootLeft(root.right);
+        System.out.println(root.val+"->");
+        rightRootLeft(root.left);
+    }
+
+    @Test
+    public void convertBSTTest() {
+        TreeNode root = TreeNode.constructTreeNode(new int[]{-1,4,1,6,0,2,5,7,-1,-1,-1,3,-1,-1,-1,8}, 1);
+//        rightRootLeft(root);
+        TreeNode node = convertBST(root);
+        TreeNode.levelPrintTreeNode(node);
     }
 }

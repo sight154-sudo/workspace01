@@ -1,18 +1,23 @@
 package com.huawei.algorithm.leetcode.arrayPractice;
 
 import com.sun.prism.sw.SWPipeline;
+import org.junit.Assert;
 import org.junit.Test;
 
+import javax.swing.text.Style;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * @author king
@@ -1875,7 +1880,7 @@ public class ArrayPractice {
         while (k > 0) {
             int num = queue.poll();
             res += num;
-            queue.add((int) Math.ceil(num/3.0d));
+            queue.add((int) Math.ceil(num / 3.0d));
             k--;
         }
         return res;
@@ -1883,8 +1888,418 @@ public class ArrayPractice {
 
     @Test
     public void maxKelementsTest() {
-        int[] nums = {1,10,3,3,3};
+        int[] nums = {1, 10, 3, 3, 3};
         System.out.println(maxKelements(nums, 3));
     }
 
+    /**
+     * 2917. 找出数组中的 K-or 值
+     * 给你一个下标从 0 开始的整数数组 nums 和一个整数 k 。
+     * nums 中的 K-or 是一个满足以下条件的非负整数：
+     * 只有在 nums 中，至少存在 k 个元素的第 i 位值为 1 ，那么 K-or 中的第 i 位的值才是 1 。
+     * 返回 nums 的 K-or 值。
+     * <p>
+     * 注意 ：对于整数 x ，如果 (2i AND x) == 2i ，则 x 中的第 i 位值为 1 ，其中 AND 为按位与运算符。
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int findKOr(int[] nums, int k) {
+        int result = 0;
+        for (int i = 0; i < 32; i++) {
+            int count = 0;
+            for (int num : nums) {
+                int bit = 1 << i;
+                if ((bit & num) == bit) {
+                    count++;
+                    if (count >= k) {
+                        result += bit;
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Alice 有 n 枚糖，其中第 i 枚糖的类型为 candyType[i] 。Alice 注意到她的体重正在增长，所以前去拜访了一位医生。
+     * 医生建议 Alice 要少摄入糖分，只吃掉她所有糖的 n / 2 即可（n 是一个偶数）。Alice 非常喜欢这些糖，她想要在遵循医生建议的情况下，尽可能吃到最多不同种类的糖。
+     * 给你一个长度为 n 的整数数组 candyType ，返回： Alice 在仅吃掉 n / 2 枚糖的情况下，可以吃到糖的 最多 种类数
+     *
+     * @param candyType
+     * @return
+     */
+    public int distributeCandies(int[] candyType) {
+        int mid = candyType.length / 2;
+        Arrays.sort(candyType);
+        int pre = -1;
+        int type = 0;
+        for (int num : candyType) {
+            if (num != pre) {
+                type++;
+                pre = num;
+                mid--;
+            }
+            if (mid == 0) {
+                break;
+            }
+        }
+        return type;
+    }
+
+    public int distributeCandies01(int[] candyType) {
+        int mid = candyType.length / 2;
+        Set<Integer> set = new HashSet<>();
+        int type = 0;
+        for (int num : candyType) {
+            if (!set.contains(num)) {
+                type++;
+                mid--;
+                set.add(num);
+            }
+            if (mid == 0) {
+                break;
+            }
+        }
+        return type;
+    }
+
+    @Test
+    public void distributeCandiesTest() {
+        int[] candyType = {6, 6, 6, 6};
+        int result = distributeCandies(candyType);
+        System.out.println(result);
+    }
+
+    /**
+     * 2575. 找出字符串的可整除数组
+     *
+     * @param word
+     * @param m
+     * @return
+     */
+    public int[] divisibilityArray(String word, int m) {
+        int len = word.length();
+        int[] result = new int[len];
+        long before = 0;
+        char[] chars = word.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            before = before * 10 + (chars[i] - 48);
+            if (before % m == 0) {
+                result[i] = 1;
+            }
+            before %= m;
+        }
+        return result;
+    }
+
+    @Test
+    public void divisibilityArray() {
+        String word = "998244353";
+        int m = 3;
+        System.out.println(Arrays.toString(divisibilityArray(word, m)));
+    }
+
+    @Test
+    public void findKOrTest() {
+        int[] nums = {10, 8, 5, 9, 11, 6, 8};
+        int k = 1;
+        int result = findKOr(nums, k);
+        System.out.println(result);
+//        System.out.println((2<<1));
+    }
+
+    /**
+     * 2789. 合并后数组中的最大元素
+     *
+     * @param nums
+     * @return
+     */
+    public long maxArrayValue(int[] nums) {
+        // 将nums数组转换为List<Long>类型的集合
+        List<Long> list = Arrays.stream(nums).mapToLong(a -> a).boxed().collect(Collectors.toList());
+
+        // 调用mergeMaxList方法进行合并操作
+        while (mergeMaxList(list)) {
+
+        }
+        // 返回合并后的最大值
+        return list.get(0);
+    }
+
+    public long maxArrayValue1(int[] nums) {
+        // 数组合并，i可以随意取值，需要满足num[i] <= num[i+1]时才可以合并， 数组合并后的子数组和与原数组的和是保持不变的
+        // 对于数组中的某个元素i, i之前的元素合并的结果必须小于元素i才可以与i合并，但我们不知道i之后合并的结果，所有可以从后往前合并，
+        // 对于数组i,
+        int len = nums.length;
+        int res = nums[len - 1];
+        for (int i = len - 2; i >= 0; i--) {
+            res = res >= nums[i] ? res + nums[i] : nums[i];
+        }
+        return res;
+    }
+
+    @Test
+    public void marArrayValueTest() {
+        int[] num = {8, 1, 19, 6, 11};
+        long max = maxArrayValue1(num);
+        System.out.println(max);
+    }
+
+
+    public boolean mergeMaxList(List<Long> list) {
+        if (list.size() == 1) {
+            return false;
+        }
+        boolean isMerge = false;
+        for (int i = list.size() - 1; i > 0; i--) {
+            if (list.get(i) >= list.get(i - 1)) {
+                list.set(i - 1, list.get(i) + list.get(i - 1));
+                isMerge = true;
+            }
+        }
+        return isMerge;
+    }
+
+
+    public int maxArea01(int[] height) {
+        // 区域面积 =  min(a[i], a[j]) * (j-i)
+        // 暴力解法
+        int maxArea = 0;
+        for (int i = 0; i < height.length; i++) {
+            for (int j = i + 1; j < height.length; j++) {
+                maxArea = Math.max(maxArea, (j - i) * Math.min(height[i], height[j]));
+            }
+        }
+        return maxArea;
+    }
+
+    public int maxArea(int[] height) {
+        // 区域面积 =  min(a[i], a[j]) * (j-i)
+        // 双指针法
+        int i = 0, j = height.length - 1;
+        int maxArea = 0;
+        while (i < j) {
+            maxArea = Math.max(maxArea, Math.min(height[i], height[j]) * (j - i));
+            if (height[i] < height[j]) {
+                i++;
+            } else {
+                j--;
+            }
+        }
+        return maxArea;
+    }
+
+    @Test
+    public void canCompleteCircuitTest() {
+        int[] gas = {1, 2, 3, 4, 5};
+        int[] cost = {3, 4, 5, 1, 2};
+        System.out.println(canCompleteCircuit(gas, cost));
+    }
+
+    public int canCompleteCircuit(int[] gas, int[] cost) {
+        int[] target = new int[gas.length];
+        int len = gas.length;
+        for (int i = 0; i < len; i++) {
+            target[i] = gas[i] - cost[i];
+        }
+        int[] preSum = new int[2 * len + 1];
+        for (int i = 1; i < preSum.length; i++) {
+            preSum[i] = preSum[i - 1] + target[(i - 1) % len];
+        }
+        Deque<Integer> deque = new ArrayDeque<>();
+        for (int i = 1; i < preSum.length; i++) {
+            while (!deque.isEmpty() && preSum[deque.peekLast()] >= preSum[i]) {
+                deque.pollLast();
+            }
+            deque.addLast(i);
+            if (deque.peekFirst() == i - len) {
+                deque.pollFirst();
+            }
+            if (i >= len) {
+                if (preSum[deque.peekFirst()] - 1 >= 0) {
+                    return (i - 1) % len;
+                }
+            }
+
+        }
+        return -1;
+    }
+
+    public int canCompleteCircuit1(int[] gas, int[] cost) {
+        int[] target = new int[gas.length];
+        int len = gas.length;
+        for (int i = 0; i < len; i++) {
+            target[i] = gas[i] - cost[i];
+        }
+        int[] preSum = new int[2 * len + 1];
+        for (int i = 1; i < preSum.length; i++) {
+            preSum[i] = preSum[i - 1] + target[(i - 1) % len];
+        }
+        for (int i = 1; i < len + 1; i++) {
+            int n = i;
+            boolean flag = true;
+            while (n - i <= len) {
+                if (preSum[n] - preSum[i - 1] < 0) {
+                    flag = false;
+                    break;
+                }
+                n++;
+            }
+            if (flag) {
+                return i - 1;
+            }
+        }
+        return -1;
+    }
+
+
+    public int minSwaps(int[] nums) {
+        int oneCnt = 0;
+        for (int i = 0; i < nums.length; i++) {
+            oneCnt += nums[i];
+        }
+        int n = nums.length;
+        int zeroCnt = 0;
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < n * 2; i++) {
+            if (i >= oneCnt) {
+                min = Math.min(zeroCnt, min);
+                if (nums[(i - oneCnt) % n] == 0) {
+                    zeroCnt--;
+                }
+            }
+            if (nums[i % n] == 0) {
+                zeroCnt++;
+            }
+        }
+
+        return min;
+    }
+
+    @Test
+    public void minimumStepsTest() {
+        String s = "1010100";
+        System.out.println(minimumSteps(s));
+        System.out.println(minimumSteps1(s));
+//        randomMinimumStep(100, 1000000);
+    }
+
+    public void randomMinimumStep(int count, int len) {
+        for (int c = 0; c < count; c++) {
+            StringBuilder sb1 = new StringBuilder();
+            StringBuilder sb2 = new StringBuilder();
+            for (int i = 0; i < len; i++) {
+                char ch = Math.random() > 0.5 ? '0' : '1';
+                sb1.append(ch);
+                sb2.append(ch);
+            }
+            if (minimumSteps(sb1.toString()) != minimumSteps(sb2.toString())) {
+                System.out.println("Fuck code!!!");
+            }
+        }
+    }
+
+
+    public long minimumSteps(String s) {
+        long step = 0;
+        int left = 0;
+        int right = s.length() - 1;
+        while (left < right) {
+            if (s.charAt(left) == '1' && s.charAt(right) == '0') {
+                step += right - left;
+                left++;
+                right--;
+                continue;
+            }
+            if (s.charAt(left) == '0') {
+                left++;
+            }
+            if (s.charAt(right) == '1') {
+                right--;
+            }
+        }
+        return step;
+    }
+
+    /**
+     * leetcode 2938
+     *
+     * @param s
+     * @return
+     */
+    public long minimumSteps1(String s) {
+        long step = 0;
+        int len = s.length();
+        char[] chs = s.toCharArray();
+        int pre = len;
+        for (int i = len - 1; i >= 0; i--) {
+            if (chs[i] == '0') {
+                pre = Math.min(pre, i);
+                int index = getOneZero(pre, chs);
+                if (index == -1) {
+                    return step;
+                }
+                step += (i - index);
+                chs[index] = '0';
+                pre = index;
+            }
+        }
+        return step;
+    }
+
+    public int getOneZero(int index, char[] chs) {
+        while (index >= 0) {
+            if (chs[index] == '1') {
+                return index;
+            }
+            index--;
+        }
+        return index;
+    }
+
+    public long minimumSteps2(String s) {
+        long step = 0;
+        int one = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '1') {
+                one++;
+            } else {
+                step += one;
+            }
+        }
+        return step;
+    }
+
+    public boolean canMeasureWater(int x, int y, int target) {
+        if (x + y < target) {
+            return false;
+        }
+        if (x == target || y == target) {
+            return true;
+        }
+        return false;
+    }
+
+    @Test
+    public void testPrint() throws InterruptedException {
+        for (int i = 0; i < 100; i++) {
+            Thread.sleep(50);
+            System.out.print("当前i为："+i);
+//            System.out.printf("当前i为：%d ", i);
+//            System.out.flush();
+//            System.out.printf("\b");
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        for (int i = 0; i < 100; i++) {
+            Thread.sleep(100);
+//            System.out.print("当前i为："+i);
+            System.out.printf("\r当前i为：%d", i);
+            System.out.flush();
+        }
+    }
 }

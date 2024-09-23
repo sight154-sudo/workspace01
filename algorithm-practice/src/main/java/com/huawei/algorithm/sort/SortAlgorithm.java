@@ -402,7 +402,7 @@ public class SortAlgorithm {
 
     @Test
     public void removeKdigits() {
-        String num = "1432219";
+        String num = "6049881";
         String str = removeKdigits(num, 3);
         System.out.println("str = " + str);
     }
@@ -423,10 +423,6 @@ public class SortAlgorithm {
         // 如果小于顶栈元素，弹出栈顶元素，直到入栈元素小于栈顶元素，k--,若k不为0，重复上述操作
         // 若k为0,还有元素，则将元素入栈， 栈中的元素即为结果
         // 若元素都添加进去后，k > 0 ，则一直弹出栈顶元素 k--  直到k为0
-        Deque<Character> deque = new LinkedList<>();
-        if (deque.peekLast() > 'c') {
-
-        }
         num:
         while (low < num.length()) {
             if (stack.peek() <= num.charAt(low)) {
@@ -469,7 +465,6 @@ public class SortAlgorithm {
         while (i < sb.length() && sb.charAt(i) == '0') {
             i++;
         }
-        LinkedList<String> strings = new LinkedList<>();
         return i >= sb.length() ? "0" : sb.substring(i);
     }
 
